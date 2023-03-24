@@ -6,7 +6,8 @@ require (
 	github.com/RangelReale/trcache v0.0.0
 	github.com/go-redis/redismock/v9 v9.0.2
 	github.com/redis/go-redis/v9 v9.0.2
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
+	golang.org/x/sys v0.4.0
 )
 
 require (

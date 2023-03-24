@@ -1,6 +1,8 @@
 package trcache
 
-import "errors"
+import (
+	"errors"
+)
 
 var ErrNotFound = errors.New("not found")
 
@@ -36,4 +38,12 @@ func (e ValidationError) Is(err error) bool {
 
 func (e ValidationError) As(target any) bool {
 	return errors.As(e.Err, target)
+}
+
+type ErrInvalidValueType struct {
+	Message string
+}
+
+func (e *ErrInvalidValueType) Error() string {
+	return e.Message
 }

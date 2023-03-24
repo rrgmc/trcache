@@ -24,8 +24,8 @@ func (c ForwardCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 		return dt, nil
 	}
 	var empty V
-	return empty, fmt.Errorf("cannot unmarshall value of type '%s' to type '%s'",
-		getType(data), getType(empty))
+	return empty, &ErrInvalidValueType{fmt.Sprintf("cannot unmarshall value of type '%s' to type '%s'",
+		getType(data), getType(empty))}
 }
 
 // JSONCodec is a Codec that marshals from/to JSON.
@@ -66,7 +66,7 @@ func (c JSONCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 	case string:
 		udata = []byte(dt)
 	default:
-		return ret, fmt.Errorf("unknown data type '%s' for JSON unmarshal", getType(data))
+		return ret, &ErrInvalidValueType{fmt.Sprintf("unknown data type '%s' for JSON unmarshal", getType(data))}
 	}
 
 	if err := json.Unmarshal(udata, &ret); err != nil {

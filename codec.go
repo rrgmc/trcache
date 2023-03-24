@@ -34,7 +34,7 @@ type JSONCodec[V any] struct {
 }
 
 type jsonCodecOptions struct {
-	returnString bool
+	returnBytes bool
 }
 
 func NewJSONCodec[V any](options ...JSONCodecOption) Codec[V] {
@@ -50,7 +50,7 @@ func (c JSONCodec[V]) Marshal(ctx context.Context, data V) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	if c.returnString {
+	if !c.returnBytes {
 		return string(ret), nil
 	}
 	return ret, nil
@@ -77,8 +77,8 @@ func (c JSONCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 
 type JSONCodecOption func(*jsonCodecOptions)
 
-func WithJSONCodecReturnString(returnString bool) JSONCodecOption {
+func WithJSONCodecReturnBytes(returnBytes bool) JSONCodecOption {
 	return func(o *jsonCodecOptions) {
-		o.returnString = returnString
+		o.returnBytes = returnBytes
 	}
 }

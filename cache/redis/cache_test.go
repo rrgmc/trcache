@@ -120,7 +120,7 @@ func TestCacheJSONCodec(t *testing.T) {
 	mockRedis.ExpectGet("z").RedisNil()
 
 	c, err := NewCache[string, string](redis,
-		WithValueCodec[string, string](trcache.NewJSONCodec[string](trcache.WithJSONCodecReturnString(true))),
+		WithValueCodec[string, string](trcache.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 	)
 	require.NoError(t, err)
@@ -150,7 +150,7 @@ func TestCacheJSONCodecInt(t *testing.T) {
 	mockRedis.ExpectGet("z").RedisNil()
 
 	c, err := NewCache[string, int](redis,
-		WithValueCodec[string, int](trcache.NewJSONCodec[int](trcache.WithJSONCodecReturnString(true))),
+		WithValueCodec[string, int](trcache.NewJSONCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
 	)
 	require.NoError(t, err)

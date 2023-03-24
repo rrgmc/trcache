@@ -40,29 +40,29 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
 		return empty, err
 	}
 
-	ret, err := c.valueCodec.Unmarshal(ctx, value)
+	dec, err := c.valueCodec.Unmarshal(ctx, value)
 	if err != nil {
 		var empty V
 		return empty, trcache.CodecError{err}
 	}
 
 	if c.validator != nil {
-		if err = c.validator.ValidateGet(ctx, ret); err != nil {
+		if err = c.validator.ValidateGet(ctx, dec); err != nil {
 			var empty V
 			return empty, err
 		}
 	}
 
-	return ret, nil
+	return dec, nil
 }
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption) error {
-	value, err := c.valueCodec.Marshal(ctx, value)
+	enc, err := c.valueCodec.Marshal(ctx, value)
 	if err != nil {
 		return trcache.CodecError{err}
 	}
 
-	return c.redis.Set(ctx, trcache.StringValue(key), value, c.defaultDuration).Err()
+	return c.redis.Set(ctx, trcache.StringValue(key), enc, c.defaultDuration).Err()
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {

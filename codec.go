@@ -3,7 +3,7 @@ package trcache
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 )
 
 // ForwardCodec is a Codec that returns the same object passed.
@@ -24,21 +24,34 @@ func (c ForwardCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 		return dt, nil
 	}
 	var empty V
-	return empty, errors.New("cannot unmarshall value")
+	return empty, fmt.Errorf("cannot unmarshall value of type '%s' to type '%s'",
+		getType(data), getType(empty))
 }
 
 // JSONCodec is a Codec that marshals from/to JSON.
 type JSONCodec[V any] struct {
+	jsonCodecOptions
 }
 
-func NewJSONCodec[V any]() Codec[V] {
-	return JSONCodec[V]{}
+type jsonCodecOptions struct {
+	returnString bool
+}
+
+func NewJSONCodec[V any](options ...JSONCodecOption) Codec[V] {
+	ret := JSONCodec[V]{}
+	for _, opt := range options {
+		opt(&ret.jsonCodecOptions)
+	}
+	return ret
 }
 
 func (c JSONCodec[V]) Marshal(ctx context.Context, data V) (any, error) {
 	ret, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
+	}
+	if c.returnString {
+		return string(ret), nil
 	}
 	return ret, nil
 }
@@ -53,11 +66,19 @@ func (c JSONCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 	case string:
 		udata = []byte(dt)
 	default:
-		return ret, errors.New("unknown data type for JSON unmarshal")
+		return ret, fmt.Errorf("unknown data type '%s' for JSON unmarshal", getType(data))
 	}
 
 	if err := json.Unmarshal(udata, &ret); err != nil {
 		return ret, err
 	}
 	return ret, nil
+}
+
+type JSONCodecOption func(*jsonCodecOptions)
+
+func WithJSONCodecReturnString(returnString bool) JSONCodecOption {
+	return func(o *jsonCodecOptions) {
+		o.returnString = returnString
+	}
 }

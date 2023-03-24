@@ -3,20 +3,23 @@ package redis
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/RangelReale/trcache"
 	"github.com/redis/go-redis/v9"
 )
 
 type Cache[K comparable, V any] struct {
-	redis      *redis.Client
-	valueCodec trcache.Codec[V]
-	validator  trcache.Validator[V]
+	redis           *redis.Client
+	valueCodec      trcache.Codec[V]
+	validator       trcache.Validator[V]
+	defaultDuration time.Duration
 }
 
 func NewCache[K comparable, V any](redis *redis.Client, option ...Option[K, V]) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
-		redis: redis,
+		redis:           redis,
+		defaultDuration: 0, // 0 means default for go-redis
 	}
 	for _, opt := range option {
 		opt(ret)
@@ -59,7 +62,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		return trcache.CodecError{err}
 	}
 
-	return c.redis.Set(ctx, trcache.StringValue(key), value, 0).Err()
+	return c.redis.Set(ctx, trcache.StringValue(key), value, c.defaultDuration).Err()
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {

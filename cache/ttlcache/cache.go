@@ -2,19 +2,22 @@ package ttlcache
 
 import (
 	"context"
+	"time"
 
 	"github.com/RangelReale/trcache"
 	"github.com/jellydator/ttlcache/v3"
 )
 
 type Cache[K comparable, V any] struct {
-	cache     *ttlcache.Cache[K, V]
-	validator trcache.Validator[V]
+	cache           *ttlcache.Cache[K, V]
+	validator       trcache.Validator[V]
+	defaultDuration time.Duration
 }
 
 func NewCache[K comparable, V any](cache *ttlcache.Cache[K, V], option ...Option[K, V]) *Cache[K, V] {
 	ret := &Cache[K, V]{
-		cache: cache,
+		cache:           cache,
+		defaultDuration: ttlcache.DefaultTTL,
 	}
 	for _, opt := range option {
 		opt(ret)
@@ -40,7 +43,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
 }
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption) error {
-	_ = c.cache.Set(key, value, ttlcache.DefaultTTL)
+	_ = c.cache.Set(key, value, c.defaultDuration)
 	return nil
 }
 

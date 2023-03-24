@@ -14,6 +14,12 @@ func WithName[K comparable, V any](name string) Option[K, V] {
 	}
 }
 
+func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) Option[K, V] {
+	return func(c *Cache[K, V]) {
+		c.keycodec = keyCodec
+	}
+}
+
 func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) Option[K, V] {
 	return func(c *Cache[K, V]) {
 		c.valueCodec = valueCodec

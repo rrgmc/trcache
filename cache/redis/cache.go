@@ -3,15 +3,19 @@ package redis
 import (
 	"context"
 	"errors"
+	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/RangelReale/trcache"
+	"github.com/RangelReale/trcache/codec"
 	"github.com/redis/go-redis/v9"
 )
 
 type Cache[K comparable, V any] struct {
 	redis           *redis.Client
 	name            string
+	keycodec        trcache.KeyCodec[K]
 	valueCodec      trcache.Codec[V]
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
@@ -28,6 +32,9 @@ func NewCache[K comparable, V any](redis *redis.Client, option ...Option[K, V]) 
 	if ret.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
+	if ret.keycodec == nil {
+		ret.keycodec = codec.NewStringKeyCodec[K]()
+	}
 	return ret, nil
 }
 
@@ -36,7 +43,13 @@ func (c *Cache[K, V]) Name() string {
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
-	value, err := c.redis.Get(ctx, trcache.StringValue(key)).Result()
+	keyValue, err := c.parseKey(ctx, key)
+	if err != nil {
+		var empty V
+		return empty, err
+	}
+
+	value, err := c.redis.Get(ctx, keyValue).Result()
 	if err != nil {
 		var empty V
 		if errors.Is(err, redis.Nil) {
@@ -67,13 +80,49 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		return trcache.CodecError{err}
 	}
 
-	return c.redis.Set(ctx, trcache.StringValue(key), enc, c.defaultDuration).Err()
+	keyValue, err := c.parseKey(ctx, key)
+	if err != nil {
+		return err
+	}
+
+	return c.redis.Set(ctx, keyValue, enc, c.defaultDuration).Err()
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
-	return c.redis.Del(ctx, trcache.StringValue(key)).Err()
+	keyValue, err := c.parseKey(ctx, key)
+	if err != nil {
+		return err
+	}
+
+	return c.redis.Del(ctx, keyValue).Err()
 }
 
 func (c *Cache[K, V]) Clear(ctx context.Context) error {
 	return trcache.ErrNotSupported
+}
+
+func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
+	keyValue, err := c.keycodec.Convert(ctx, key)
+	if err != nil {
+		return "", trcache.CodecError{err}
+	}
+
+	switch kv := keyValue.(type) {
+	case string:
+		return kv, nil
+	case []byte:
+		return string(kv), nil
+	default:
+		return "", trcache.CodecError{
+			&trcache.ErrInvalidValueType{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
+		}
+	}
+}
+
+func getType(myvar interface{}) string {
+	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
+		return "*" + t.Elem().Name()
+	} else {
+		return t.Name()
+	}
 }

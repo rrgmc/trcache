@@ -24,7 +24,7 @@ func (c *wrapRefreshCache[K, V]) Name() string {
 	return c.cache.Name()
 }
 
-func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K) (V, error) {
+func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
 	return c.cache.Get(ctx, key)
 }
 

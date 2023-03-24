@@ -6,7 +6,7 @@ import (
 
 type Cache[K comparable, V any] interface {
 	Name() string
-	Get(ctx context.Context, key K) (V, error)
+	Get(ctx context.Context, key K, options ...CacheGetOption) (V, error)
 	Set(ctx context.Context, key K, value V, options ...CacheSetOption) error
 	Delete(ctx context.Context, key K) error
 	Clear(ctx context.Context) error

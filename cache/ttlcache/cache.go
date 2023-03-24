@@ -30,7 +30,7 @@ func (c *Cache[K, V]) Name() string {
 	return c.name
 }
 
-func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
+func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
 	item := c.cache.Get(key)
 	if item == nil {
 		var empty V

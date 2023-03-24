@@ -42,7 +42,7 @@ func (c *Cache[K, V]) Name() string {
 	return c.name
 }
 
-func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
+func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
 		var empty V

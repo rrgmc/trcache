@@ -2,17 +2,38 @@ package trcache
 
 import "time"
 
+// Cache get options
+
+type CacheGetOption func(options *CacheGetOptions)
+
+type CacheGetOptions struct {
+	Touch         bool
+	CustomOptions []any
+}
+
+func WithCacheGetTouch(touch bool) CacheGetOption {
+	return func(options *CacheGetOptions) {
+		options.Touch = touch
+	}
+}
+
+func WithCacheGetCustomOption(cacheGetCustomOption ...any) CacheGetOption {
+	return func(options *CacheGetOptions) {
+		options.CustomOptions = append(options.CustomOptions, cacheGetCustomOption...)
+	}
+}
+
 // Cache set options
 
-type CacheSetOption func(options *cacheSetOptions)
+type CacheSetOption func(options *CacheSetOptions)
 
-type cacheSetOptions struct {
-	duration time.Duration
+type CacheSetOptions struct {
+	Duration time.Duration
 }
 
 func WithCacheSetDuration(duration time.Duration) CacheSetOption {
-	return func(options *cacheSetOptions) {
-		options.duration = duration
+	return func(options *CacheSetOptions) {
+		options.Duration = duration
 	}
 }
 

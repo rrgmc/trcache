@@ -33,11 +33,11 @@ func (c *Chain[K, V]) Name() string {
 	return c.name
 }
 
-func (c *Chain[K, V]) Get(ctx context.Context, key K) (V, error) {
+func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
 	var reterr error
 
 	for _, cache := range c.caches {
-		if ret, err := cache.Get(ctx, key); err == nil {
+		if ret, err := cache.Get(ctx, key, options...); err == nil {
 			return ret, nil
 		} else {
 			reterr = multierr.Append(reterr, err)
@@ -98,62 +98,4 @@ func (c *Chain[K, V]) Clear(ctx context.Context) error {
 		return nil
 	}
 	return trcache.NewChainError("no cache to get", reterr)
-}
-
-// func (c *Chain[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
-// 	var optns trcache.CacheRefreshOptions[K, V]
-// 	for _, opt := range options {
-// 		opt(&optns)
-// 	}
-//
-// 	ret, err := c.Get(ctx, key)
-// 	if err == nil {
-// 		return ret, nil
-// 	} else if err != nil && !errors.Is(err, trcache.ErrNotFound) {
-// 		var empty V
-// 		return empty, err
-// 	}
-//
-// 	refreshFn := c.refreshFunc
-// 	if optns.RefreshFn != nil {
-// 		refreshFn = optns.RefreshFn
-// 	}
-//
-// 	if refreshFn == nil {
-// 		var empty V
-// 		return empty, errors.New("refresh function not set")
-// 	}
-//
-// 	ret, err = refreshFn(ctx, key, optns.CacheRefreshFuncOptions)
-// 	if err != nil {
-// 		var empty V
-// 		return empty, err
-// 	}
-//
-// 	err = c.Set(ctx, key, ret, optns.CacheSetOpt...)
-// 	if err != nil {
-// 		var empty V
-// 		return empty, err
-// 	}
-//
-// 	return ret, nil
-// }
-
-type Option[K comparable, V any] func(*chainOptions[K, V])
-
-type chainOptions[K comparable, V any] struct {
-	name        string
-	refreshFunc trcache.CacheRefreshFunc[K, V]
-}
-
-func WithName[K comparable, V any](name string) Option[K, V] {
-	return func(c *chainOptions[K, V]) {
-		c.name = name
-	}
-}
-
-func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) Option[K, V] {
-	return func(c *chainOptions[K, V]) {
-		c.refreshFunc = refreshFunc
-	}
 }

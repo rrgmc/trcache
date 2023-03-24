@@ -15,8 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// //go:generate mockery --srcpkg github.com/spf13/afero --name Fs
-
 func TestCache(t *testing.T) {
 	ctx := context.Background()
 

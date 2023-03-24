@@ -52,7 +52,7 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
 	return nil
 }
 
-func (c *Cache[K, V]) Clear(ctx context.Context, key K) error {
+func (c *Cache[K, V]) Clear(ctx context.Context) error {
 	c.cache.DeleteAll()
 	return nil
 }

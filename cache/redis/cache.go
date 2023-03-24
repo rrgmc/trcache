@@ -69,6 +69,6 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
 	return c.redis.Del(ctx, trcache.StringValue(key)).Err()
 }
 
-func (c *Cache[K, V]) Clear(ctx context.Context, key K) error {
+func (c *Cache[K, V]) Clear(ctx context.Context) error {
 	return trcache.ErrNotSupported
 }

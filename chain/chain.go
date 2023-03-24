@@ -2,25 +2,29 @@ package chain
 
 import (
 	"context"
-	"errors"
 
 	"github.com/RangelReale/trcache"
+	"github.com/RangelReale/trcache/wrap"
 	"go.uber.org/multierr"
 )
 
 type Chain[K comparable, V any] struct {
-	caches      []trcache.Cache[K, V]
-	refreshFunc trcache.CacheRefreshFunc[K, V]
+	caches []trcache.Cache[K, V]
 }
 
-func NewChain[K comparable, V any](cache []trcache.Cache[K, V], options ...ChainOption[K, V]) *Chain[K, V] {
-	ret := &Chain[K, V]{
-		caches: cache,
-	}
+func NewChain[K comparable, V any](cache []trcache.Cache[K, V], options ...ChainOption[K, V]) trcache.RefreshCache[K, V] {
+	var optns chainOptions[K, V]
 	for _, opt := range options {
-		opt(ret)
+		opt(&optns)
 	}
-	return ret
+	var wopt []wrap.WrapRefreshOption[K, V]
+	if optns.refreshFunc != nil {
+		wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](optns.refreshFunc))
+	}
+
+	return wrap.NewWrapRefreshCache[K, V](&Chain[K, V]{
+		caches: cache,
+	})
 }
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K) (V, error) {
@@ -90,49 +94,53 @@ func (c *Chain[K, V]) Clear(ctx context.Context) error {
 	return trcache.NewChainError("no cache to get", reterr)
 }
 
-func (c *Chain[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
-	var optns trcache.CacheRefreshOptions[K, V]
-	for _, opt := range options {
-		opt(&optns)
-	}
+// func (c *Chain[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
+// 	var optns trcache.CacheRefreshOptions[K, V]
+// 	for _, opt := range options {
+// 		opt(&optns)
+// 	}
+//
+// 	ret, err := c.Get(ctx, key)
+// 	if err == nil {
+// 		return ret, nil
+// 	} else if err != nil && !errors.Is(err, trcache.ErrNotFound) {
+// 		var empty V
+// 		return empty, err
+// 	}
+//
+// 	refreshFn := c.refreshFunc
+// 	if optns.RefreshFn != nil {
+// 		refreshFn = optns.RefreshFn
+// 	}
+//
+// 	if refreshFn == nil {
+// 		var empty V
+// 		return empty, errors.New("refresh function not set")
+// 	}
+//
+// 	ret, err = refreshFn(ctx, key, optns.CacheRefreshFuncOptions)
+// 	if err != nil {
+// 		var empty V
+// 		return empty, err
+// 	}
+//
+// 	err = c.Set(ctx, key, ret, optns.CacheSetOpt...)
+// 	if err != nil {
+// 		var empty V
+// 		return empty, err
+// 	}
+//
+// 	return ret, nil
+// }
 
-	ret, err := c.Get(ctx, key)
-	if err == nil {
-		return ret, nil
-	} else if err != nil && !errors.Is(err, trcache.ErrNotFound) {
-		var empty V
-		return empty, err
-	}
+type ChainOption[K comparable, V any] func(*chainOptions[K, V])
 
-	refreshFn := c.refreshFunc
-	if optns.RefreshFn != nil {
-		refreshFn = optns.RefreshFn
-	}
-
-	if refreshFn == nil {
-		var empty V
-		return empty, errors.New("refresh function not set")
-	}
-
-	ret, err = refreshFn(ctx, key, optns.CacheRefreshFuncOptions)
-	if err != nil {
-		var empty V
-		return empty, err
-	}
-
-	err = c.Set(ctx, key, ret, optns.CacheSetOpt...)
-	if err != nil {
-		var empty V
-		return empty, err
-	}
-
-	return ret, nil
+type chainOptions[K comparable, V any] struct {
+	refreshFunc trcache.CacheRefreshFunc[K, V]
 }
 
-type ChainOption[K comparable, V any] func(*Chain[K, V])
-
 func WithChainRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) ChainOption[K, V] {
-	return func(c *Chain[K, V]) {
+	return func(c *chainOptions[K, V]) {
 		c.refreshFunc = refreshFunc
 	}
 }

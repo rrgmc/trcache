@@ -10,9 +10,10 @@ import (
 
 type Chain[K comparable, V any] struct {
 	caches []trcache.Cache[K, V]
+	name   string
 }
 
-func NewChain[K comparable, V any](cache []trcache.Cache[K, V], options ...ChainOption[K, V]) trcache.RefreshCache[K, V] {
+func NewChain[K comparable, V any](cache []trcache.Cache[K, V], options ...Option[K, V]) trcache.RefreshCache[K, V] {
 	var optns chainOptions[K, V]
 	for _, opt := range options {
 		opt(&optns)
@@ -24,7 +25,12 @@ func NewChain[K comparable, V any](cache []trcache.Cache[K, V], options ...Chain
 
 	return wrap.NewWrapRefreshCache[K, V](&Chain[K, V]{
 		caches: cache,
+		name:   optns.name,
 	})
+}
+
+func (c *Chain[K, V]) Name() string {
+	return c.name
 }
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K) (V, error) {
@@ -133,13 +139,20 @@ func (c *Chain[K, V]) Clear(ctx context.Context) error {
 // 	return ret, nil
 // }
 
-type ChainOption[K comparable, V any] func(*chainOptions[K, V])
+type Option[K comparable, V any] func(*chainOptions[K, V])
 
 type chainOptions[K comparable, V any] struct {
+	name        string
 	refreshFunc trcache.CacheRefreshFunc[K, V]
 }
 
-func WithChainRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) ChainOption[K, V] {
+func WithName[K comparable, V any](name string) Option[K, V] {
+	return func(c *chainOptions[K, V]) {
+		c.name = name
+	}
+}
+
+func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) Option[K, V] {
 	return func(c *chainOptions[K, V]) {
 		c.refreshFunc = refreshFunc
 	}

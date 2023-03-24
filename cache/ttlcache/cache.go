@@ -10,6 +10,7 @@ import (
 
 type Cache[K comparable, V any] struct {
 	cache           *ttlcache.Cache[K, V]
+	name            string
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
 }
@@ -23,6 +24,10 @@ func NewCache[K comparable, V any](cache *ttlcache.Cache[K, V], option ...Option
 		opt(ret)
 	}
 	return ret
+}
+
+func (c *Cache[K, V]) Name() string {
+	return c.name
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {

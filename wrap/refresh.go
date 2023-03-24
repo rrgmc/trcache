@@ -20,6 +20,10 @@ func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V], options
 	return ret
 }
 
+func (c *wrapRefreshCache[K, V]) Name() string {
+	return c.cache.Name()
+}
+
 func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K) (V, error) {
 	return c.cache.Get(ctx, key)
 }

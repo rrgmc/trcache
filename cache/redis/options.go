@@ -8,6 +8,12 @@ import (
 
 type Option[K comparable, V any] func(*Cache[K, V])
 
+func WithName[K comparable, V any](name string) Option[K, V] {
+	return func(c *Cache[K, V]) {
+		c.name = name
+	}
+}
+
 func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) Option[K, V] {
 	return func(c *Cache[K, V]) {
 		c.valueCodec = valueCodec

@@ -11,6 +11,7 @@ import (
 
 type Cache[K comparable, V any] struct {
 	redis           *redis.Client
+	name            string
 	valueCodec      trcache.Codec[V]
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
@@ -28,6 +29,10 @@ func NewCache[K comparable, V any](redis *redis.Client, option ...Option[K, V]) 
 		return nil, errors.New("value codec is required")
 	}
 	return ret, nil
+}
+
+func (c *Cache[K, V]) Name() string {
+	return c.name
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {

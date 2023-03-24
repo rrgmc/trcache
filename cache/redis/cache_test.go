@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -71,6 +72,35 @@ func TestCacheValidator(t *testing.T) {
 
 	err = c.Set(ctx, "a", "12")
 	require.NoError(t, err)
+
+	_, err = c.Get(ctx, "a")
+	require.ErrorIs(t, err, trcache.ErrNotFound)
+
+	if err := mockRedis.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestCacheCodecError(t *testing.T) {
+	ctx := context.Background()
+
+	redis, mockRedis := redismock.NewClientMock()
+	mockCodec := mocks.NewCodec[string](t)
+
+	mockRedis.ExpectGet("a").RedisNil()
+
+	mockCodec.EXPECT().
+		Marshal(mock.Anything, "12").
+		Return(nil, errors.New("my error"))
+
+	c, err := NewCache[string, string](redis,
+		WithValueCodec[string, string](mockCodec),
+		WithDefaultDuration[string, string](time.Minute),
+	)
+	require.NoError(t, err)
+
+	err = c.Set(ctx, "a", "12")
+	require.ErrorAs(t, err, &trcache.CodecError{})
 
 	_, err = c.Get(ctx, "a")
 	require.ErrorIs(t, err, trcache.ErrNotFound)

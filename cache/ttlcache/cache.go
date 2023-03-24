@@ -8,13 +8,18 @@ import (
 )
 
 type Cache[K comparable, V any] struct {
-	cache *ttlcache.Cache[K, V]
+	cache     *ttlcache.Cache[K, V]
+	validator trcache.Validator[V]
 }
 
-func NewCache[K comparable, V any](cache *ttlcache.Cache[K, V]) *Cache[K, V] {
-	return &Cache[K, V]{
+func NewCache[K comparable, V any](cache *ttlcache.Cache[K, V], option ...Option[K, V]) *Cache[K, V] {
+	ret := &Cache[K, V]{
 		cache: cache,
 	}
+	for _, opt := range option {
+		opt(ret)
+	}
+	return ret
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
@@ -23,6 +28,14 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K) (V, error) {
 		var empty V
 		return empty, trcache.ErrNotFound
 	}
+
+	if c.validator != nil {
+		if err := c.validator.ValidateGet(ctx, item.Value()); err != nil {
+			var empty V
+			return empty, err
+		}
+	}
+
 	return item.Value(), nil
 }
 

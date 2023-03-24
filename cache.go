@@ -17,9 +17,13 @@ type RefreshCache[K comparable, V any] interface {
 	GetOrRefresh(ctx context.Context, key K, refreshFn CacheRefreshFunc[V], options ...CacheSetOption) (V, error)
 }
 
-type Codec[T any] interface {
-	Marshal(ctx context.Context, data T) (any, error)
-	Unmarshal(ctx context.Context, data any) (T, error)
+type Codec[V any] interface {
+	Marshal(ctx context.Context, data V) (any, error)
+	Unmarshal(ctx context.Context, data any) (V, error)
+}
+
+type Validator[V any] interface {
+	ValidateGet(ctx context.Context, data V) error
 }
 
 type CacheRefreshFunc[V any] func(ctx context.Context) (V, error)

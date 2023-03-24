@@ -9,3 +9,9 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) Option[K, 
 		c.valueCodec = valueCodec
 	}
 }
+
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) Option[K, V] {
+	return func(c *Cache[K, V]) {
+		c.validator = validator
+	}
+}

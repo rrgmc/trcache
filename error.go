@@ -21,3 +21,19 @@ func (e CodecError) Is(err error) bool {
 func (e CodecError) As(target any) bool {
 	return errors.As(e.Err, target)
 }
+
+type ValidationError struct {
+	Err error
+}
+
+func (e ValidationError) Error() string {
+	return e.Err.Error()
+}
+
+func (e ValidationError) Is(err error) bool {
+	return errors.Is(e.Err, err)
+}
+
+func (e ValidationError) As(target any) bool {
+	return errors.As(e.Err, target)
+}

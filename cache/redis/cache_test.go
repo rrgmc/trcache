@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/RangelReale/trcache"
+	"github.com/RangelReale/trcache/codec"
 	"github.com/RangelReale/trcache/mocks"
 	"github.com/go-redis/redismock/v9"
 	"github.com/stretchr/testify/mock"
@@ -26,7 +27,7 @@ func TestCache(t *testing.T) {
 	mockRedis.ExpectGet("z").RedisNil()
 
 	c, err := NewCache[string, string](redis,
-		WithValueCodec[string, string](trcache.NewForwardCodec[string]()),
+		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 	)
 	require.NoError(t, err)
@@ -64,7 +65,7 @@ func TestCacheValidator(t *testing.T) {
 		Once()
 
 	c, err := NewCache[string, string](redis,
-		WithValueCodec[string, string](trcache.NewForwardCodec[string]()),
+		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithValidator[string, string](mockValidator),
 		WithDefaultDuration[string, string](time.Minute),
 	)
@@ -119,7 +120,7 @@ func TestCacheJSONCodec(t *testing.T) {
 	mockRedis.ExpectGet("a").SetVal(`"12"`)
 
 	c, err := NewCache[string, string](redis,
-		WithValueCodec[string, string](trcache.NewJSONCodec[string]()),
+		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 	)
 	require.NoError(t, err)
@@ -145,7 +146,7 @@ func TestCacheJSONCodecInt(t *testing.T) {
 	mockRedis.ExpectGet("a").SetVal("12")
 
 	c, err := NewCache[string, int](redis,
-		WithValueCodec[string, int](trcache.NewJSONCodec[int]()),
+		WithValueCodec[string, int](codec.NewJSONCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
 	)
 	require.NoError(t, err)
@@ -167,7 +168,7 @@ func TestCacheFuncCodecInt(t *testing.T) {
 	mockRedis.ExpectGet("a").SetVal("12")
 
 	c, err := NewCache[string, int](redis,
-		WithValueCodec[string, int](trcache.NewFuncCodec[int](
+		WithValueCodec[string, int](codec.NewFuncCodec[int](
 			func(ctx context.Context, data int) (any, error) {
 				return fmt.Sprint(data), nil
 			}, func(ctx context.Context, data any) (int, error) {
@@ -194,7 +195,7 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 	mockRedis.ExpectGet("a").SetVal("12")
 
 	c, err := NewCache[string, int](redis,
-		WithValueCodec[string, int](trcache.NewForwardCodec[int]()),
+		WithValueCodec[string, int](codec.NewForwardCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
 	)
 	require.NoError(t, err)

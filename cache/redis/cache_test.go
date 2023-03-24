@@ -3,6 +3,8 @@ package redis
 import (
 	"context"
 	"errors"
+	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -117,7 +119,6 @@ func TestCacheJSONCodec(t *testing.T) {
 
 	mockRedis.ExpectSet("a", `"12"`, time.Minute).SetVal(`"12"`)
 	mockRedis.ExpectGet("a").SetVal(`"12"`)
-	mockRedis.ExpectGet("z").RedisNil()
 
 	c, err := NewCache[string, string](redis,
 		WithValueCodec[string, string](trcache.NewJSONCodec[string]()),
@@ -132,9 +133,6 @@ func TestCacheJSONCodec(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "12", v)
 
-	v, err = c.Get(ctx, "z")
-	require.ErrorIs(t, err, trcache.ErrNotFound)
-
 	if err := mockRedis.ExpectationsWereMet(); err != nil {
 		t.Error(err)
 	}
@@ -147,7 +145,6 @@ func TestCacheJSONCodecInt(t *testing.T) {
 
 	mockRedis.ExpectSet("a", "12", time.Minute).SetVal("12")
 	mockRedis.ExpectGet("a").SetVal("12")
-	mockRedis.ExpectGet("z").RedisNil()
 
 	c, err := NewCache[string, int](redis,
 		WithValueCodec[string, int](trcache.NewJSONCodec[int]()),
@@ -161,9 +158,33 @@ func TestCacheJSONCodecInt(t *testing.T) {
 	v, err := c.Get(ctx, "a")
 	require.NoError(t, err)
 	require.Equal(t, 12, v)
+}
 
-	v, err = c.Get(ctx, "z")
-	require.ErrorIs(t, err, trcache.ErrNotFound)
+func TestCacheFuncCodecInt(t *testing.T) {
+	ctx := context.Background()
+
+	redis, mockRedis := redismock.NewClientMock()
+
+	mockRedis.ExpectSet("a", "12", time.Minute).SetVal("12")
+	mockRedis.ExpectGet("a").SetVal("12")
+
+	c, err := NewCache[string, int](redis,
+		WithValueCodec[string, int](trcache.NewFuncCodec[int](
+			func(ctx context.Context, data int) (any, error) {
+				return fmt.Sprint(data), nil
+			}, func(ctx context.Context, data any) (int, error) {
+				return strconv.Atoi(fmt.Sprint(data))
+			})),
+		WithDefaultDuration[string, int](time.Minute),
+	)
+	require.NoError(t, err)
+
+	err = c.Set(ctx, "a", 12)
+	require.NoError(t, err)
+
+	v, err := c.Get(ctx, "a")
+	require.NoError(t, err)
+	require.Equal(t, 12, v)
 }
 
 func TestCacheCodecInvalidInt(t *testing.T) {

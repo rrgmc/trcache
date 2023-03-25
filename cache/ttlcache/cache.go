@@ -35,7 +35,12 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 	var optns CacheGetOptions[K, V]
 	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions}, options...)
 
-	item := c.cache.Get(key)
+	var ttlopt []ttlcache.Option[K, V]
+	if !optns.Touch {
+		ttlopt = append(ttlopt, ttlcache.WithDisableTouchOnHit[K, V]())
+	}
+
+	item := c.cache.Get(key, ttlopt...)
 	if item == nil {
 		var empty V
 		return empty, trcache.ErrNotFound

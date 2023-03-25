@@ -24,26 +24,26 @@ func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K
 
 // Cache get options
 
-type CacheGetOptions struct {
-	trcache.CacheGetOptions
-	SetPreviousOnGetOptions []trcache.CacheSetOption
+type CacheGetOptions[K comparable, V any] struct {
+	trcache.CacheGetOptions[K, V]
+	SetPreviousOnGetOptions []trcache.CacheSetOption[K, V]
 }
 
 // Cache get options: declarations
 
-func WithCacheGetSetPreviousOnGetOptions(options ...trcache.CacheSetOption) trcache.CacheGetOption {
-	return &withCacheGetSetPreviousOnGetOptions{options}
+func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](options ...trcache.CacheSetOption[K, V]) trcache.CacheGetOption[K, V] {
+	return &withCacheGetSetPreviousOnGetOptions[K, V]{options}
 }
 
 // Cache get options: implementations
 
-type withCacheGetSetPreviousOnGetOptions struct {
-	options []trcache.CacheSetOption
+type withCacheGetSetPreviousOnGetOptions[K comparable, V any] struct {
+	options []trcache.CacheSetOption[K, V]
 }
 
-func (o withCacheGetSetPreviousOnGetOptions) ApplyCacheGetOpt(options any) bool {
+func (o withCacheGetSetPreviousOnGetOptions[K, V]) ApplyCacheGetOpt(options any) bool {
 	switch opt := options.(type) {
-	case *CacheGetOptions:
+	case *CacheGetOptions[K, V]:
 		opt.SetPreviousOnGetOptions = append(opt.SetPreviousOnGetOptions, o.options...)
 		return true
 	}

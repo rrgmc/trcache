@@ -6,8 +6,8 @@ import (
 
 type Cache[K comparable, V any] interface {
 	Name() string
-	Get(ctx context.Context, key K, options ...CacheGetOption) (V, error)
-	Set(ctx context.Context, key K, value V, options ...CacheSetOption) error
+	Get(ctx context.Context, key K, options ...CacheGetOption[K, V]) (V, error)
+	Set(ctx context.Context, key K, value V, options ...CacheSetOption[K, V]) error
 	Delete(ctx context.Context, key K) error
 	Clear(ctx context.Context) error
 }

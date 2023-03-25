@@ -35,8 +35,8 @@ func (c *Chain[K, V]) Name() string {
 	return c.name
 }
 
-func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
-	var optns CacheGetOptions
+func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
+	var optns CacheGetOptions[K, V]
 	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions}, options...)
 
 	var reterr error
@@ -65,7 +65,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 	return empty, trcache.NewChainError("no cache to get", reterr)
 }
 
-func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption) error {
+func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
 	var reterr error
 
 	for _, cache := range c.caches {

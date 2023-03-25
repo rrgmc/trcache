@@ -24,11 +24,11 @@ func (c *wrapRefreshCache[K, V]) Name() string {
 	return c.cache.Name()
 }
 
-func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
+func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	return c.cache.Get(ctx, key, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption) error {
+func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
 	return c.cache.Set(ctx, key, value, options...)
 }
 

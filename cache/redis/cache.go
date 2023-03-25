@@ -38,9 +38,8 @@ func (c *Cache[K, V]) Name() string {
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
-	var optns trcache.CacheGetOptions[K, V]
-	trcache.ParseCacheGetOptions([]any{&optns},
-		trcache.AppendCacheGetOptions(c.options.fnDefaultGet, options)...)
+	var optns cacheGetOptions[K, V]
+	trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
@@ -74,9 +73,8 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 }
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
-	var optns trcache.CacheSetOptions[K, V]
-	trcache.ParseCacheSetOptions([]any{&optns},
-		trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)...)
+	var optns cacheSetOptions[K, V]
+	trcache.ParseCacheSetOptions(&optns, c.options.fnDefaultSet, options)
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)
 	if err != nil {

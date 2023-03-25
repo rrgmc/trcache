@@ -8,15 +8,6 @@ import (
 
 // Option
 
-// type CacheOptions[K comparable, V any] struct {
-// 	trcache.CacheFnDefaultOptions[K, V]
-// 	name            string
-// 	keyCodec        trcache.KeyCodec[K]
-// 	valueCodec      trcache.Codec[V]
-// 	validator       trcache.Validator[V]
-// 	defaultDuration time.Duration
-// }
-
 type CacheOptions[K comparable, V any] interface {
 	trcache.IsCacheOption
 	trcache.CacheFnDefaultOptions[K, V]
@@ -67,8 +58,6 @@ func (c *cacheOptions[K, V]) OptValidator(t trcache.Validator[V]) {
 func (c *cacheOptions[K, V]) OptDefaultDuration(duration time.Duration) {
 	c.defaultDuration = duration
 }
-
-// type Option[K comparable, V any] func(*Cache[K, V])
 
 func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
 	return trcache.CacheOptionFunc(func(o any) bool {
@@ -123,4 +112,40 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 		}
 		return false
 	})
+}
+
+// Cache get options
+
+type CacheGetOptions[K comparable, V any] interface {
+	trcache.IsCacheGetOption
+	trcache.CacheGetOptions[K, V]
+}
+
+type cacheGetOptions[K comparable, V any] struct {
+	trcache.IsCacheGetOptionImpl
+	customOptions []any
+}
+
+var _ CacheGetOptions[string, string] = &cacheGetOptions[string, string]{}
+
+func (c *cacheGetOptions[K, V]) OptCustomOptions(anies []any) {
+	c.customOptions = anies
+}
+
+// Cache set options
+
+type CacheSetOptions[K comparable, V any] interface {
+	trcache.IsCacheSetOption
+	trcache.CacheSetOptions[K, V]
+}
+
+type cacheSetOptions[K comparable, V any] struct {
+	trcache.IsCacheSetOptionImpl
+	duration time.Duration
+}
+
+var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
+
+func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
+	c.duration = duration
 }

@@ -12,35 +12,35 @@ import (
 )
 
 type Cache[K comparable, V any] struct {
-	CacheOptions[K, V]
-	redis *redis.Client
+	options cacheOptions[K, V]
+	redis   *redis.Client
 }
 
 func New[K comparable, V any](redis *redis.Client, options ...trcache.CacheOption[K, V]) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
 		redis: redis,
-		CacheOptions: CacheOptions[K, V]{
+		options: cacheOptions[K, V]{
 			defaultDuration: 0, // 0 means default for go-redis
 		},
 	}
-	trcache.ParseCacheOptions[K, V]([]any{&ret.CacheOptions, &ret.CacheOptions.CacheFnDefaultOptions}, options...)
-	if ret.valueCodec == nil {
+	trcache.ParseCacheOptions[K, V](&ret.options, options...)
+	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
-	if ret.keyCodec == nil {
-		ret.keyCodec = codec.NewStringKeyCodec[K]()
+	if ret.options.keyCodec == nil {
+		ret.options.keyCodec = codec.NewStringKeyCodec[K]()
 	}
 	return ret, nil
 }
 
 func (c *Cache[K, V]) Name() string {
-	return c.name
+	return c.options.name
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns trcache.CacheGetOptions[K, V]
 	trcache.ParseCacheGetOptions([]any{&optns},
-		trcache.AppendCacheGetOptions(c.FnDefaultGet, options)...)
+		trcache.AppendCacheGetOptions(c.options.fnDefaultGet, options)...)
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
@@ -57,14 +57,14 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 		return empty, err
 	}
 
-	dec, err := c.valueCodec.Unmarshal(ctx, value)
+	dec, err := c.options.valueCodec.Unmarshal(ctx, value)
 	if err != nil {
 		var empty V
 		return empty, trcache.CodecError{err}
 	}
 
-	if c.validator != nil {
-		if err = c.validator.ValidateGet(ctx, dec); err != nil {
+	if c.options.validator != nil {
+		if err = c.options.validator.ValidateGet(ctx, dec); err != nil {
 			var empty V
 			return empty, err
 		}
@@ -76,9 +76,9 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
 	var optns trcache.CacheSetOptions[K, V]
 	trcache.ParseCacheSetOptions([]any{&optns},
-		trcache.AppendCacheSetOptions(c.FnDefaultSet, options)...)
+		trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)...)
 
-	enc, err := c.valueCodec.Marshal(ctx, value)
+	enc, err := c.options.valueCodec.Marshal(ctx, value)
 	if err != nil {
 		return trcache.CodecError{err}
 	}
@@ -88,7 +88,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		return err
 	}
 
-	return c.redis.Set(ctx, keyValue, enc, c.defaultDuration).Err()
+	return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
@@ -101,7 +101,7 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
 }
 
 func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
-	keyValue, err := c.keyCodec.Convert(ctx, key)
+	keyValue, err := c.options.keyCodec.Convert(ctx, key)
 	if err != nil {
 		return "", trcache.CodecError{err}
 	}

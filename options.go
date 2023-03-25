@@ -4,6 +4,15 @@ import "time"
 
 // Cache options
 
+type CacheOptionMarker interface {
+	isCacheOption()
+}
+
+type IsCacheOption struct {
+}
+
+func (i IsCacheOption) isCacheOption() {}
+
 type CacheOption[K comparable, V any] interface {
 	ApplyCacheOpt(any) bool
 }
@@ -16,12 +25,10 @@ func (o CacheOptionFunc) ApplyCacheOpt(c any) bool {
 
 // Cache options: functions
 
-func ParseCacheOptions[K comparable, V any](objs []any,
+func ParseCacheOptions[K comparable, V any](obj CacheOptionMarker,
 	options ...CacheOption[K, V]) {
 	for _, opt := range options {
-		for _, obj := range objs {
-			_ = opt.ApplyCacheOpt(obj)
-		}
+		_ = opt.ApplyCacheOpt(obj)
 	}
 }
 
@@ -29,15 +36,24 @@ func ParseCacheOptions[K comparable, V any](objs []any,
 
 // type DefaultOption[K comparable, V any] func(*CacheFnDefaultOptions[K, V])
 
-type CacheFnDefaultOptions[K comparable, V any] struct {
-	FnDefaultGet []CacheGetOption[K, V]
-	FnDefaultSet []CacheSetOption[K, V]
+// type CacheFnDefaultOptions[K comparable, V any] struct {
+// 	FnDefaultGet []CacheGetOption[K, V]
+// 	FnDefaultSet []CacheSetOption[K, V]
+// }
+
+type CacheFnDefaultOptions[K comparable, V any] interface {
+	OptFnDefaultGet([]CacheGetOption[K, V])
+	OptFnDefaultSet([]CacheSetOption[K, V])
 }
 
 // type DefaultRefreshOption[K comparable, V any] func(*CacheFnDefaultRefreshOptions[K, V])
 
-type CacheFnDefaultRefreshOptions[K comparable, V any] struct {
-	FnDefaultRefresh []CacheRefreshOption[K, V]
+// type CacheFnDefaultRefreshOptions[K comparable, V any] struct {
+// 	FnDefaultRefresh []CacheRefreshOption[K, V]
+// }
+
+type CacheFnDefaultRefreshOptions[K comparable, V any] interface {
+	OptFnDefaultRefresh([]CacheRefreshOption[K, V])
 }
 
 // Cache Fn Default options
@@ -45,8 +61,8 @@ type CacheFnDefaultRefreshOptions[K comparable, V any] struct {
 func WithCacheFnDefaultGetOptions[K comparable, V any](options ...CacheGetOption[K, V]) CacheOption[K, V] {
 	return CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case *CacheFnDefaultOptions[K, V]:
-			opt.FnDefaultGet = append(opt.FnDefaultGet, options...)
+		case CacheFnDefaultOptions[K, V]:
+			opt.OptFnDefaultGet(options)
 			return true
 		}
 		return false
@@ -56,8 +72,8 @@ func WithCacheFnDefaultGetOptions[K comparable, V any](options ...CacheGetOption
 func WithCacheFnDefaultSetOptions[K comparable, V any](options ...CacheSetOption[K, V]) CacheOption[K, V] {
 	return CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case *CacheFnDefaultOptions[K, V]:
-			opt.FnDefaultSet = append(opt.FnDefaultSet, options...)
+		case CacheFnDefaultOptions[K, V]:
+			opt.OptFnDefaultSet(options)
 			return true
 		}
 		return false
@@ -67,8 +83,8 @@ func WithCacheFnDefaultSetOptions[K comparable, V any](options ...CacheSetOption
 func WithCacheFnDefaultRefreshOptions[K comparable, V any](options ...CacheRefreshOption[K, V]) CacheOption[K, V] {
 	return CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case *CacheFnDefaultRefreshOptions[K, V]:
-			opt.FnDefaultRefresh = append(opt.FnDefaultRefresh, options...)
+		case CacheFnDefaultRefreshOptions[K, V]:
+			opt.OptFnDefaultRefresh(options)
 			return true
 		}
 		return false

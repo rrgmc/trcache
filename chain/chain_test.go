@@ -13,13 +13,19 @@ import (
 func TestChain(t *testing.T) {
 	ctx := context.Background()
 
-	mockCache := mocks.NewCache[string, string](t)
+	mockCache1 := mocks.NewCache[string, string](t)
+	mockCache2 := mocks.NewCache[string, string](t)
 
-	mockCache.EXPECT().Get(mock.Anything, "a").Return("12", nil)
+	mockCache1.EXPECT().Get(mock.Anything, "a").Return("12", nil)
+	mockCache2.EXPECT().Get(mock.Anything, "a").Return("12", nil)
 
 	c := New[string, string]([]trcache.Cache[string, string]{
-		mockCache,
-	})
+		mockCache1, mockCache2,
+	},
+		trcache.WithCacheFnDefaultRefreshOptions[string, string](
+			trcache.WithCacheRefreshData[string, string]("abc"),
+		),
+	)
 
 	value, err := c.Get(ctx, "a")
 	require.NoError(t, err)

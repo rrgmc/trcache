@@ -28,6 +28,24 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) Opt
 	}
 }
 
+func WithDefaultGetOptions[K comparable, V any](options ...trcache.CacheGetOption[K, V]) Option[K, V] {
+	return func(o *Cache[K, V]) {
+		trcache.WithDefaultGetOptions[K, V](options...)(&o.defaultOptions)
+	}
+}
+
+func WithDefaultSetOptions[K comparable, V any](options ...trcache.CacheSetOption[K, V]) Option[K, V] {
+	return func(o *Cache[K, V]) {
+		trcache.WithDefaultSetOptions[K, V](options...)(&o.defaultOptions)
+	}
+}
+
+func WithDefaultRefreshOptions[K comparable, V any](options ...trcache.CacheRefreshOption[K, V]) Option[K, V] {
+	return func(o *Cache[K, V]) {
+		trcache.WithDefaultRefreshOptions[K, V](options...)(&o.defaultOptions)
+	}
+}
+
 // Cache get options
 
 type CacheGetOptions[K comparable, V any] struct {

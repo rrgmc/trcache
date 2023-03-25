@@ -2,6 +2,36 @@ package trcache
 
 import "time"
 
+// Default options
+
+type DefaultOption[K comparable, V any] func(*DefaultOptions[K, V])
+
+type DefaultOptions[K comparable, V any] struct {
+	Get     []CacheGetOption[K, V]
+	Set     []CacheSetOption[K, V]
+	Refresh []CacheRefreshOption[K, V]
+}
+
+// Defaut options: declarations
+
+func WithDefaultGetOptions[K comparable, V any](options ...CacheGetOption[K, V]) DefaultOption[K, V] {
+	return func(o *DefaultOptions[K, V]) {
+		o.Get = append(o.Get, options...)
+	}
+}
+
+func WithDefaultSetOptions[K comparable, V any](options ...CacheSetOption[K, V]) DefaultOption[K, V] {
+	return func(o *DefaultOptions[K, V]) {
+		o.Set = append(o.Set, options...)
+	}
+}
+
+func WithDefaultRefreshOptions[K comparable, V any](options ...CacheRefreshOption[K, V]) DefaultOption[K, V] {
+	return func(o *DefaultOptions[K, V]) {
+		o.Refresh = append(o.Refresh, options...)
+	}
+}
+
 // Cache get options
 
 type CacheGetOption[K comparable, V any] interface {

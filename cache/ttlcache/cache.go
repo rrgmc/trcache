@@ -11,6 +11,7 @@ import (
 type Cache[K comparable, V any] struct {
 	cache           *ttlcache.Cache[K, V]
 	name            string
+	defaultOptions  trcache.DefaultOptions[K, V]
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
 }

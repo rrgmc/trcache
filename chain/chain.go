@@ -11,6 +11,7 @@ import (
 type Chain[K comparable, V any] struct {
 	caches           []trcache.Cache[K, V]
 	name             string
+	defaultOptions   trcache.DefaultOptions[K, V]
 	setPreviousOnGet bool
 }
 
@@ -37,7 +38,8 @@ func (c *Chain[K, V]) Name() string {
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns CacheGetOptions[K, V]
-	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions}, options...)
+	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions},
+		trcache.AppendCacheGetOptions(c.defaultOptions.Get, options)...)
 
 	var reterr error
 
@@ -69,7 +71,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	var reterr error
 
 	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, options...); err == nil {
+		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.defaultOptions.Set, options)...); err == nil {
 			return nil
 		} else {
 			reterr = multierr.Append(reterr, err)

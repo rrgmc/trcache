@@ -12,7 +12,7 @@ type DefaultOptions[K comparable, V any] struct {
 	Refresh []CacheRefreshOption[K, V]
 }
 
-// Defaut options: declarations
+// Defaut options
 
 func WithDefaultGetOptions[K comparable, V any](options ...CacheGetOption[K, V]) DefaultOption[K, V] {
 	return func(o *DefaultOptions[K, V]) {
@@ -65,7 +65,8 @@ func (o withCacheGetCustomOption[K, V]) ApplyCacheGetOpt(options any) bool {
 
 // Cache get options: functions
 
-func ParseCacheGetOptions[K comparable, V any](objs []any, options ...CacheGetOption[K, V]) {
+func ParseCacheGetOptions[K comparable, V any](objs []any,
+	options ...CacheGetOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
 			if opt.ApplyCacheGetOpt(obj) {
@@ -73,6 +74,24 @@ func ParseCacheGetOptions[K comparable, V any](objs []any, options ...CacheGetOp
 			}
 		}
 	}
+}
+
+// func ParseCacheGetOptions[K comparable, V any](objs []any, defaultOptions []CacheGetOption[K, V],
+// 	options ...CacheGetOption[K, V]) {
+// 	for _, optitem := range [][]CacheGetOption[K, V]{defaultOptions, options} {
+// 		for _, opt := range optitem {
+// 			for _, obj := range objs {
+// 				if opt.ApplyCacheGetOpt(obj) {
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+func AppendCacheGetOptions[K comparable, V any](opt1, opt2 []CacheGetOption[K, V]) []CacheGetOption[K, V] {
+	ret := append([]CacheGetOption[K, V]{}, opt1...)
+	return append(ret, opt2...)
 }
 
 // Cache set options
@@ -108,7 +127,8 @@ func (o withCacheSetDuration[K, V]) ApplyCacheSetOpt(options any) bool {
 
 // Cache set options: functions
 
-func ParseCacheSetOptions[K comparable, V any](objs []any, options ...CacheSetOption[K, V]) {
+func ParseCacheSetOptions[K comparable, V any](objs []any,
+	options ...CacheSetOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
 			if opt.ApplyCacheSetOpt(obj) {
@@ -116,6 +136,24 @@ func ParseCacheSetOptions[K comparable, V any](objs []any, options ...CacheSetOp
 			}
 		}
 	}
+}
+
+// func ParseCacheSetOptions[K comparable, V any](objs []any, defaultOptions []CacheSetOption[K, V],
+// 	options ...CacheSetOption[K, V]) {
+// 	for _, optitem := range [][]CacheSetOption[K, V]{defaultOptions, options} {
+// 		for _, opt := range optitem {
+// 			for _, obj := range objs {
+// 				if opt.ApplyCacheSetOpt(obj) {
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+func AppendCacheSetOptions[K comparable, V any](opt1, opt2 []CacheSetOption[K, V]) []CacheSetOption[K, V] {
+	ret := append([]CacheSetOption[K, V]{}, opt1...)
+	return append(ret, opt2...)
 }
 
 // Cache refresh options
@@ -193,7 +231,8 @@ func (o withCacheRefreshFunc[K, V]) ApplyCacheRefreshOpt(options any) bool {
 
 // Cache refresh options: functions
 
-func ParseCacheRefreshOptions[K comparable, V any](objs []any, options ...CacheRefreshOption[K, V]) {
+func ParseCacheRefreshOptions[K comparable, V any](objs []any,
+	options ...CacheRefreshOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
 			if opt.ApplyCacheRefreshOpt(obj) {
@@ -201,4 +240,22 @@ func ParseCacheRefreshOptions[K comparable, V any](objs []any, options ...CacheR
 			}
 		}
 	}
+}
+
+// func ParseCacheRefreshOptions[K comparable, V any](objs []any, defaultOptions []CacheRefreshOption[K, V],
+// 	options ...CacheRefreshOption[K, V]) {
+// 	for _, optitem := range [][]CacheRefreshOption[K, V]{defaultOptions, options} {
+// 		for _, opt := range optitem {
+// 			for _, obj := range objs {
+// 				if opt.ApplyCacheRefreshOpt(obj) {
+// 					break
+// 				}
+// 			}
+// 		}
+// 	}
+// }
+
+func AppendCacheRefreshOptions[K comparable, V any](opt1, opt2 []CacheRefreshOption[K, V]) []CacheRefreshOption[K, V] {
+	ret := append([]CacheRefreshOption[K, V]{}, opt1...)
+	return append(ret, opt2...)
 }

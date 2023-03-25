@@ -69,6 +69,9 @@ func TestCacheOptions(t *testing.T) {
 		trcache.WithCacheFnDefaultGetOptions[string, string](
 			WithCacheGetTouch[string, string](true),
 		),
+		trcache.WithCacheFnDefaultRefreshOptions[string, string](
+			trcache.WithCacheRefreshData[string, string]("abc"),
+		),
 	)
 
 	err := c.Set(ctx, "a", "12")

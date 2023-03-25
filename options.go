@@ -20,9 +20,7 @@ func ParseCacheOptions[K comparable, V any](objs []any,
 	options ...CacheOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
-			if opt.ApplyCacheOpt(obj) {
-				break
-			}
+			_ = opt.ApplyCacheOpt(obj)
 		}
 	}
 }
@@ -127,9 +125,7 @@ func ParseCacheGetOptions[K comparable, V any](objs []any,
 	options ...CacheGetOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
-			if opt.ApplyCacheGetOpt(obj) {
-				break
-			}
+			_ = opt.ApplyCacheGetOpt(obj)
 		}
 	}
 }
@@ -202,9 +198,7 @@ func ParseCacheSetOptions[K comparable, V any](objs []any,
 	options ...CacheSetOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
-			if opt.ApplyCacheSetOpt(obj) {
-				break
-			}
+			_ = opt.ApplyCacheSetOpt(obj)
 		}
 	}
 }
@@ -331,9 +325,7 @@ func ParseCacheRefreshOptions[K comparable, V any](objs []any,
 	options ...CacheRefreshOption[K, V]) {
 	for _, opt := range options {
 		for _, obj := range objs {
-			if opt.ApplyCacheRefreshOpt(obj) {
-				break
-			}
+			_ = opt.ApplyCacheRefreshOpt(obj)
 		}
 	}
 }

@@ -68,7 +68,7 @@ func TestCacheOptions(t *testing.T) {
 
 	c := New[string, string](cache,
 		WithDefaultDuration[string, string](time.Minute),
-		WithDefaultGetOptions[string, string](
+		trcache.WithCacheFnDefaultGetOptions[string, string](
 			WithCacheGetTouch[string, string](true),
 		),
 	)

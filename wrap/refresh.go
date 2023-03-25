@@ -8,16 +8,15 @@ import (
 )
 
 type wrapRefreshCache[K comparable, V any] struct {
-	cache                 trcache.Cache[K, V]
-	refreshFunc           trcache.CacheRefreshFunc[K, V]
-	defaultRefreshOptions trcache.DefaultRefreshOptions[K, V]
+	WrapRefreshCacheOptions[K, V]
+	cache trcache.Cache[K, V]
+	// refreshFunc           trcache.CacheRefreshFunc[K, V]
+	// defaultRefreshOptions trcache.CacheFnDefaultRefreshOptions[K, V]
 }
 
-func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V], options ...WrapRefreshOption[K, V]) trcache.RefreshCache[K, V] {
+func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
 	ret := &wrapRefreshCache[K, V]{cache: cache}
-	for _, opt := range options {
-		opt(ret)
-	}
+	trcache.ParseCacheOptions[K, V]([]any{&ret.WrapRefreshCacheOptions, &ret.WrapRefreshCacheOptions.CacheFnDefaultRefreshOptions}, options...)
 	return ret
 }
 
@@ -40,7 +39,7 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K) error {
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
 	var optns trcache.CacheRefreshOptions[K, V]
 	trcache.ParseCacheRefreshOptions[K, V]([]any{&optns},
-		trcache.AppendCacheRefreshOptions(c.defaultRefreshOptions.Refresh, options)...)
+		trcache.AppendCacheRefreshOptions(c.FnDefaultRefresh, options)...)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {
@@ -75,16 +74,28 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 	return ret, nil
 }
 
-type WrapRefreshOption[K comparable, V any] func(*wrapRefreshCache[K, V])
+// Option
 
-func WithWrapRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) WrapRefreshOption[K, V] {
-	return func(c *wrapRefreshCache[K, V]) {
-		c.refreshFunc = refreshFunc
-	}
+type WrapRefreshCacheOptions[K comparable, V any] struct {
+	trcache.CacheFnDefaultRefreshOptions[K, V]
+	refreshFunc trcache.CacheRefreshFunc[K, V]
 }
 
-func WithWrapRefreshDefaultRefreshOptions[K comparable, V any](options ...trcache.CacheRefreshOption[K, V]) WrapRefreshOption[K, V] {
-	return func(o *wrapRefreshCache[K, V]) {
-		trcache.WithDefaultRefreshOptions[K, V](options...)(&o.defaultRefreshOptions)
-	}
+// type WrapRefreshOption[K comparable, V any] func(*wrapRefreshCache[K, V])
+
+func WithWrapRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.CacheOption[K, V] {
+	return trcache.CacheOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case *WrapRefreshCacheOptions[K, V]:
+			opt.refreshFunc = refreshFunc
+			return true
+		}
+		return false
+	})
 }
+
+// func WithWrapRefreshDefaultRefreshOptions[K comparable, V any](options ...trcache.CacheRefreshOption[K, V]) WrapRefreshOption[K, V] {
+// 	return func(o *wrapRefreshCache[K, V]) {
+// 		trcache.WithDefaultRefreshOptions[K, V](options...)(&o.defaultRefreshOptions)
+// 	}
+// }

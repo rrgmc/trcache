@@ -2,28 +2,28 @@ package ttlcache
 
 import (
 	"context"
-	"time"
 
 	"github.com/RangelReale/trcache"
 	"github.com/jellydator/ttlcache/v3"
 )
 
 type Cache[K comparable, V any] struct {
-	cache           *ttlcache.Cache[K, V]
-	name            string
-	defaultOptions  trcache.DefaultOptions[K, V]
-	validator       trcache.Validator[V]
-	defaultDuration time.Duration
+	CacheOptions[K, V]
+	cache          *ttlcache.Cache[K, V]
+	defaultOptions trcache.CacheFnDefaultOptions[K, V]
+	// name            string
+	// validator       trcache.Validator[V]
+	// defaultDuration time.Duration
 }
 
-func New[K comparable, V any](cache *ttlcache.Cache[K, V], option ...Option[K, V]) *Cache[K, V] {
+func New[K comparable, V any](cache *ttlcache.Cache[K, V], options ...trcache.CacheOption[K, V]) *Cache[K, V] {
 	ret := &Cache[K, V]{
-		cache:           cache,
-		defaultDuration: ttlcache.DefaultTTL,
+		cache: cache,
+		CacheOptions: CacheOptions[K, V]{
+			defaultDuration: ttlcache.DefaultTTL,
+		},
 	}
-	for _, opt := range option {
-		opt(ret)
-	}
+	trcache.ParseCacheOptions[K, V]([]any{&ret.CacheOptions, &ret.CacheOptions.CacheFnDefaultOptions}, options...)
 	return ret
 }
 
@@ -34,7 +34,7 @@ func (c *Cache[K, V]) Name() string {
 func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns CacheGetOptions[K, V]
 	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions},
-		trcache.AppendCacheGetOptions(c.defaultOptions.Get, options)...)
+		trcache.AppendCacheGetOptions(c.defaultOptions.FnDefaultGet, options)...)
 
 	var ttlopt []ttlcache.Option[K, V]
 	if !optns.Touch {
@@ -60,7 +60,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
 	var optns trcache.CacheSetOptions[K, V]
 	trcache.ParseCacheSetOptions([]any{&optns},
-		trcache.AppendCacheSetOptions(c.defaultOptions.Set, options)...)
+		trcache.AppendCacheSetOptions(c.defaultOptions.FnDefaultSet, options)...)
 
 	_ = c.cache.Set(key, value, c.defaultDuration)
 	return nil

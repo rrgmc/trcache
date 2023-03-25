@@ -1,25 +1,46 @@
 package chain
 
-import "github.com/RangelReale/trcache"
+import (
+	"github.com/RangelReale/trcache"
+)
 
-type Option[K comparable, V any] func(*chainOptions[K, V])
+// Option
 
-type chainOptions[K comparable, V any] struct {
-	name             string
-	refreshFunc      trcache.CacheRefreshFunc[K, V]
-	setPreviousOnGet bool
+type CacheOptions[K comparable, V any] struct {
+	trcache.CacheFnDefaultOptions[K, V]
+	name        string
+	refreshFunc trcache.CacheRefreshFunc[K, V]
+	// setPreviousOnGet bool
 }
 
-func WithName[K comparable, V any](name string) Option[K, V] {
-	return func(c *chainOptions[K, V]) {
-		c.name = name
-	}
+// type Option[K comparable, V any] func(*chainOptions[K, V])
+
+// type chainOptions[K comparable, V any] struct {
+// 	name             string
+// 	refreshFunc      trcache.CacheRefreshFunc[K, V]
+// 	setPreviousOnGet bool
+// }
+
+func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
+	return trcache.CacheOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case *CacheOptions[K, V]:
+			opt.name = name
+			return true
+		}
+		return false
+	})
 }
 
-func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) Option[K, V] {
-	return func(c *chainOptions[K, V]) {
-		c.refreshFunc = refreshFunc
-	}
+func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.CacheOption[K, V] {
+	return trcache.CacheOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case *CacheOptions[K, V]:
+			opt.refreshFunc = refreshFunc
+			return true
+		}
+		return false
+	})
 }
 
 // Cache get options

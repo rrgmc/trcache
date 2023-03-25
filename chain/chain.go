@@ -9,39 +9,27 @@ import (
 )
 
 type Chain[K comparable, V any] struct {
+	CacheOptions[K, V]
 	caches           []trcache.Cache[K, V]
 	name             string
-	defaultOptions   trcache.DefaultOptions[K, V]
+	defaultOptions   trcache.CacheFnDefaultOptions[K, V]
 	setPreviousOnGet bool
 }
 
-func New[K comparable, V any](cache []trcache.Cache[K, V], options ...Option[K, V]) trcache.Cache[K, V] {
-	var optns chainOptions[K, V]
-	for _, opt := range options {
-		opt(&optns)
+func New[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) *Chain[K, V] {
+	ret := &Chain[K, V]{
+		caches: cache,
 	}
-	return &Chain[K, V]{
-		caches:           cache,
-		name:             optns.name,
-		setPreviousOnGet: optns.setPreviousOnGet,
-	}
+	trcache.ParseCacheOptions[K, V]([]any{&ret.CacheOptions, &ret.CacheOptions.CacheFnDefaultOptions}, options...)
+	return ret
 }
 
-func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V], options ...Option[K, V]) trcache.RefreshCache[K, V] {
-	var optns chainOptions[K, V]
-	for _, opt := range options {
-		opt(&optns)
-	}
-	var wopt []wrap.WrapRefreshOption[K, V]
-	if optns.refreshFunc != nil {
-		wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](optns.refreshFunc))
-	}
-
-	return wrap.NewWrapRefreshCache[K, V](&Chain[K, V]{
-		caches:           cache,
-		name:             optns.name,
-		setPreviousOnGet: optns.setPreviousOnGet,
-	})
+func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
+	// var wopt []wrap.WrapRefreshOption[K, V]
+	// if ret.refreshFunc != nil {
+	// 	wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](ret.refreshFunc))
+	// }
+	return wrap.NewWrapRefreshCache[K, V](New(cache, options...), options...)
 }
 
 func (c *Chain[K, V]) Name() string {
@@ -51,7 +39,7 @@ func (c *Chain[K, V]) Name() string {
 func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns CacheGetOptions[K, V]
 	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions},
-		trcache.AppendCacheGetOptions(c.defaultOptions.Get, options)...)
+		trcache.AppendCacheGetOptions(c.defaultOptions.FnDefaultGet, options)...)
 
 	var reterr error
 
@@ -83,7 +71,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	var reterr error
 
 	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.defaultOptions.Set, options)...); err == nil {
+		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.defaultOptions.FnDefaultSet, options)...); err == nil {
 			return nil
 		} else {
 			reterr = multierr.Append(reterr, err)

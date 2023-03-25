@@ -4,14 +4,14 @@ import "time"
 
 // Cache options
 
-type CacheOptionMarker interface {
+type IsCacheOption interface {
 	isCacheOption()
 }
 
-type IsCacheOption struct {
+type IsCacheOptionImpl struct {
 }
 
-func (i IsCacheOption) isCacheOption() {}
+func (i IsCacheOptionImpl) isCacheOption() {}
 
 type CacheOption[K comparable, V any] interface {
 	ApplyCacheOpt(any) bool
@@ -25,7 +25,7 @@ func (o CacheOptionFunc) ApplyCacheOpt(c any) bool {
 
 // Cache options: functions
 
-func ParseCacheOptions[K comparable, V any](obj CacheOptionMarker,
+func ParseCacheOptions[K comparable, V any](obj IsCacheOption,
 	options ...CacheOption[K, V]) {
 	for _, opt := range options {
 		_ = opt.ApplyCacheOpt(obj)

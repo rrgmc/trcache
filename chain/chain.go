@@ -9,15 +9,15 @@ import (
 )
 
 type Chain[K comparable, V any] struct {
-	CacheOptions[K, V]
-	caches []trcache.Cache[K, V]
+	options cacheOptions[K, V]
+	caches  []trcache.Cache[K, V]
 }
 
 func New[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) *Chain[K, V] {
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	trcache.ParseCacheOptions[K, V]([]any{&ret.CacheOptions, &ret.CacheOptions.CacheFnDefaultOptions}, options...)
+	trcache.ParseCacheOptions[K, V](&ret.options, options...)
 	return ret
 }
 
@@ -30,18 +30,18 @@ func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V], options ...trc
 }
 
 func (c *Chain[K, V]) Name() string {
-	return c.name
+	return c.options.name
 }
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns CacheGetOptions[K, V]
 	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions},
-		trcache.AppendCacheGetOptions(c.FnDefaultGet, options)...)
+		trcache.AppendCacheGetOptions(c.options.fnDefaultGet, options)...)
 
 	var reterr error
 
 	setPrevious := func(cacheIdx int, value V) {
-		if c.setPreviousOnGet {
+		if c.options.setPreviousOnGet {
 			for p := cacheIdx - 1; p >= 0; p++ {
 				err := c.caches[p].Set(ctx, key, value, optns.SetPreviousOnGetOptions...)
 				if err != nil {
@@ -68,7 +68,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	var reterr error
 
 	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.FnDefaultSet, options)...); err == nil {
+		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)...); err == nil {
 			return nil
 		} else {
 			reterr = multierr.Append(reterr, err)

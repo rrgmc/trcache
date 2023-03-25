@@ -16,7 +16,7 @@ import (
 // }
 
 type CacheOptions[K comparable, V any] interface {
-	trcache.CacheOptionMarker
+	trcache.IsCacheOption
 	trcache.CacheFnDefaultOptions[K, V]
 	OptName(string)
 	OptValidator(trcache.Validator[V])
@@ -24,7 +24,7 @@ type CacheOptions[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsCacheOption
+	trcache.IsCacheOptionImpl
 	name            string
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration

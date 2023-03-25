@@ -18,7 +18,7 @@ import (
 // }
 
 type CacheOptions[K comparable, V any] interface {
-	trcache.CacheOptionMarker
+	trcache.IsCacheOption
 	trcache.CacheFnDefaultOptions[K, V]
 	OptName(string)
 	OptKeyCodec(trcache.KeyCodec[K])
@@ -28,7 +28,7 @@ type CacheOptions[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsCacheOption
+	trcache.IsCacheOptionImpl
 	name            string
 	keyCodec        trcache.KeyCodec[K]
 	valueCodec      trcache.Codec[V]

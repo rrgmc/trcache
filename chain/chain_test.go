@@ -17,7 +17,7 @@ func TestChain(t *testing.T) {
 	mockCache2 := mocks.NewCache[string, string](t)
 
 	mockCache1.EXPECT().Get(mock.Anything, "a").Return("12", nil)
-	mockCache2.EXPECT().Get(mock.Anything, "a").Return("12", nil)
+	// mockCache2.EXPECT().Get(mock.Anything, "a").Return("12", nil)
 
 	c := New[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,

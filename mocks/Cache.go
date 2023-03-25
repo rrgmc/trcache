@@ -22,48 +22,6 @@ func (_m *Cache[K, V]) EXPECT() *Cache_Expecter[K, V] {
 	return &Cache_Expecter[K, V]{mock: &_m.Mock}
 }
 
-// Clear provides a mock function with given fields: ctx
-func (_m *Cache[K, V]) Clear(ctx context.Context) error {
-	ret := _m.Called(ctx)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context) error); ok {
-		r0 = rf(ctx)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// Cache_Clear_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Clear'
-type Cache_Clear_Call[K comparable, V interface{}] struct {
-	*mock.Call
-}
-
-// Clear is a helper method to define mock.On call
-//   - ctx context.Context
-func (_e *Cache_Expecter[K, V]) Clear(ctx interface{}) *Cache_Clear_Call[K, V] {
-	return &Cache_Clear_Call[K, V]{Call: _e.mock.On("Clear", ctx)}
-}
-
-func (_c *Cache_Clear_Call[K, V]) Run(run func(ctx context.Context)) *Cache_Clear_Call[K, V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context))
-	})
-	return _c
-}
-
-func (_c *Cache_Clear_Call[K, V]) Return(_a0 error) *Cache_Clear_Call[K, V] {
-	_c.Call.Return(_a0)
-	return _c
-}
-
-func (_c *Cache_Clear_Call[K, V]) RunAndReturn(run func(context.Context) error) *Cache_Clear_Call[K, V] {
-	_c.Call.Return(run)
-	return _c
-}
-
 // Delete provides a mock function with given fields: ctx, key
 func (_m *Cache[K, V]) Delete(ctx context.Context, key K) error {
 	ret := _m.Called(ctx, key)

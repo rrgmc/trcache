@@ -36,10 +36,6 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K) error {
 	return c.cache.Delete(ctx, key)
 }
 
-func (c *wrapRefreshCache[K, V]) Clear(ctx context.Context) error {
-	return c.cache.Clear(ctx)
-}
-
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
 	var optns trcache.CacheRefreshOptions[K, V]
 	trcache.ParseCacheRefreshOptions[K, V]([]any{&optns}, options...)

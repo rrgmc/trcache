@@ -97,22 +97,3 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K) error {
 	}
 	return trcache.NewChainError("no cache to get", reterr)
 }
-
-func (c *Chain[K, V]) Clear(ctx context.Context) error {
-	var reterr error
-	success := false
-
-	// delete from all
-	for _, cache := range c.caches {
-		if err := cache.Clear(ctx); err != nil {
-			reterr = multierr.Append(reterr, err)
-		} else {
-			success = true
-		}
-	}
-
-	if success || reterr == nil {
-		return nil
-	}
-	return trcache.NewChainError("no cache to get", reterr)
-}

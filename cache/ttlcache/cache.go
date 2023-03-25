@@ -62,8 +62,3 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
 	c.cache.Delete(key)
 	return nil
 }
-
-func (c *Cache[K, V]) Clear(ctx context.Context) error {
-	c.cache.DeleteAll()
-	return nil
-}

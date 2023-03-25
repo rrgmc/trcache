@@ -103,10 +103,6 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
 	return c.redis.Del(ctx, keyValue).Err()
 }
 
-func (c *Cache[K, V]) Clear(ctx context.Context) error {
-	return trcache.ErrNotSupported
-}
-
 func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
 	keyValue, err := c.keycodec.Convert(ctx, key)
 	if err != nil {

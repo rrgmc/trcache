@@ -9,7 +9,6 @@ type Cache[K comparable, V any] interface {
 	Get(ctx context.Context, key K, options ...CacheGetOption[K, V]) (V, error)
 	Set(ctx context.Context, key K, value V, options ...CacheSetOption[K, V]) error
 	Delete(ctx context.Context, key K) error
-	Clear(ctx context.Context) error
 }
 
 type RefreshCache[K comparable, V any] interface {

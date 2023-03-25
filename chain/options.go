@@ -31,21 +31,28 @@ type CacheGetOptions[K comparable, V any] struct {
 
 // Cache get options: declarations
 
-func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](options ...trcache.CacheSetOption[K, V]) trcache.CacheGetOption[K, V] {
-	return &withCacheGetSetPreviousOnGetOptions[K, V]{options}
+func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.CacheSetOption[K, V]) trcache.CacheGetOption[K, V] {
+	return trcache.CacheGetOptionFunc(func(options any) bool {
+		switch opt := options.(type) {
+		case *CacheGetOptions[K, V]:
+			opt.SetPreviousOnGetOptions = append(opt.SetPreviousOnGetOptions, optns...)
+			return true
+		}
+		return false
+	})
 }
 
-// Cache get options: implementations
-
-type withCacheGetSetPreviousOnGetOptions[K comparable, V any] struct {
-	options []trcache.CacheSetOption[K, V]
-}
-
-func (o withCacheGetSetPreviousOnGetOptions[K, V]) ApplyCacheGetOpt(options any) bool {
-	switch opt := options.(type) {
-	case *CacheGetOptions[K, V]:
-		opt.SetPreviousOnGetOptions = append(opt.SetPreviousOnGetOptions, o.options...)
-		return true
-	}
-	return false
-}
+// // Cache get options: implementations
+//
+// type withCacheGetSetPreviousOnGetOptions[K comparable, V any] struct {
+// 	options []trcache.CacheSetOption[K, V]
+// }
+//
+// func (o withCacheGetSetPreviousOnGetOptions[K, V]) ApplyCacheGetOpt(options any) bool {
+// 	switch opt := options.(type) {
+// 	case *CacheGetOptions[K, V]:
+// 		opt.SetPreviousOnGetOptions = append(opt.SetPreviousOnGetOptions, o.options...)
+// 		return true
+// 	}
+// 	return false
+// }

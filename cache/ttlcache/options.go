@@ -50,20 +50,27 @@ type CacheGetOptions[K comparable, V any] struct {
 // Cache get options: declarations
 
 func WithCacheGetTouch[K comparable, V any](touch bool) trcache.CacheGetOption[K, V] {
-	return &withCacheGetTouch[K, V]{touch}
+	return trcache.CacheGetOptionFunc(func(options any) bool {
+		switch opt := options.(type) {
+		case *CacheGetOptions[K, V]:
+			opt.Touch = touch
+			return true
+		}
+		return false
+	})
 }
 
-// Cache get options: implementations
-
-type withCacheGetTouch[K comparable, V any] struct {
-	touch bool
-}
-
-func (o withCacheGetTouch[K, V]) ApplyCacheGetOpt(options any) bool {
-	switch opt := options.(type) {
-	case *CacheGetOptions[K, V]:
-		opt.Touch = o.touch
-		return true
-	}
-	return false
-}
+// // Cache get options: implementations
+//
+// type withCacheGetTouch[K comparable, V any] struct {
+// 	touch bool
+// }
+//
+// func (o withCacheGetTouch[K, V]) ApplyCacheGetOpt(options any) bool {
+// 	switch opt := options.(type) {
+// 	case *CacheGetOptions[K, V]:
+// 		opt.Touch = o.touch
+// 		return true
+// 	}
+// 	return false
+// }

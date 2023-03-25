@@ -15,7 +15,7 @@ type Cache[K comparable, V any] struct {
 	defaultDuration time.Duration
 }
 
-func NewCache[K comparable, V any](cache *ttlcache.Cache[K, V], option ...Option[K, V]) *Cache[K, V] {
+func New[K comparable, V any](cache *ttlcache.Cache[K, V], option ...Option[K, V]) *Cache[K, V] {
 	ret := &Cache[K, V]{
 		cache:           cache,
 		defaultDuration: ttlcache.DefaultTTL,

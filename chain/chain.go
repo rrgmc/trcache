@@ -13,7 +13,7 @@ type Chain[K comparable, V any] struct {
 	name   string
 }
 
-func NewChain[K comparable, V any](cache []trcache.Cache[K, V], options ...Option[K, V]) trcache.RefreshCache[K, V] {
+func New[K comparable, V any](cache []trcache.Cache[K, V], options ...Option[K, V]) trcache.RefreshCache[K, V] {
 	var optns chainOptions[K, V]
 	for _, opt := range options {
 		opt(&optns)

@@ -21,7 +21,7 @@ type Cache[K comparable, V any] struct {
 	defaultDuration time.Duration
 }
 
-func NewCache[K comparable, V any](redis *redis.Client, option ...Option[K, V]) (*Cache[K, V], error) {
+func New[K comparable, V any](redis *redis.Client, option ...Option[K, V]) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
 		redis:           redis,
 		defaultDuration: 0, // 0 means default for go-redis

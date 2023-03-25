@@ -17,7 +17,7 @@ func TestChain(t *testing.T) {
 
 	mockCache.EXPECT().Get(mock.Anything, "a").Return("12", nil)
 
-	c := NewChain[string, string]([]trcache.Cache[string, string]{
+	c := New[string, string]([]trcache.Cache[string, string]{
 		mockCache,
 	})
 

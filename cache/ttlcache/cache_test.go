@@ -17,7 +17,7 @@ func TestCache(t *testing.T) {
 
 	cache := ttlcache.New[string, string]()
 
-	c := NewCache[string, string](cache,
+	c := New[string, string](cache,
 		WithDefaultDuration[string, string](time.Minute),
 	)
 
@@ -47,7 +47,7 @@ func TestCacheValidator(t *testing.T) {
 		Return(trcache.ErrNotFound).
 		Once()
 
-	c := NewCache[string, string](ttlcache.New[string, string](),
+	c := New[string, string](ttlcache.New[string, string](),
 		WithDefaultDuration[string, string](time.Minute),
 		WithValidator[string, string](mockValidator),
 	)

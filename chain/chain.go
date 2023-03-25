@@ -17,7 +17,7 @@ func New[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.Ca
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	trcache.ParseCacheOptions[K, V](&ret.options, options...)
+	trcache.ParseCacheOptions[K, V](&ret.options, options)
 	return ret
 }
 

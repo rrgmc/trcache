@@ -19,8 +19,7 @@ func New[K comparable, V any](cache *ttlcache.Cache[K, V], options ...trcache.Ca
 			defaultDuration: ttlcache.DefaultTTL,
 		},
 	}
-	// trcache.ParseCacheOptions[K, V]([]any{&ret.CacheOptions, &ret.CacheOptions.CacheFnDefaultOptions}, options...)
-	trcache.ParseCacheOptions[K, V](&ret.options, options...)
+	trcache.ParseCacheOptions[K, V](&ret.options, options)
 	return ret
 }
 

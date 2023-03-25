@@ -26,9 +26,11 @@ func (o CacheOptionFunc) ApplyCacheOpt(c any) bool {
 // Cache options: functions
 
 func ParseCacheOptions[K comparable, V any](obj IsCacheOption,
-	options ...CacheOption[K, V]) {
-	for _, opt := range options {
-		_ = opt.ApplyCacheOpt(obj)
+	options ...[]CacheOption[K, V]) {
+	for _, optinstance := range options {
+		for _, opt := range optinstance {
+			_ = opt.ApplyCacheOpt(obj)
+		}
 	}
 }
 

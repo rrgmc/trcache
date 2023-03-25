@@ -23,7 +23,7 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.CacheOptio
 			defaultDuration: 0, // 0 means default for go-redis
 		},
 	}
-	trcache.ParseCacheOptions[K, V](&ret.options, options...)
+	trcache.ParseCacheOptions[K, V](&ret.options, options)
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}

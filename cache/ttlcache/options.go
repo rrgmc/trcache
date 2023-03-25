@@ -40,12 +40,6 @@ func WithDefaultSetOptions[K comparable, V any](options ...trcache.CacheSetOptio
 	}
 }
 
-func WithDefaultRefreshOptions[K comparable, V any](options ...trcache.CacheRefreshOption[K, V]) Option[K, V] {
-	return func(o *Cache[K, V]) {
-		trcache.WithDefaultRefreshOptions[K, V](options...)(&o.defaultOptions)
-	}
-}
-
 // Cache get options
 
 type CacheGetOptions[K comparable, V any] struct {

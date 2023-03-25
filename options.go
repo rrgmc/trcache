@@ -7,8 +7,13 @@ import "time"
 type DefaultOption[K comparable, V any] func(*DefaultOptions[K, V])
 
 type DefaultOptions[K comparable, V any] struct {
-	Get     []CacheGetOption[K, V]
-	Set     []CacheSetOption[K, V]
+	Get []CacheGetOption[K, V]
+	Set []CacheSetOption[K, V]
+}
+
+type DefaultRefreshOption[K comparable, V any] func(*DefaultRefreshOptions[K, V])
+
+type DefaultRefreshOptions[K comparable, V any] struct {
 	Refresh []CacheRefreshOption[K, V]
 }
 
@@ -26,8 +31,8 @@ func WithDefaultSetOptions[K comparable, V any](options ...CacheSetOption[K, V])
 	}
 }
 
-func WithDefaultRefreshOptions[K comparable, V any](options ...CacheRefreshOption[K, V]) DefaultOption[K, V] {
-	return func(o *DefaultOptions[K, V]) {
+func WithDefaultRefreshOptions[K comparable, V any](options ...CacheRefreshOption[K, V]) DefaultRefreshOption[K, V] {
+	return func(o *DefaultRefreshOptions[K, V]) {
 		o.Refresh = append(o.Refresh, options...)
 	}
 }

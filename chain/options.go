@@ -1,6 +1,8 @@
 package chain
 
 import (
+	"time"
+
 	"github.com/RangelReale/trcache"
 )
 
@@ -88,9 +90,26 @@ func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Ca
 
 // Cache get options
 
-type CacheGetOptions[K comparable, V any] struct {
+type CacheGetOptions[K comparable, V any] interface {
+	trcache.IsCacheGetOption
 	trcache.CacheGetOptions[K, V]
-	SetPreviousOnGetOptions []trcache.CacheSetOption[K, V]
+	OptSetPreviousOnGetOptions([]trcache.CacheSetOption[K, V])
+}
+
+type cacheGetOptions[K comparable, V any] struct {
+	trcache.IsCacheGetOptionImpl
+	customOptions           []any
+	setPreviousOnGetOptions []trcache.CacheSetOption[K, V]
+}
+
+var _ CacheGetOptions[string, string] = &cacheGetOptions[string, string]{}
+
+func (c *cacheGetOptions[K, V]) OptCustomOptions(anies []any) {
+	c.customOptions = anies
+}
+
+func (c *cacheGetOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.CacheSetOption[K, V]) {
+	c.setPreviousOnGetOptions = i
 }
 
 // Cache get options: declarations
@@ -98,25 +117,28 @@ type CacheGetOptions[K comparable, V any] struct {
 func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.CacheSetOption[K, V]) trcache.CacheGetOption[K, V] {
 	return trcache.CacheGetOptionFunc(func(options any) bool {
 		switch opt := options.(type) {
-		case *CacheGetOptions[K, V]:
-			opt.SetPreviousOnGetOptions = append(opt.SetPreviousOnGetOptions, optns...)
+		case CacheGetOptions[K, V]:
+			opt.OptSetPreviousOnGetOptions(optns)
 			return true
 		}
 		return false
 	})
 }
 
-// // Cache get options: implementations
-//
-// type withCacheGetSetPreviousOnGetOptions[K comparable, V any] struct {
-// 	options []trcache.CacheSetOption[K, V]
-// }
-//
-// func (o withCacheGetSetPreviousOnGetOptions[K, V]) ApplyCacheGetOpt(options any) bool {
-// 	switch opt := options.(type) {
-// 	case *CacheGetOptions[K, V]:
-// 		opt.SetPreviousOnGetOptions = append(opt.SetPreviousOnGetOptions, o.options...)
-// 		return true
-// 	}
-// 	return false
-// }
+// Cache set options
+
+type CacheSetOptions[K comparable, V any] interface {
+	trcache.IsCacheSetOption
+	trcache.CacheSetOptions[K, V]
+}
+
+type cacheSetOptions[K comparable, V any] struct {
+	trcache.IsCacheSetOptionImpl
+	duration time.Duration
+}
+
+var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
+
+func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
+	c.duration = duration
+}

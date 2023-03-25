@@ -10,8 +10,6 @@ import (
 type wrapRefreshCache[K comparable, V any] struct {
 	options wrapRefreshCacheOptions[K, V]
 	cache   trcache.Cache[K, V]
-	// refreshFunc           trcache.CacheRefreshFunc[K, V]
-	// defaultRefreshOptions trcache.CacheFnDefaultRefreshOptions[K, V]
 }
 
 func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
@@ -37,9 +35,8 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K) error {
 }
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
-	var optns trcache.CacheRefreshOptions[K, V]
-	trcache.ParseCacheRefreshOptions[K, V]([]any{&optns},
-		trcache.AppendCacheRefreshOptions(c.options.fnDefaultRefresh, options)...)
+	var optns wrapRefreshCacheRefreshOptions[K, V]
+	trcache.ParseCacheRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {
@@ -50,8 +47,8 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 	}
 
 	refreshFn := c.options.refreshFunc
-	if optns.RefreshFn != nil {
-		refreshFn = optns.RefreshFn
+	if optns.refreshFn != nil {
+		refreshFn = optns.refreshFn
 	}
 
 	if refreshFn == nil {
@@ -59,13 +56,15 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 		return empty, errors.New("refresh function not set")
 	}
 
-	ret, err = refreshFn(ctx, key, optns.CacheRefreshFuncOptions)
+	ret, err = refreshFn(ctx, key, trcache.CacheRefreshFuncOptions{
+		Data: optns.data,
+	})
 	if err != nil {
 		var empty V
 		return empty, err
 	}
 
-	err = c.Set(ctx, key, ret, optns.CacheSetOpt...)
+	err = c.Set(ctx, key, ret, optns.cacheSetOpt...)
 	if err != nil {
 		var empty V
 		return empty, err

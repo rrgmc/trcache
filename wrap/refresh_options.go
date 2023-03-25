@@ -1,6 +1,8 @@
 package wrap
 
-import "github.com/RangelReale/trcache"
+import (
+	"github.com/RangelReale/trcache"
+)
 
 // Option
 
@@ -26,8 +28,6 @@ func (w *wrapRefreshCacheOptions[K, V]) OptRefreshFunc(t trcache.CacheRefreshFun
 	w.refreshFunc = t
 }
 
-// type WrapRefreshOption[K comparable, V any] func(*wrapRefreshCache[K, V])
-
 func WithWrapRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.CacheOption[K, V] {
 	return trcache.CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -44,3 +44,31 @@ func WithWrapRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFu
 // 		trcache.WithDefaultRefreshOptions[K, V](options...)(&o.defaultRefreshOptions)
 // 	}
 // }
+
+// Cache set options
+
+type WrapRefreshCacheRefreshOptions[K comparable, V any] interface {
+	trcache.IsCacheRefreshOption
+	trcache.CacheRefreshOptions[K, V]
+}
+
+type wrapRefreshCacheRefreshOptions[K comparable, V any] struct {
+	trcache.IsCacheRefreshOptionImpl
+	data        any
+	cacheSetOpt []trcache.CacheSetOption[K, V]
+	refreshFn   trcache.CacheRefreshFunc[K, V]
+}
+
+var _ WrapRefreshCacheRefreshOptions[string, string] = &wrapRefreshCacheRefreshOptions[string, string]{}
+
+func (w *wrapRefreshCacheRefreshOptions[K, V]) OptData(a any) {
+	w.data = a
+}
+
+func (w *wrapRefreshCacheRefreshOptions[K, V]) OptCacheSetOpt(i []trcache.CacheSetOption[K, V]) {
+	w.cacheSetOpt = w.cacheSetOpt
+}
+
+func (w *wrapRefreshCacheRefreshOptions[K, V]) OptRefreshFn(c trcache.CacheRefreshFunc[K, V]) {
+	w.refreshFn = c
+}

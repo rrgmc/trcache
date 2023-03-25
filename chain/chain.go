@@ -34,16 +34,15 @@ func (c *Chain[K, V]) Name() string {
 }
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
-	var optns CacheGetOptions[K, V]
-	trcache.ParseCacheGetOptions([]any{&optns, &optns.CacheGetOptions},
-		trcache.AppendCacheGetOptions(c.options.fnDefaultGet, options)...)
+	var optns cacheGetOptions[K, V]
+	trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	var reterr error
 
 	setPrevious := func(cacheIdx int, value V) {
 		if c.options.setPreviousOnGet {
 			for p := cacheIdx - 1; p >= 0; p++ {
-				err := c.caches[p].Set(ctx, key, value, optns.SetPreviousOnGetOptions...)
+				err := c.caches[p].Set(ctx, key, value, optns.setPreviousOnGetOptions...)
 				if err != nil {
 					// do nothing
 				}

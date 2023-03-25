@@ -24,7 +24,7 @@ func TestCache(t *testing.T) {
 	err := c.Set(ctx, "a", "12")
 	require.NoError(t, err)
 
-	v, err := c.Get(ctx, "a")
+	v, err := c.Get(ctx, "a", WithCacheGetTouch(true), trcache.WithCacheGetCustomOption(1))
 	require.NoError(t, err)
 	require.Equal(t, "12", v)
 

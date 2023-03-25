@@ -30,14 +30,28 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) Opt
 
 // Cache get options
 
-type CacheGetOption func(options *cacheGetOptions)
+type CacheGetOptions struct {
+	trcache.CacheGetOptions
+	Touch bool
+}
 
-type cacheGetOptions struct {
+// Cache get options: declarations
+
+func WithCacheGetTouch(touch bool) trcache.CacheGetOption {
+	return &withCacheGetTouch{touch}
+}
+
+// Cache get options: implementations
+
+type withCacheGetTouch struct {
 	touch bool
 }
 
-func WithCacheGetTouch(touch bool) CacheGetOption {
-	return func(options *cacheGetOptions) {
-		options.touch = touch
+func (o withCacheGetTouch) ApplyCacheGetOpt(options any) bool {
+	switch opt := options.(type) {
+	case *CacheGetOptions:
+		opt.Touch = o.touch
+		return true
 	}
+	return false
 }

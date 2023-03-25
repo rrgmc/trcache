@@ -25,7 +25,7 @@ func (c *wrapRefreshCache[K, V]) Name() string {
 }
 
 func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption) (V, error) {
-	return c.cache.Get(ctx, key)
+	return c.cache.Get(ctx, key, options...)
 }
 
 func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption) error {
@@ -42,9 +42,7 @@ func (c *wrapRefreshCache[K, V]) Clear(ctx context.Context) error {
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
 	var optns trcache.CacheRefreshOptions[K, V]
-	for _, opt := range options {
-		opt(&optns)
-	}
+	trcache.ParseCacheRefreshOptions[K, V]([]any{&optns}, options...)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {

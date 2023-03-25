@@ -8,6 +8,8 @@ var ErrNotFound = errors.New("not found")
 
 var ErrNotSupported = errors.New("not supported")
 
+var ErrOptionNotSupported = errors.New("option not supported")
+
 type CodecError struct {
 	Err error
 }

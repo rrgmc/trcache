@@ -8,9 +8,9 @@ import (
 
 type CacheOptions[K comparable, V any] struct {
 	trcache.CacheFnDefaultOptions[K, V]
-	name        string
-	refreshFunc trcache.CacheRefreshFunc[K, V]
-	// setPreviousOnGet bool
+	name             string
+	refreshFunc      trcache.CacheRefreshFunc[K, V]
+	setPreviousOnGet bool
 }
 
 // type Option[K comparable, V any] func(*chainOptions[K, V])
@@ -37,6 +37,17 @@ func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K
 		switch opt := o.(type) {
 		case *CacheOptions[K, V]:
 			opt.refreshFunc = refreshFunc
+			return true
+		}
+		return false
+	})
+}
+
+func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.CacheOption[K, V] {
+	return trcache.CacheOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case *CacheOptions[K, V]:
+			opt.setPreviousOnGet = setPreviousOnGet
 			return true
 		}
 		return false

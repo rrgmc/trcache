@@ -107,6 +107,46 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 	})
 }
 
+type OptionBuilder[K comparable, V any] struct {
+	opt []Option[K, V]
+}
+
+func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
+	return &OptionBuilder[K, V]{}
+}
+
+func (ob *OptionBuilder[K, V]) With(options ...Option[K, V]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, options...)
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithCallDefaultGetOptions(options ...GetOption[K, V]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithCallDefaultGetOptions[K, V](options...))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithCallDefaultSetOptions(options ...SetOption[K, V]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithCallDefaultSetOptions[K, V](options...))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOption[K, V]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithCallDefaultDeleteOptions[K, V](options...))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) Build() []Option[K, V] {
+	return nil
+}
+
+// func Tst() {
+// 	ob := NewOptionBuilder[string, string]().
+// 		WithCallDefaultGetOptions(
+// 			WithGetCustomOption(),
+// 		).
+// 		Build()
+// }
+
 //
 // Cache get options
 //

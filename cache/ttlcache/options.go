@@ -10,7 +10,7 @@ import (
 
 type Options[K comparable, V any] interface {
 	trcache.IsOption
-	trcache.CacheFnDefaultOptions[K, V]
+	trcache.CallDefaultOptions[K, V]
 	OptName(string)
 	OptValidator(trcache.Validator[V])
 	OptDefaultDuration(time.Duration)
@@ -28,15 +28,15 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ Options[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.GetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultGetOpt(i []trcache.GetOption[K, V]) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.SetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultSetOpt(i []trcache.SetOption[K, V]) {
 	c.fnDefaultSet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.DeleteOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultDeleteOpt(i []trcache.DeleteOption[K, V]) {
 	c.fnDefaultDelete = i
 }
 

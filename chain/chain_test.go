@@ -22,7 +22,7 @@ func TestChain(t *testing.T) {
 	c := New[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
-		trcache.WithCacheFnDefaultRefreshOptions[string, string](
+		trcache.WithCallDefaultRefreshOptions[string, string](
 			trcache.WithRefreshData[string, string]("abc"),
 		),
 	)

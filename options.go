@@ -51,56 +51,56 @@ func ParseOptions[K comparable, V any](obj IsOption, options ...[]Option[K, V]) 
 
 // Cache Fn Default options
 
-type CacheFnDefaultOptions[K comparable, V any] interface {
-	OptFnDefaultGetOpt([]GetOption[K, V])
-	OptFnDefaultSetOpt([]SetOption[K, V])
-	OptFnDefaultDeleteOpt([]DeleteOption[K, V])
+type CallDefaultOptions[K comparable, V any] interface {
+	OptCallDefaultGetOpt([]GetOption[K, V])
+	OptCallDefaultSetOpt([]SetOption[K, V])
+	OptCallDefaultDeleteOpt([]DeleteOption[K, V])
 }
 
-type CacheFnDefaultRefreshOptions[K comparable, V any] interface {
-	OptFnDefaultRefreshOpt([]RefreshOption[K, V])
+type CallDefaultRefreshOptions[K comparable, V any] interface {
+	OptCallDefaultRefreshOpt([]RefreshOption[K, V])
 }
 
 // Cache Fn Default options
 
-func WithCacheFnDefaultGetOptions[K comparable, V any](options ...GetOption[K, V]) Option[K, V] {
+func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption[K, V]) Option[K, V] {
 	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheFnDefaultOptions[K, V]:
-			opt.OptFnDefaultGetOpt(options)
+		case CallDefaultOptions[K, V]:
+			opt.OptCallDefaultGetOpt(options)
 			return true
 		}
 		return false
 	})
 }
 
-func WithCacheFnDefaultSetOptions[K comparable, V any](options ...SetOption[K, V]) Option[K, V] {
+func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption[K, V]) Option[K, V] {
 	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheFnDefaultOptions[K, V]:
-			opt.OptFnDefaultSetOpt(options)
+		case CallDefaultOptions[K, V]:
+			opt.OptCallDefaultSetOpt(options)
 			return true
 		}
 		return false
 	})
 }
 
-func WithCacheFnDefaultDeleteOptions[K comparable, V any](options ...DeleteOption[K, V]) Option[K, V] {
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption[K, V]) Option[K, V] {
 	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheFnDefaultOptions[K, V]:
-			opt.OptFnDefaultDeleteOpt(options)
+		case CallDefaultOptions[K, V]:
+			opt.OptCallDefaultDeleteOpt(options)
 			return true
 		}
 		return false
 	})
 }
 
-func WithCacheFnDefaultRefreshOptions[K comparable, V any](options ...RefreshOption[K, V]) Option[K, V] {
+func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption[K, V]) Option[K, V] {
 	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheFnDefaultRefreshOptions[K, V]:
-			opt.OptFnDefaultRefreshOpt(options)
+		case CallDefaultRefreshOptions[K, V]:
+			opt.OptCallDefaultRefreshOpt(options)
 			return true
 		}
 		return false

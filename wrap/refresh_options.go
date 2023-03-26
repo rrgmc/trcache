@@ -8,7 +8,7 @@ import (
 
 type WrapRefreshOptions[K comparable, V any] interface {
 	trcache.IsOption
-	trcache.CacheFnDefaultRefreshOptions[K, V]
+	trcache.CallDefaultRefreshOptions[K, V]
 	OptRefreshFunc(trcache.CacheRefreshFunc[K, V])
 }
 
@@ -20,7 +20,7 @@ type wrapRefreshOptions[K comparable, V any] struct {
 
 var _ WrapRefreshOptions[string, string] = &wrapRefreshOptions[string, string]{}
 
-func (w *wrapRefreshOptions[K, V]) OptFnDefaultRefreshOpt(i []trcache.RefreshOption[K, V]) {
+func (w *wrapRefreshOptions[K, V]) OptCallDefaultRefreshOpt(i []trcache.RefreshOption[K, V]) {
 	w.fnDefaultRefresh = i
 }
 

@@ -31,16 +31,19 @@ func TestFuncGet(t *testing.T) {
 			).
 			With(trcache.NewOptionBuilder[string, string]().
 				WithCallDefaultGetOptions(
-					WithGetRedisGetFunc[string, string](RedisGetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
-						value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()
-						if err != nil {
-							if errors.Is(err, redis.Nil) {
-								return "", trcache.ErrNotFound
-							}
-							return "", err
-						}
-						return value, nil
-					})),
+					trcache.NewGetOptionBuilderImpl[string, string]().
+						With(NewGetOptionBuilder[string, string]().
+							WithGetRedisGetFunc(RedisGetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
+								value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()
+								if err != nil {
+									if errors.Is(err, redis.Nil) {
+										return "", trcache.ErrNotFound
+									}
+									return "", err
+								}
+								return value, nil
+							}))).
+						Build()...,
 				).
 				WithCallDefaultSetOptions(
 					WithSetRedisSetFunc[string, string](RedisSetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, value any, expiration time.Duration, customParams any) error {

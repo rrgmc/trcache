@@ -12,6 +12,8 @@ type Cache[K comparable, V any] struct {
 	cache   *ttlcache.Cache[K, V]
 }
 
+var _ trcache.Cache[string, string] = &Cache[string, string]{}
+
 func New[K comparable, V any](cache *ttlcache.Cache[K, V], options ...trcache.CacheOption[K, V]) *Cache[K, V] {
 	ret := &Cache[K, V]{
 		cache: cache,

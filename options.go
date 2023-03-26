@@ -131,31 +131,31 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 // 	return o.opt
 // }
 
-type OptionBuilderIntf[K comparable, V any, O any] interface {
+type OptionBuilderIntf[O any] interface {
 	Build() []O
 }
 
-type OptionBuilderIntfImpl[K comparable, V any, O any] struct {
+type OptionBuilderIntfImpl[O any] struct {
 	opt []O
 }
 
-func NewOptionBuilderIntfImpl[K comparable, V any, O any]() *OptionBuilderIntfImpl[K, V, O] {
-	return &OptionBuilderIntfImpl[K, V, O]{}
+func NewOptionBuilderIntfImpl[O any]() *OptionBuilderIntfImpl[O] {
+	return &OptionBuilderIntfImpl[O]{}
 }
 
-func (ob *OptionBuilderIntfImpl[K, V, O]) With(builder OptionBuilderIntf[K, V, O]) *OptionBuilderIntfImpl[K, V, O] {
+func (ob *OptionBuilderIntfImpl[O]) With(builder OptionBuilderIntf[O]) *OptionBuilderIntfImpl[O] {
 	ob.opt = append(ob.opt, builder.Build()...)
 	return ob
 }
 
-func (o *OptionBuilderIntfImpl[K, V, O]) Build() []O {
+func (o *OptionBuilderIntfImpl[O]) Build() []O {
 	return o.opt
 }
 
 // Options
 
-func NewOptionBuilderImpl[K comparable, V any]() *OptionBuilderIntfImpl[K, V, Option[K, V]] {
-	return &OptionBuilderIntfImpl[K, V, Option[K, V]]{}
+func NewOptionBuilderImpl[K comparable, V any]() *OptionBuilderIntfImpl[Option[K, V]] {
+	return &OptionBuilderIntfImpl[Option[K, V]]{}
 }
 
 type OptionBuilder[K comparable, V any] struct {
@@ -222,6 +222,10 @@ func ParseGetOptions[K comparable, V any](obj IsGetOption, options ...[]GetOptio
 	return parseOptions(obj, func(i GetOption[K, V], o IsGetOption) bool {
 		return i.ApplyCacheGetOpt(o)
 	}, options...)
+}
+
+func NewGetOptionBuilderImpl[K comparable, V any]() *OptionBuilderIntfImpl[GetOption[K, V]] {
+	return &OptionBuilderIntfImpl[GetOption[K, V]]{}
 }
 
 // Cache get options: default

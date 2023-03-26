@@ -34,11 +34,11 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptFnDefaultGet(i []trcache.CacheGetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.CacheGetOption[K, V]) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultSet(i []trcache.CacheSetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.CacheSetOption[K, V]) {
 	c.fnDefaultSet = i
 }
 

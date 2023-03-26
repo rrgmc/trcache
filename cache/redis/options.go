@@ -31,11 +31,11 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptFnDefaultGet(i []trcache.CacheGetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.CacheGetOption[K, V]) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultSet(i []trcache.CacheSetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.CacheSetOption[K, V]) {
 	c.fnDefaultSet = i
 }
 
@@ -119,17 +119,34 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 type CacheGetOptions[K comparable, V any] interface {
 	trcache.IsCacheGetOption
 	trcache.CacheGetOptions[K, V]
+	OptCustomParams(any)
 }
 
 type cacheGetOptions[K comparable, V any] struct {
 	trcache.IsCacheGetOptionImpl
 	customOptions []any
+	customParams  any
 }
 
 var _ CacheGetOptions[string, string] = &cacheGetOptions[string, string]{}
 
 func (c *cacheGetOptions[K, V]) OptCustomOptions(anies []any) {
 	c.customOptions = anies
+}
+
+func (c *cacheGetOptions[K, V]) OptCustomParams(params any) {
+	c.customParams = params
+}
+
+func WithCacheGetCustomParam[K comparable, V any](param any) trcache.CacheGetOption[K, V] {
+	return trcache.CacheGetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case CacheGetOptions[K, V]:
+			opt.OptCustomParams(param)
+			return true
+		}
+		return false
+	})
 }
 
 // Cache set options

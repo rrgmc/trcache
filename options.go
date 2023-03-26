@@ -52,12 +52,12 @@ func ParseCacheOptions[K comparable, V any](obj IsCacheOption, options ...[]Cach
 // Cache Fn Default options
 
 type CacheFnDefaultOptions[K comparable, V any] interface {
-	OptFnDefaultGet([]CacheGetOption[K, V])
-	OptFnDefaultSet([]CacheSetOption[K, V])
+	OptFnDefaultGetOpt([]CacheGetOption[K, V])
+	OptFnDefaultSetOpt([]CacheSetOption[K, V])
 }
 
 type CacheFnDefaultRefreshOptions[K comparable, V any] interface {
-	OptFnDefaultRefresh([]CacheRefreshOption[K, V])
+	OptFnDefaultRefreshOpt([]CacheRefreshOption[K, V])
 }
 
 // Cache Fn Default options
@@ -66,7 +66,7 @@ func WithCacheFnDefaultGetOptions[K comparable, V any](options ...CacheGetOption
 	return CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultOptions[K, V]:
-			opt.OptFnDefaultGet(options)
+			opt.OptFnDefaultGetOpt(options)
 			return true
 		}
 		return false
@@ -77,7 +77,7 @@ func WithCacheFnDefaultSetOptions[K comparable, V any](options ...CacheSetOption
 	return CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultOptions[K, V]:
-			opt.OptFnDefaultSet(options)
+			opt.OptFnDefaultSetOpt(options)
 			return true
 		}
 		return false
@@ -88,7 +88,7 @@ func WithCacheFnDefaultRefreshOptions[K comparable, V any](options ...CacheRefre
 	return CacheOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultRefreshOptions[K, V]:
-			opt.OptFnDefaultRefresh(options)
+			opt.OptFnDefaultRefreshOpt(options)
 			return true
 		}
 		return false

@@ -8,7 +8,7 @@ import (
 )
 
 type wrapRefreshCache[K comparable, V any] struct {
-	options wrapRefreshCacheOptions[K, V]
+	options wrapRefreshOptions[K, V]
 	cache   trcache.Cache[K, V]
 }
 
@@ -39,7 +39,7 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
 }
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption[K, V]) (V, error) {
-	var optns wrapRefreshCacheRefreshOptions[K, V]
+	var optns wrapRefreshRefreshOptions[K, V]
 	_ = trcache.ParseRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
 
 	ret, err := c.Get(ctx, key)

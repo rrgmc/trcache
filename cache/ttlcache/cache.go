@@ -40,7 +40,7 @@ func (c *Cache[K, V]) Name() string {
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption[K, V]) (V, error) {
-	var optns cacheGetOptions[K, V]
+	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	var ttlopt []ttlcache.Option[K, V]
@@ -66,7 +66,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption[K, V]) error {
-	var optns cacheSetOptions[K, V]
+	var optns setOptions[K, V]
 	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
 
 	_ = c.cache.Set(key, value, c.options.defaultDuration)

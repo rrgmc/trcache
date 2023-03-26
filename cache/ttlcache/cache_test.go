@@ -68,7 +68,7 @@ func TestCacheOptions(t *testing.T) {
 		WithDefaultDuration[string, string](time.Minute),
 		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCacheFnDefaultGetOptions[string, string](
-			WithCacheGetTouch[string, string](true),
+			WithGetTouch[string, string](true),
 		),
 		trcache.WithCacheFnDefaultRefreshOptions[string, string](
 			trcache.WithRefreshData[string, string]("abc"),

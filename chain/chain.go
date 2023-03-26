@@ -37,7 +37,7 @@ func (c *Chain[K, V]) Name() string {
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption[K, V]) (V, error) {
-	var optns cacheGetOptions[K, V]
+	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	var reterr error

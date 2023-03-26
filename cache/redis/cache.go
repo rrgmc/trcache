@@ -45,7 +45,7 @@ func (c *Cache[K, V]) Name() string {
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption[K, V]) (V, error) {
-	var optns cacheGetOptions[K, V]
+	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	keyValue, err := c.parseKey(ctx, key)
@@ -87,7 +87,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOpti
 }
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption[K, V]) error {
-	var optns cacheSetOptions[K, V]
+	var optns setOptions[K, V]
 	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)
@@ -107,7 +107,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption[K, V]) error {
-	var optns cacheDeleteOptions[K, V]
+	var optns deleteOptions[K, V]
 	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
 
 	keyValue, err := c.parseKey(ctx, key)

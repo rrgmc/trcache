@@ -6,7 +6,7 @@ import (
 
 // Option
 
-type CacheOptions[K comparable, V any] interface {
+type Options[K comparable, V any] interface {
 	trcache.IsOption
 	trcache.CacheFnDefaultOptions[K, V]
 	OptName(string)
@@ -24,7 +24,7 @@ type cacheOptions[K comparable, V any] struct {
 	setPreviousOnGet bool
 }
 
-var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
+var _ Options[string, string] = &cacheOptions[string, string]{}
 
 func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.GetOption[K, V]) {
 	c.fnDefaultGet = i
@@ -50,18 +50,10 @@ func (c *cacheOptions[K, V]) OptSetPreviousOnGet(b bool) {
 	c.setPreviousOnGet = b
 }
 
-// type Option[K comparable, V any] func(*chainOptions[K, V])
-
-// type chainOptions[K comparable, V any] struct {
-// 	name             string
-// 	refreshFunc      trcache.CacheRefreshFunc[K, V]
-// 	setPreviousOnGet bool
-// }
-
 func WithName[K comparable, V any](name string) trcache.Option[K, V] {
 	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheOptions[K, V]:
+		case Options[K, V]:
 			opt.OptName(name)
 			return true
 		}
@@ -72,7 +64,7 @@ func WithName[K comparable, V any](name string) trcache.Option[K, V] {
 func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.Option[K, V] {
 	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheOptions[K, V]:
+		case Options[K, V]:
 			opt.OptRefreshFunc(refreshFunc)
 			return true
 		}
@@ -83,7 +75,7 @@ func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K
 func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Option[K, V] {
 	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheOptions[K, V]:
+		case Options[K, V]:
 			opt.OptSetPreviousOnGet(setPreviousOnGet)
 			return true
 		}
@@ -93,34 +85,34 @@ func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Op
 
 // Cache get options
 
-type CacheGetOptions[K comparable, V any] interface {
+type GetOptions[K comparable, V any] interface {
 	trcache.IsGetOption
 	trcache.GetOptions[K, V]
 	OptSetPreviousOnGetOptions([]trcache.SetOption[K, V])
 }
 
-type cacheGetOptions[K comparable, V any] struct {
+type getOptions[K comparable, V any] struct {
 	trcache.IsGetOptionImpl
 	customOptions           []any
 	setPreviousOnGetOptions []trcache.SetOption[K, V]
 }
 
-var _ CacheGetOptions[string, string] = &cacheGetOptions[string, string]{}
+var _ GetOptions[string, string] = &getOptions[string, string]{}
 
-func (c *cacheGetOptions[K, V]) OptCustomOptions(anies []any) {
+func (c *getOptions[K, V]) OptCustomOptions(anies []any) {
 	c.customOptions = anies
 }
 
-func (c *cacheGetOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.SetOption[K, V]) {
+func (c *getOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.SetOption[K, V]) {
 	c.setPreviousOnGetOptions = i
 }
 
 // Cache get options: declarations
 
-func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
+func WithGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
 	return trcache.GetOptionFunc(func(options any) bool {
 		switch opt := options.(type) {
-		case CacheGetOptions[K, V]:
+		case GetOptions[K, V]:
 			opt.OptSetPreviousOnGetOptions(optns)
 			return true
 		}

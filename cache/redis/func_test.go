@@ -27,7 +27,7 @@ func TestFuncGet(t *testing.T) {
 		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCacheFnDefaultGetOptions[string, string](
-			WithCacheGetGetFunc[string, string](GetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
+			WithGetGetFunc[string, string](GetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
 				value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()
 				if err != nil {
 					if errors.Is(err, redis.Nil) {
@@ -39,12 +39,12 @@ func TestFuncGet(t *testing.T) {
 			})),
 		),
 		trcache.WithCacheFnDefaultSetOptions[string, string](
-			WithCacheSetSetFunc[string, string](SetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, value any, expiration time.Duration, customParams any) error {
+			WithSetSetFunc[string, string](SetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, value any, expiration time.Duration, customParams any) error {
 				return c.Handle().HSet(ctx, keyValue, "f1", value, expiration).Err()
 			})),
 		),
 		trcache.WithCacheFnDefaultDeleteOptions[string, string](
-			WithCacheDeleteDelFunc[string, string](DelFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) error {
+			WithDeleteDelFunc[string, string](DelFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) error {
 				return c.Handle().HDel(ctx, keyValue, "f1").Err()
 			})),
 		),

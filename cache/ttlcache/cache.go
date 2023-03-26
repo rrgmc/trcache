@@ -14,7 +14,8 @@ type Cache[K comparable, V any] struct {
 
 var _ trcache.Cache[string, string] = &Cache[string, string]{}
 
-func New[K comparable, V any](cache *ttlcache.Cache[K, V], options ...trcache.CacheOption[K, V]) *Cache[K, V] {
+func New[K comparable, V any](cache *ttlcache.Cache[K, V],
+	options ...trcache.CacheOption[K, V]) *Cache[K, V] {
 	ret := &Cache[K, V]{
 		cache: cache,
 		options: cacheOptions[K, V]{
@@ -37,7 +38,8 @@ func (c *Cache[K, V]) Name() string {
 	return c.options.name
 }
 
-func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
+func (c *Cache[K, V]) Get(ctx context.Context, key K,
+	options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns cacheGetOptions[K, V]
 	_ = trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
 
@@ -62,7 +64,8 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 	return item.Value(), nil
 }
 
-func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
+func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
+	options ...trcache.CacheSetOption[K, V]) error {
 	var optns cacheSetOptions[K, V]
 	_ = trcache.ParseCacheSetOptions(&optns, c.options.fnDefaultSet, options)
 
@@ -70,7 +73,8 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	return nil
 }
 
-func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
+func (c *Cache[K, V]) Delete(ctx context.Context, key K,
+	options ...trcache.CacheDeleteOption[K, V]) error {
 	c.cache.Delete(key)
 	return nil
 }

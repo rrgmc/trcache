@@ -12,7 +12,8 @@ type wrapRefreshCache[K comparable, V any] struct {
 	cache   trcache.Cache[K, V]
 }
 
-func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
+func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V],
+	options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
 	ret := &wrapRefreshCache[K, V]{cache: cache}
 	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
 	return ret
@@ -22,16 +23,19 @@ func (c *wrapRefreshCache[K, V]) Name() string {
 	return c.cache.Name()
 }
 
-func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
+func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K,
+	options ...trcache.CacheGetOption[K, V]) (V, error) {
 	return c.cache.Get(ctx, key, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
+func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V,
+	options ...trcache.CacheSetOption[K, V]) error {
 	return c.cache.Set(ctx, key, value, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K) error {
-	return c.cache.Delete(ctx, key)
+func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
+	options ...trcache.CacheDeleteOption[K, V]) error {
+	return c.cache.Delete(ctx, key, options...)
 }
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {

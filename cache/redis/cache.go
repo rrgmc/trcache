@@ -104,13 +104,17 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	// return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
 }
 
-func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {
+func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.CacheDeleteOption[K, V]) error {
+	var optns cacheDeleteOptions[K, V]
+	_ = trcache.ParseCacheDeleteOptions(&optns, c.options.fnDefaultDelete, options)
+
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
 		return err
 	}
 
-	return c.redis.Del(ctx, keyValue).Err()
+	return c.options.delFunc.Delete(ctx, c, keyValue, optns.customParams)
+	// return c.redis.Del(ctx, keyValue).Err()
 }
 
 func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {

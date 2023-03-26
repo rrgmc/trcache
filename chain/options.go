@@ -1,8 +1,6 @@
 package chain
 
 import (
-	"time"
-
 	"github.com/RangelReale/trcache"
 )
 
@@ -18,11 +16,12 @@ type CacheOptions[K comparable, V any] interface {
 
 type cacheOptions[K comparable, V any] struct {
 	trcache.IsCacheOptionImpl
+	fnDefaultGet     []trcache.CacheGetOption[K, V]
+	fnDefaultSet     []trcache.CacheSetOption[K, V]
+	fnDefaultDelete  []trcache.CacheDeleteOption[K, V]
 	name             string
 	refreshFunc      trcache.CacheRefreshFunc[K, V]
 	setPreviousOnGet bool
-	fnDefaultGet     []trcache.CacheGetOption[K, V]
-	fnDefaultSet     []trcache.CacheSetOption[K, V]
 }
 
 var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
@@ -33,6 +32,10 @@ func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.CacheGetOption[K, V]
 
 func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.CacheSetOption[K, V]) {
 	c.fnDefaultSet = i
+}
+
+func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.CacheDeleteOption[K, V]) {
+	c.fnDefaultDelete = i
 }
 
 func (c *cacheOptions[K, V]) OptName(s string) {
@@ -125,20 +128,20 @@ func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.C
 	})
 }
 
-// Cache set options
-
-type CacheSetOptions[K comparable, V any] interface {
-	trcache.IsCacheSetOption
-	trcache.CacheSetOptions[K, V]
-}
-
-type cacheSetOptions[K comparable, V any] struct {
-	trcache.IsCacheSetOptionImpl
-	duration time.Duration
-}
-
-var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
-
-func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
-	c.duration = duration
-}
+// // Cache set options
+//
+// type CacheSetOptions[K comparable, V any] interface {
+// 	trcache.IsCacheSetOption
+// 	trcache.CacheSetOptions[K, V]
+// }
+//
+// type cacheSetOptions[K comparable, V any] struct {
+// 	trcache.IsCacheSetOptionImpl
+// 	duration time.Duration
+// }
+//
+// var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
+//
+// func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
+// 	c.duration = duration
+// }

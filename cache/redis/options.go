@@ -25,6 +25,7 @@ type cacheOptions[K comparable, V any] struct {
 	trcache.IsCacheOptionImpl
 	fnDefaultGet    []trcache.CacheGetOption[K, V]
 	fnDefaultSet    []trcache.CacheSetOption[K, V]
+	fnDefaultDelete []trcache.CacheDeleteOption[K, V]
 	name            string
 	keyCodec        trcache.KeyCodec[K]
 	valueCodec      trcache.Codec[V]
@@ -43,6 +44,10 @@ func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.CacheGetOption[K, V]
 
 func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.CacheSetOption[K, V]) {
 	c.fnDefaultSet = i
+}
+
+func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.CacheDeleteOption[K, V]) {
+	c.fnDefaultDelete = i
 }
 
 func (c *cacheOptions[K, V]) OptName(s string) {
@@ -188,5 +193,24 @@ func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
 }
 
 func (c *cacheSetOptions[K, V]) OptCustomParams(customParams any) {
+	c.customParams = customParams
+}
+
+// Cache delete options
+
+type CacheDeleteOptions[K comparable, V any] interface {
+	trcache.IsCacheDeleteOption
+	trcache.CacheDeleteOptions[K, V]
+	OptCustomParams(any)
+}
+
+type cacheDeleteOptions[K comparable, V any] struct {
+	trcache.IsCacheDeleteOptionImpl
+	customParams any
+}
+
+var _ CacheDeleteOptions[string, string] = &cacheDeleteOptions[string, string]{}
+
+func (c *cacheDeleteOptions[K, V]) OptCustomParams(customParams any) {
 	c.customParams = customParams
 }

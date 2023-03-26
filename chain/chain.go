@@ -13,7 +13,8 @@ type Chain[K comparable, V any] struct {
 	caches  []trcache.Cache[K, V]
 }
 
-func New[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) *Chain[K, V] {
+func New[K comparable, V any](cache []trcache.Cache[K, V],
+	options ...trcache.CacheOption[K, V]) *Chain[K, V] {
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
@@ -21,7 +22,8 @@ func New[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.Ca
 	return ret
 }
 
-func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
+func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V],
+	options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
 	// var wopt []wrap.WrapRefreshOption[K, V]
 	// if ret.refreshFunc != nil {
 	// 	wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](ret.refreshFunc))
@@ -33,7 +35,8 @@ func (c *Chain[K, V]) Name() string {
 	return c.options.name
 }
 
-func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
+func (c *Chain[K, V]) Get(ctx context.Context, key K,
+	options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns cacheGetOptions[K, V]
 	_ = trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
 
@@ -50,8 +53,9 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 		}
 	}
 
+	callOpts := trcache.AppendCacheGetOptions(c.options.fnDefaultGet, options)
 	for cacheIdx, cache := range c.caches {
-		if ret, err := cache.Get(ctx, key, options...); err == nil {
+		if ret, err := cache.Get(ctx, key, callOpts...); err == nil {
 			setPrevious(cacheIdx, ret)
 			return ret, nil
 		} else {
@@ -63,12 +67,14 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 	return empty, NewChainError(ChainErrorTypeError, "no cache to get", reterr)
 }
 
-func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
+func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
+	options ...trcache.CacheSetOption[K, V]) error {
 	var reterr error
 
 	success := false
+	callOpts := trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)
 	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)...); err != nil {
+		if err := cache.Set(ctx, key, value, callOpts...); err != nil {
 			reterr = multierr.Append(reterr, err)
 		} else {
 			success = true
@@ -86,13 +92,15 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	return nil
 }
 
-func (c *Chain[K, V]) Delete(ctx context.Context, key K) error {
+func (c *Chain[K, V]) Delete(ctx context.Context, key K,
+	options ...trcache.CacheDeleteOption[K, V]) error {
 	var reterr error
 
 	// delete from all
 	success := false
+	callOpts := trcache.AppendCacheDeleteOptions(c.options.fnDefaultDelete, options)
 	for _, cache := range c.caches {
-		if err := cache.Delete(ctx, key); err != nil {
+		if err := cache.Delete(ctx, key, callOpts...); err != nil {
 			reterr = multierr.Append(reterr, err)
 		} else {
 			success = true

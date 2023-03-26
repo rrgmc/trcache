@@ -54,6 +54,7 @@ func ParseCacheOptions[K comparable, V any](obj IsCacheOption, options ...[]Cach
 type CacheFnDefaultOptions[K comparable, V any] interface {
 	OptFnDefaultGetOpt([]CacheGetOption[K, V])
 	OptFnDefaultSetOpt([]CacheSetOption[K, V])
+	OptFnDefaultDeleteOpt([]CacheDeleteOption[K, V])
 }
 
 type CacheFnDefaultRefreshOptions[K comparable, V any] interface {
@@ -78,6 +79,17 @@ func WithCacheFnDefaultSetOptions[K comparable, V any](options ...CacheSetOption
 		switch opt := o.(type) {
 		case CacheFnDefaultOptions[K, V]:
 			opt.OptFnDefaultSetOpt(options)
+			return true
+		}
+		return false
+	})
+}
+
+func WithCacheFnDefaultDeleteOptions[K comparable, V any](options ...CacheDeleteOption[K, V]) CacheOption[K, V] {
+	return CacheOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case CacheFnDefaultOptions[K, V]:
+			opt.OptFnDefaultDeleteOpt(options)
 			return true
 		}
 		return false
@@ -204,6 +216,49 @@ func WithCacheSetDuration[K comparable, V any](duration time.Duration) CacheSetO
 		}
 		return false
 	})
+}
+
+// Cache delete options
+
+type IsCacheDeleteOption interface {
+	isCacheDeleteOption()
+}
+
+type IsCacheDeleteOptionImpl struct {
+}
+
+func (i IsCacheDeleteOptionImpl) isCacheDeleteOption() {}
+
+type CacheDeleteOption[K comparable, V any] interface {
+	ApplyCacheDeleteOpt(any) bool
+}
+
+type CacheDeleteOptionFunc func(any) bool
+
+func (o CacheDeleteOptionFunc) ApplyCacheDeleteOpt(c any) bool {
+	return o(c)
+}
+
+// Cache delete options: functions
+
+func ParseCacheDeleteOptions[K comparable, V any](obj IsCacheDeleteOption,
+	options ...[]CacheDeleteOption[K, V]) error {
+	return ParseOptions(obj, func(i CacheDeleteOption[K, V], o IsCacheDeleteOption) bool {
+		return i.ApplyCacheDeleteOpt(o)
+	}, options...)
+}
+
+func AppendCacheDeleteOptions[K comparable, V any](options ...[]CacheDeleteOption[K, V]) []CacheDeleteOption[K, V] {
+	var ret []CacheDeleteOption[K, V]
+	for _, opt := range options {
+		ret = append(ret, opt...)
+	}
+	return ret
+}
+
+// Cache set options: declarations
+
+type CacheDeleteOptions[K comparable, V any] interface {
 }
 
 // Cache refresh options

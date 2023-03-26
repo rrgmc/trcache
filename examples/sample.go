@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/RangelReale/trcache"
-	trttlcache "github.com/RangelReale/trcache/cache/ttlcache"
+	"github.com/RangelReale/trcache/cache/ttlcache"
 	"github.com/RangelReale/trcache/chain"
 	"github.com/jellydator/ttlcache/v3"
 )

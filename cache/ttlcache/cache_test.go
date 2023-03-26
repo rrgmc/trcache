@@ -1,4 +1,4 @@
-package ttlcache
+package trttlcache
 
 import (
 	"context"

@@ -107,17 +107,35 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 	})
 }
 
+type OptionBuilderIntf[K comparable, V any] interface {
+	Build() []Option[K, V]
+}
+
+type OptionBuilderImpl[K comparable, V any] struct {
+	opt []Option[K, V]
+}
+
+func NewOptionBuilderImpl[K comparable, V any]() *OptionBuilderImpl[K, V] {
+	return &OptionBuilderImpl[K, V]{}
+}
+
+func (ob *OptionBuilderImpl[K, V]) With(builder OptionBuilderIntf[K, V]) *OptionBuilderImpl[K, V] {
+	ob.opt = append(ob.opt, builder.Build()...)
+	return ob
+}
+
+func (o *OptionBuilderImpl[K, V]) Build() []Option[K, V] {
+	return o.opt
+}
+
+// Options
+
 type OptionBuilder[K comparable, V any] struct {
 	opt []Option[K, V]
 }
 
 func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
 	return &OptionBuilder[K, V]{}
-}
-
-func (ob *OptionBuilder[K, V]) With(options ...Option[K, V]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, options...)
-	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithCallDefaultGetOptions(options ...GetOption[K, V]) *OptionBuilder[K, V] {
@@ -136,7 +154,7 @@ func (ob *OptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOpt
 }
 
 func (ob *OptionBuilder[K, V]) Build() []Option[K, V] {
-	return nil
+	return ob.opt
 }
 
 // func Tst() {

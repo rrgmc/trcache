@@ -137,6 +137,45 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 	})
 }
 
+// Options builder
+
+type OptionBuilder[K comparable, V any] struct {
+	opt []trcache.Option[K, V]
+}
+
+func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
+	return &OptionBuilder[K, V]{}
+}
+
+func (ob *OptionBuilder[K, V]) WithName(name string) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithName[K, V](name))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithKeyCodec(keyCodec trcache.KeyCodec[K]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithKeyCodec[K, V](keyCodec))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithValueCodec(valueCodec trcache.Codec[V]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithValueCodec[K, V](valueCodec))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithValidator[K, V](validator))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) WithDefaultDuration(defaultDuration time.Duration) *OptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithDefaultDuration[K, V](defaultDuration))
+	return ob
+}
+
+func (ob *OptionBuilder[K, V]) Build() []trcache.Option[K, V] {
+	return ob.opt
+}
+
 // Cache get options
 
 type GetOptions[K comparable, V any] interface {

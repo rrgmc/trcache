@@ -24,33 +24,67 @@ func TestFuncGet(t *testing.T) {
 	mockRedis.ExpectHGet("z", "f1").RedisNil()
 
 	c, err := New[string, string](redisClient,
-		trcache.NewOptionBuilder[string, string]().
-			With(WithValueCodec[string, string](codec.NewForwardCodec[string]())).
-			With(WithDefaultDuration[string, string](time.Minute)).
-			WithCallDefaultGetOptions(
-				WithGetRedisGetFunc[string, string](RedisGetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
-					value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()
-					if err != nil {
-						if errors.Is(err, redis.Nil) {
-							return "", trcache.ErrNotFound
+		trcache.NewOptionBuilderImpl[string, string]().
+			With(NewOptionBuilder[string, string]().
+				WithValueCodec(codec.NewForwardCodec[string]()).
+				WithDefaultDuration(time.Minute),
+			).
+			With(trcache.NewOptionBuilder[string, string]().
+				WithCallDefaultGetOptions(
+					WithGetRedisGetFunc[string, string](RedisGetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
+						value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()
+						if err != nil {
+							if errors.Is(err, redis.Nil) {
+								return "", trcache.ErrNotFound
+							}
+							return "", err
 						}
-						return "", err
-					}
-					return value, nil
-				})),
-			).
-			WithCallDefaultSetOptions(
-				WithSetRedisSetFunc[string, string](RedisSetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, value any, expiration time.Duration, customParams any) error {
-					return c.Handle().HSet(ctx, keyValue, "f1", value, expiration).Err()
-				})),
-			).
-			WithCallDefaultDeleteOptions(
-				WithDeleteRedisDelFunc[string, string](RedisDelFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) error {
-					return c.Handle().HDel(ctx, keyValue, "f1").Err()
-				})),
+						return value, nil
+					})),
+				).
+				WithCallDefaultSetOptions(
+					WithSetRedisSetFunc[string, string](RedisSetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, value any, expiration time.Duration, customParams any) error {
+						return c.Handle().HSet(ctx, keyValue, "f1", value, expiration).Err()
+					})),
+				).
+				WithCallDefaultDeleteOptions(
+					WithDeleteRedisDelFunc[string, string](RedisDelFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) error {
+						return c.Handle().HDel(ctx, keyValue, "f1").Err()
+					})),
+				),
 			).
 			Build()...,
 	)
+
+	// c, err := New[string, string](redisClient,
+	// 	trcache.NewOptionBuilder[string, string]().
+	// 		With(WithValueCodec[string, string](codec.NewForwardCodec[string]())).
+	// 		With(WithDefaultDuration[string, string](time.Minute)).
+	// 		WithCallDefaultGetOptions(
+	// 			WithGetRedisGetFunc[string, string](RedisGetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
+	// 				value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()
+	// 				if err != nil {
+	// 					if errors.Is(err, redis.Nil) {
+	// 						return "", trcache.ErrNotFound
+	// 					}
+	// 					return "", err
+	// 				}
+	// 				return value, nil
+	// 			})),
+	// 		).
+	// 		WithCallDefaultSetOptions(
+	// 			WithSetRedisSetFunc[string, string](RedisSetFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, value any, expiration time.Duration, customParams any) error {
+	// 				return c.Handle().HSet(ctx, keyValue, "f1", value, expiration).Err()
+	// 			})),
+	// 		).
+	// 		WithCallDefaultDeleteOptions(
+	// 			WithDeleteRedisDelFunc[string, string](RedisDelFuncFunc[string, string](func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) error {
+	// 				return c.Handle().HDel(ctx, keyValue, "f1").Err()
+	// 			})),
+	// 		).
+	// 		Build()...,
+	// )
+
 	// c, err := New[string, string](redisClient,
 	// 	WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 	// 	WithDefaultDuration[string, string](time.Minute),

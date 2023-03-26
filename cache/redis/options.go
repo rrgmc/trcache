@@ -228,6 +228,25 @@ func WithGetRedisGetFunc[K comparable, V any](fn RedisGetFunc[K, V]) trcache.Get
 	})
 }
 
+// Options Get
+
+type GetOptionBuilder[K comparable, V any] struct {
+	opt []trcache.GetOption[K, V]
+}
+
+func NewGetOptionBuilder[K comparable, V any]() *GetOptionBuilder[K, V] {
+	return &GetOptionBuilder[K, V]{}
+}
+
+func (ob *GetOptionBuilder[K, V]) WithGetRedisGetFunc(fn RedisGetFunc[K, V]) *GetOptionBuilder[K, V] {
+	ob.opt = append(ob.opt, WithGetRedisGetFunc[K, V](fn))
+	return ob
+}
+
+func (ob *GetOptionBuilder[K, V]) Build() []trcache.GetOption[K, V] {
+	return ob.opt
+}
+
 // Cache set options
 
 type SetOptions[K comparable, V any] interface {

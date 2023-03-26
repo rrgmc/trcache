@@ -107,28 +107,56 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 	})
 }
 
-type OptionBuilderIntf[K comparable, V any] interface {
-	Build() []Option[K, V]
+// type OptionIntf[K comparable, V any] interface {
+// }
+//
+// type OptionBuilderIntf[K comparable, V any, O OptionIntf[K, V]] interface {
+// 	Build() []O[K, V]
+// }
+//
+// type OptionBuilderIntfImpl[K comparable, V any, O any] struct {
+// 	opt []O[K, V]
+// }
+//
+// func NewOptionBuilderIntfImpl[K comparable, V any, O any]() *OptionBuilderIntfImpl[K, V, O] {
+// 	return &OptionBuilderIntfImpl[K, V, O]{}
+// }
+//
+// func (ob *OptionBuilderIntfImpl[K, V, O]) With(builder OptionBuilderIntf[K, V, O]) *OptionBuilderIntfImpl[K, V, O] {
+// 	ob.opt = append(ob.opt, builder.Build()...)
+// 	return ob
+// }
+//
+// func (o *OptionBuilderIntfImpl[K, V, O]) Build() []O[K, V] {
+// 	return o.opt
+// }
+
+type OptionBuilderIntf[K comparable, V any, O any] interface {
+	Build() []O
 }
 
-type OptionBuilderImpl[K comparable, V any] struct {
-	opt []Option[K, V]
+type OptionBuilderIntfImpl[K comparable, V any, O any] struct {
+	opt []O
 }
 
-func NewOptionBuilderImpl[K comparable, V any]() *OptionBuilderImpl[K, V] {
-	return &OptionBuilderImpl[K, V]{}
+func NewOptionBuilderIntfImpl[K comparable, V any, O any]() *OptionBuilderIntfImpl[K, V, O] {
+	return &OptionBuilderIntfImpl[K, V, O]{}
 }
 
-func (ob *OptionBuilderImpl[K, V]) With(builder OptionBuilderIntf[K, V]) *OptionBuilderImpl[K, V] {
+func (ob *OptionBuilderIntfImpl[K, V, O]) With(builder OptionBuilderIntf[K, V, O]) *OptionBuilderIntfImpl[K, V, O] {
 	ob.opt = append(ob.opt, builder.Build()...)
 	return ob
 }
 
-func (o *OptionBuilderImpl[K, V]) Build() []Option[K, V] {
+func (o *OptionBuilderIntfImpl[K, V, O]) Build() []O {
 	return o.opt
 }
 
 // Options
+
+func NewOptionBuilderImpl[K comparable, V any]() *OptionBuilderIntfImpl[K, V, Option[K, V]] {
+	return &OptionBuilderIntfImpl[K, V, Option[K, V]]{}
+}
 
 type OptionBuilder[K comparable, V any] struct {
 	opt []Option[K, V]

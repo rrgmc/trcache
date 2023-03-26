@@ -254,3 +254,14 @@ func (c *cacheDeleteOptions[K, V]) OptCustomParams(customParams any) {
 func (c *cacheDeleteOptions[K, V]) OptDelFunc(fn DelFunc[K, V]) {
 	c.delFunc = fn
 }
+
+func WithCacheDeleteDelFunc[K comparable, V any](fn DelFunc[K, V]) trcache.CacheDeleteOption[K, V] {
+	return trcache.CacheDeleteOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case CacheDeleteOptions[K, V]:
+			opt.OptDelFunc(fn)
+			return true
+		}
+		return false
+	})
+}

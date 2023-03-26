@@ -37,7 +37,7 @@ func (o SetFuncFunc[K, V]) Set(ctx context.Context, c *Cache[K, V], keyValue str
 
 type DelFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error
 
-func (o DelFuncFunc[K, V]) Del(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error {
+func (o DelFuncFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error {
 	return o(ctx, c, keyValue, customParams)
 }
 

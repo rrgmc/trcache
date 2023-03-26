@@ -16,9 +16,9 @@ type Options[K comparable, V any] interface {
 	OptValueCodec(trcache.Codec[V])
 	OptValidator(trcache.Validator[V])
 	OptDefaultDuration(time.Duration)
-	OptGetFunc(GetFunc[K, V])
-	OptSetFunc(SetFunc[K, V])
-	OptDelFunc(DelFunc[K, V])
+	OptRedisGetFunc(RedisGetFunc[K, V])
+	OptRedisSetFunc(RedisSetFunc[K, V])
+	OptRedisDelFunc(RedisDelFunc[K, V])
 }
 
 type cacheOptions[K comparable, V any] struct {
@@ -31,9 +31,9 @@ type cacheOptions[K comparable, V any] struct {
 	valueCodec      trcache.Codec[V]
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
-	getFunc         GetFunc[K, V]
-	setFunc         SetFunc[K, V]
-	delFunc         DelFunc[K, V]
+	redisGetFunc    RedisGetFunc[K, V]
+	redisSetFunc    RedisSetFunc[K, V]
+	redisDelFunc    RedisDelFunc[K, V]
 }
 
 var _ Options[string, string] = &cacheOptions[string, string]{}
@@ -70,16 +70,16 @@ func (c *cacheOptions[K, V]) OptDefaultDuration(duration time.Duration) {
 	c.defaultDuration = duration
 }
 
-func (c *cacheOptions[K, V]) OptGetFunc(fn GetFunc[K, V]) {
-	c.getFunc = fn
+func (c *cacheOptions[K, V]) OptRedisGetFunc(fn RedisGetFunc[K, V]) {
+	c.redisGetFunc = fn
 }
 
-func (c *cacheOptions[K, V]) OptSetFunc(fn SetFunc[K, V]) {
-	c.setFunc = fn
+func (c *cacheOptions[K, V]) OptRedisSetFunc(fn RedisSetFunc[K, V]) {
+	c.redisSetFunc = fn
 }
 
-func (c *cacheOptions[K, V]) OptDelFunc(fn DelFunc[K, V]) {
-	c.delFunc = fn
+func (c *cacheOptions[K, V]) OptRedisDelFunc(fn RedisDelFunc[K, V]) {
+	c.redisDelFunc = fn
 }
 
 func WithName[K comparable, V any](name string) trcache.Option[K, V] {
@@ -143,14 +143,14 @@ type GetOptions[K comparable, V any] interface {
 	trcache.IsGetOption
 	trcache.GetOptions[K, V]
 	OptCustomParams(any)
-	OptGetFunc(GetFunc[K, V])
+	OptRedisGetFunc(RedisGetFunc[K, V])
 }
 
 type getOptions[K comparable, V any] struct {
 	trcache.IsGetOptionImpl
 	customOptions []any
 	customParams  any
-	getFunc       GetFunc[K, V]
+	redisGetFunc  RedisGetFunc[K, V]
 }
 
 var _ GetOptions[string, string] = &getOptions[string, string]{}
@@ -163,8 +163,8 @@ func (c *getOptions[K, V]) OptCustomParams(params any) {
 	c.customParams = params
 }
 
-func (c *getOptions[K, V]) OptGetFunc(fn GetFunc[K, V]) {
-	c.getFunc = fn
+func (c *getOptions[K, V]) OptRedisGetFunc(fn RedisGetFunc[K, V]) {
+	c.redisGetFunc = fn
 }
 
 func WithGetCustomParam[K comparable, V any](param any) trcache.GetOption[K, V] {
@@ -178,11 +178,11 @@ func WithGetCustomParam[K comparable, V any](param any) trcache.GetOption[K, V] 
 	})
 }
 
-func WithGetGetFunc[K comparable, V any](fn GetFunc[K, V]) trcache.GetOption[K, V] {
+func WithGetRedisGetFunc[K comparable, V any](fn RedisGetFunc[K, V]) trcache.GetOption[K, V] {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
-			opt.OptGetFunc(fn)
+			opt.OptRedisGetFunc(fn)
 			return true
 		}
 		return false
@@ -195,14 +195,14 @@ type SetOptions[K comparable, V any] interface {
 	trcache.IsSetOption
 	trcache.SetOptions[K, V]
 	OptCustomParams(any)
-	OptSetFunc(SetFunc[K, V])
+	OptRedisSetFunc(RedisSetFunc[K, V])
 }
 
 type setOptions[K comparable, V any] struct {
 	trcache.IsSetOptionImpl
 	duration     time.Duration
 	customParams any
-	setFunc      SetFunc[K, V]
+	redisSetFunc RedisSetFunc[K, V]
 }
 
 var _ SetOptions[string, string] = &setOptions[string, string]{}
@@ -215,15 +215,15 @@ func (c *setOptions[K, V]) OptCustomParams(customParams any) {
 	c.customParams = customParams
 }
 
-func (c *setOptions[K, V]) OptSetFunc(fn SetFunc[K, V]) {
-	c.setFunc = fn
+func (c *setOptions[K, V]) OptRedisSetFunc(fn RedisSetFunc[K, V]) {
+	c.redisSetFunc = fn
 }
 
-func WithSetSetFunc[K comparable, V any](fn SetFunc[K, V]) trcache.SetOption[K, V] {
+func WithSetRedisSetFunc[K comparable, V any](fn RedisSetFunc[K, V]) trcache.SetOption[K, V] {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
-			opt.OptSetFunc(fn)
+			opt.OptRedisSetFunc(fn)
 			return true
 		}
 		return false
@@ -236,13 +236,13 @@ type DeleteOptions[K comparable, V any] interface {
 	trcache.IsDeleteOption
 	trcache.DeleteOptions[K, V]
 	OptCustomParams(any)
-	OptDelFunc(DelFunc[K, V])
+	OptRedisDelFunc(RedisDelFunc[K, V])
 }
 
 type deleteOptions[K comparable, V any] struct {
 	trcache.IsDeleteOptionImpl
 	customParams any
-	delFunc      DelFunc[K, V]
+	redisDelFunc RedisDelFunc[K, V]
 }
 
 var _ DeleteOptions[string, string] = &deleteOptions[string, string]{}
@@ -251,15 +251,15 @@ func (c *deleteOptions[K, V]) OptCustomParams(customParams any) {
 	c.customParams = customParams
 }
 
-func (c *deleteOptions[K, V]) OptDelFunc(fn DelFunc[K, V]) {
-	c.delFunc = fn
+func (c *deleteOptions[K, V]) OptRedisDelFunc(fn RedisDelFunc[K, V]) {
+	c.redisDelFunc = fn
 }
 
-func WithDeleteDelFunc[K comparable, V any](fn DelFunc[K, V]) trcache.DeleteOption[K, V] {
+func WithDeleteRedisDelFunc[K comparable, V any](fn RedisDelFunc[K, V]) trcache.DeleteOption[K, V] {
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case DeleteOptions[K, V]:
-			opt.OptDelFunc(fn)
+			opt.OptRedisDelFunc(fn)
 			return true
 		}
 		return false

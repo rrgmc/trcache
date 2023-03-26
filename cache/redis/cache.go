@@ -21,9 +21,9 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.Option[K, 
 		redis: redis,
 		options: cacheOptions[K, V]{
 			defaultDuration: 0, // 0 means default for go-redis
-			getFunc:         DefaultGetFunc[K, V]{},
-			setFunc:         DefaultSetFunc[K, V]{},
-			delFunc:         DefaultDelFunc[K, V]{},
+			redisGetFunc:    DefaultRedisGetFunc[K, V]{},
+			redisSetFunc:    DefaultRedisSetFunc[K, V]{},
+			redisDelFunc:    DefaultRedisDelFunc[K, V]{},
 		},
 	}
 	_ = trcache.ParseOptions[K, V](&ret.options, options)
@@ -54,21 +54,12 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOpti
 		return empty, err
 	}
 
-	value, err := FirstGetFunc(optns.getFunc, c.options.getFunc).
+	value, err := FirstRedisGetFunc(optns.redisGetFunc, c.options.redisGetFunc).
 		Get(ctx, c, keyValue, optns.customParams)
 	if err != nil {
 		var empty V
 		return empty, err
 	}
-
-	// value, err := c.redis.Get(ctx, keyValue).Result()
-	// if err != nil {
-	// 	var empty V
-	// 	if errors.Is(err, redis.Nil) {
-	// 		return empty, trcache.ErrNotFound
-	// 	}
-	// 	return empty, err
-	// }
 
 	dec, err := c.options.valueCodec.Unmarshal(ctx, value)
 	if err != nil {
@@ -100,10 +91,8 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		return err
 	}
 
-	return FirstSetFunc(optns.setFunc, c.options.setFunc).
+	return FirstRedisSetFunc(optns.redisSetFunc, c.options.redisSetFunc).
 		Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
-
-	// return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption[K, V]) error {
@@ -115,9 +104,8 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.Dele
 		return err
 	}
 
-	return FirstDelFunc(optns.delFunc, c.options.delFunc).
+	return FirstRedisDelFunc(optns.redisDelFunc, c.options.redisDelFunc).
 		Delete(ctx, c, keyValue, optns.customParams)
-	// return c.redis.Del(ctx, keyValue).Err()
 }
 
 func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {

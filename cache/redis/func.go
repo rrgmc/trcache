@@ -9,44 +9,44 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type GetFunc[K comparable, V any] interface {
+type RedisGetFunc[K comparable, V any] interface {
 	Get(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) (string, error)
 }
 
-type SetFunc[K comparable, V any] interface {
+type RedisSetFunc[K comparable, V any] interface {
 	Set(ctx context.Context, c *Cache[K, V], keyValue string, value any, expiration time.Duration, customParams any) error
 }
 
-type DelFunc[K comparable, V any] interface {
+type RedisDelFunc[K comparable, V any] interface {
 	Delete(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error
 }
 
 // Interface funcs
 
-type GetFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) (string, error)
+type RedisGetFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) (string, error)
 
-func (o GetFuncFunc[K, V]) Get(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) (string, error) {
+func (o RedisGetFuncFunc[K, V]) Get(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) (string, error) {
 	return o(ctx, c, keyValue, customParams)
 }
 
-type SetFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, value any, expiration time.Duration, customParams any) error
+type RedisSetFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, value any, expiration time.Duration, customParams any) error
 
-func (o SetFuncFunc[K, V]) Set(ctx context.Context, c *Cache[K, V], keyValue string, value any, expiration time.Duration, customParams any) error {
+func (o RedisSetFuncFunc[K, V]) Set(ctx context.Context, c *Cache[K, V], keyValue string, value any, expiration time.Duration, customParams any) error {
 	return o(ctx, c, keyValue, value, expiration, customParams)
 }
 
-type DelFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error
+type RedisDelFuncFunc[K comparable, V any] func(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error
 
-func (o DelFuncFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error {
+func (o RedisDelFuncFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, customParams any) error {
 	return o(ctx, c, keyValue, customParams)
 }
 
 // Default
 
-type DefaultGetFunc[K comparable, V any] struct {
+type DefaultRedisGetFunc[K comparable, V any] struct {
 }
 
-func (f DefaultGetFunc[K, V]) Get(ctx context.Context, c *Cache[K, V], keyValue string, _ any) (string, error) {
+func (f DefaultRedisGetFunc[K, V]) Get(ctx context.Context, c *Cache[K, V], keyValue string, _ any) (string, error) {
 	value, err := c.Handle().Get(ctx, keyValue).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -57,46 +57,46 @@ func (f DefaultGetFunc[K, V]) Get(ctx context.Context, c *Cache[K, V], keyValue 
 	return value, nil
 }
 
-type DefaultSetFunc[K comparable, V any] struct {
+type DefaultRedisSetFunc[K comparable, V any] struct {
 }
 
-func (f DefaultSetFunc[K, V]) Set(ctx context.Context, c *Cache[K, V], keyValue string, value any,
+func (f DefaultRedisSetFunc[K, V]) Set(ctx context.Context, c *Cache[K, V], keyValue string, value any,
 	expiration time.Duration, _ any) error {
 	return c.Handle().Set(ctx, keyValue, value, expiration).Err()
 }
 
-type DefaultDelFunc[K comparable, V any] struct {
+type DefaultRedisDelFunc[K comparable, V any] struct {
 }
 
-func (f DefaultDelFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, _ any) error {
+func (f DefaultRedisDelFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, _ any) error {
 	return c.Handle().Del(ctx, keyValue).Err()
 }
 
 // Helpers
 
-func FirstGetFunc[K comparable, V any](fns ...GetFunc[K, V]) GetFunc[K, V] {
+func FirstRedisGetFunc[K comparable, V any](fns ...RedisGetFunc[K, V]) RedisGetFunc[K, V] {
 	for _, fn := range fns {
 		if fn != nil {
 			return fn
 		}
 	}
-	panic("no GetFunc function to call")
+	panic("no RedisGetFunc function to call")
 }
 
-func FirstSetFunc[K comparable, V any](fns ...SetFunc[K, V]) SetFunc[K, V] {
+func FirstRedisSetFunc[K comparable, V any](fns ...RedisSetFunc[K, V]) RedisSetFunc[K, V] {
 	for _, fn := range fns {
 		if fn != nil {
 			return fn
 		}
 	}
-	panic("no SetFunc function to call")
+	panic("no RedisSetFunc function to call")
 }
 
-func FirstDelFunc[K comparable, V any](fns ...DelFunc[K, V]) DelFunc[K, V] {
+func FirstRedisDelFunc[K comparable, V any](fns ...RedisDelFunc[K, V]) RedisDelFunc[K, V] {
 	for _, fn := range fns {
 		if fn != nil {
 			return fn
 		}
 	}
-	panic("no DelFunc function to call")
+	panic("no RedisDelFunc function to call")
 }

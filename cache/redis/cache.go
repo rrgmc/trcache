@@ -16,7 +16,7 @@ type Cache[K comparable, V any] struct {
 	redis   *redis.Client
 }
 
-func New[K comparable, V any](redis *redis.Client, options ...trcache.CacheOption[K, V]) (*Cache[K, V], error) {
+func New[K comparable, V any](redis *redis.Client, options ...trcache.Option[K, V]) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
 		redis: redis,
 		options: cacheOptions[K, V]{
@@ -26,7 +26,7 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.CacheOptio
 			delFunc:         DefaultDelFunc[K, V]{},
 		},
 	}
-	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
+	_ = trcache.ParseOptions[K, V](&ret.options, options)
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
@@ -44,9 +44,9 @@ func (c *Cache[K, V]) Name() string {
 	return c.options.name
 }
 
-func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
+func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption[K, V]) (V, error) {
 	var optns cacheGetOptions[K, V]
-	_ = trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
+	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
@@ -86,9 +86,9 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 	return dec, nil
 }
 
-func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
+func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption[K, V]) error {
 	var optns cacheSetOptions[K, V]
-	_ = trcache.ParseCacheSetOptions(&optns, c.options.fnDefaultSet, options)
+	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)
 	if err != nil {
@@ -106,9 +106,9 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 	// return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
 }
 
-func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.CacheDeleteOption[K, V]) error {
+func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption[K, V]) error {
 	var optns cacheDeleteOptions[K, V]
-	_ = trcache.ParseCacheDeleteOptions(&optns, c.options.fnDefaultDelete, options)
+	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {

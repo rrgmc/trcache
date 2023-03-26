@@ -7,7 +7,7 @@ import (
 // Option
 
 type CacheOptions[K comparable, V any] interface {
-	trcache.IsCacheOption
+	trcache.IsOption
 	trcache.CacheFnDefaultOptions[K, V]
 	OptName(string)
 	OptRefreshFunc(trcache.CacheRefreshFunc[K, V])
@@ -15,10 +15,10 @@ type CacheOptions[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsCacheOptionImpl
-	fnDefaultGet     []trcache.CacheGetOption[K, V]
-	fnDefaultSet     []trcache.CacheSetOption[K, V]
-	fnDefaultDelete  []trcache.CacheDeleteOption[K, V]
+	trcache.IsOptionImpl
+	fnDefaultGet     []trcache.GetOption[K, V]
+	fnDefaultSet     []trcache.SetOption[K, V]
+	fnDefaultDelete  []trcache.DeleteOption[K, V]
 	name             string
 	refreshFunc      trcache.CacheRefreshFunc[K, V]
 	setPreviousOnGet bool
@@ -26,15 +26,15 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.CacheGetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.GetOption[K, V]) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.CacheSetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.SetOption[K, V]) {
 	c.fnDefaultSet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.CacheDeleteOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.DeleteOption[K, V]) {
 	c.fnDefaultDelete = i
 }
 
@@ -58,8 +58,8 @@ func (c *cacheOptions[K, V]) OptSetPreviousOnGet(b bool) {
 // 	setPreviousOnGet bool
 // }
 
-func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
-	return trcache.CacheOptionFunc(func(o any) bool {
+func WithName[K comparable, V any](name string) trcache.Option[K, V] {
+	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheOptions[K, V]:
 			opt.OptName(name)
@@ -69,8 +69,8 @@ func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
 	})
 }
 
-func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.CacheOption[K, V] {
-	return trcache.CacheOptionFunc(func(o any) bool {
+func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.Option[K, V] {
+	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheOptions[K, V]:
 			opt.OptRefreshFunc(refreshFunc)
@@ -80,8 +80,8 @@ func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K
 	})
 }
 
-func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.CacheOption[K, V] {
-	return trcache.CacheOptionFunc(func(o any) bool {
+func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Option[K, V] {
+	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheOptions[K, V]:
 			opt.OptSetPreviousOnGet(setPreviousOnGet)
@@ -94,15 +94,15 @@ func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Ca
 // Cache get options
 
 type CacheGetOptions[K comparable, V any] interface {
-	trcache.IsCacheGetOption
-	trcache.CacheGetOptions[K, V]
-	OptSetPreviousOnGetOptions([]trcache.CacheSetOption[K, V])
+	trcache.IsGetOption
+	trcache.GetOptions[K, V]
+	OptSetPreviousOnGetOptions([]trcache.SetOption[K, V])
 }
 
 type cacheGetOptions[K comparable, V any] struct {
-	trcache.IsCacheGetOptionImpl
+	trcache.IsGetOptionImpl
 	customOptions           []any
-	setPreviousOnGetOptions []trcache.CacheSetOption[K, V]
+	setPreviousOnGetOptions []trcache.SetOption[K, V]
 }
 
 var _ CacheGetOptions[string, string] = &cacheGetOptions[string, string]{}
@@ -111,14 +111,14 @@ func (c *cacheGetOptions[K, V]) OptCustomOptions(anies []any) {
 	c.customOptions = anies
 }
 
-func (c *cacheGetOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.CacheSetOption[K, V]) {
+func (c *cacheGetOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.SetOption[K, V]) {
 	c.setPreviousOnGetOptions = i
 }
 
 // Cache get options: declarations
 
-func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.CacheSetOption[K, V]) trcache.CacheGetOption[K, V] {
-	return trcache.CacheGetOptionFunc(func(options any) bool {
+func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
+	return trcache.GetOptionFunc(func(options any) bool {
 		switch opt := options.(type) {
 		case CacheGetOptions[K, V]:
 			opt.OptSetPreviousOnGetOptions(optns)
@@ -130,17 +130,17 @@ func WithCacheGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.C
 
 // // Cache set options
 //
-// type CacheSetOptions[K comparable, V any] interface {
-// 	trcache.IsCacheSetOption
-// 	trcache.CacheSetOptions[K, V]
+// type SetOptions[K comparable, V any] interface {
+// 	trcache.IsSetOption
+// 	trcache.SetOptions[K, V]
 // }
 //
 // type cacheSetOptions[K comparable, V any] struct {
-// 	trcache.IsCacheSetOptionImpl
+// 	trcache.IsSetOptionImpl
 // 	duration time.Duration
 // }
 //
-// var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
+// var _ SetOptions[string, string] = &cacheSetOptions[string, string]{}
 //
 // func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
 // 	c.duration = duration

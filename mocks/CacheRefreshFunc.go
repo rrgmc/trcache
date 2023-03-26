@@ -23,21 +23,21 @@ func (_m *CacheRefreshFunc[K, V]) EXPECT() *CacheRefreshFunc_Expecter[K, V] {
 }
 
 // Execute provides a mock function with given fields: ctx, key, options
-func (_m *CacheRefreshFunc[K, V]) Execute(ctx context.Context, key K, options trcache.CacheRefreshFuncOptions) (V, error) {
+func (_m *CacheRefreshFunc[K, V]) Execute(ctx context.Context, key K, options trcache.RefreshFuncOptions) (V, error) {
 	ret := _m.Called(ctx, key, options)
 
 	var r0 V
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, K, trcache.CacheRefreshFuncOptions) (V, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, trcache.RefreshFuncOptions) (V, error)); ok {
 		return rf(ctx, key, options)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, K, trcache.CacheRefreshFuncOptions) V); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, trcache.RefreshFuncOptions) V); ok {
 		r0 = rf(ctx, key, options)
 	} else {
 		r0 = ret.Get(0).(V)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, K, trcache.CacheRefreshFuncOptions) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, K, trcache.RefreshFuncOptions) error); ok {
 		r1 = rf(ctx, key, options)
 	} else {
 		r1 = ret.Error(1)
@@ -54,14 +54,14 @@ type CacheRefreshFunc_Execute_Call[K comparable, V interface{}] struct {
 // Execute is a helper method to define mock.On call
 //   - ctx context.Context
 //   - key K
-//   - options trcache.CacheRefreshFuncOptions
+//   - options trcache.RefreshFuncOptions
 func (_e *CacheRefreshFunc_Expecter[K, V]) Execute(ctx interface{}, key interface{}, options interface{}) *CacheRefreshFunc_Execute_Call[K, V] {
 	return &CacheRefreshFunc_Execute_Call[K, V]{Call: _e.mock.On("Execute", ctx, key, options)}
 }
 
-func (_c *CacheRefreshFunc_Execute_Call[K, V]) Run(run func(ctx context.Context, key K, options trcache.CacheRefreshFuncOptions)) *CacheRefreshFunc_Execute_Call[K, V] {
+func (_c *CacheRefreshFunc_Execute_Call[K, V]) Run(run func(ctx context.Context, key K, options trcache.RefreshFuncOptions)) *CacheRefreshFunc_Execute_Call[K, V] {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(K), args[2].(trcache.CacheRefreshFuncOptions))
+		run(args[0].(context.Context), args[1].(K), args[2].(trcache.RefreshFuncOptions))
 	})
 	return _c
 }
@@ -71,7 +71,7 @@ func (_c *CacheRefreshFunc_Execute_Call[K, V]) Return(_a0 V, _a1 error) *CacheRe
 	return _c
 }
 
-func (_c *CacheRefreshFunc_Execute_Call[K, V]) RunAndReturn(run func(context.Context, K, trcache.CacheRefreshFuncOptions) (V, error)) *CacheRefreshFunc_Execute_Call[K, V] {
+func (_c *CacheRefreshFunc_Execute_Call[K, V]) RunAndReturn(run func(context.Context, K, trcache.RefreshFuncOptions) (V, error)) *CacheRefreshFunc_Execute_Call[K, V] {
 	_c.Call.Return(run)
 	return _c
 }

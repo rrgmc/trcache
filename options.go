@@ -10,28 +10,28 @@ import (
 // Cache options
 //
 
-type IsCacheOption interface {
+type IsOption interface {
 	isCacheOption()
 }
 
-type IsCacheOptionImpl struct {
+type IsOptionImpl struct {
 }
 
-func (i IsCacheOptionImpl) isCacheOption() {}
+func (i IsOptionImpl) isCacheOption() {}
 
-type CacheOption[K comparable, V any] interface {
+type Option[K comparable, V any] interface {
 	ApplyCacheOpt(any) bool
 }
 
-type CacheOptionFunc func(any) bool
+type OptionFunc func(any) bool
 
-func (o CacheOptionFunc) ApplyCacheOpt(c any) bool {
+func (o OptionFunc) ApplyCacheOpt(c any) bool {
 	return o(c)
 }
 
 // Cache options: functions
 
-func ParseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) error {
+func parseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) error {
 	var err error
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
@@ -43,8 +43,8 @@ func ParseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) er
 	return err
 }
 
-func ParseCacheOptions[K comparable, V any](obj IsCacheOption, options ...[]CacheOption[K, V]) error {
-	return ParseOptions(obj, func(i CacheOption[K, V], o IsCacheOption) bool {
+func ParseOptions[K comparable, V any](obj IsOption, options ...[]Option[K, V]) error {
+	return parseOptions(obj, func(i Option[K, V], o IsOption) bool {
 		return i.ApplyCacheOpt(o)
 	}, options...)
 }
@@ -52,19 +52,19 @@ func ParseCacheOptions[K comparable, V any](obj IsCacheOption, options ...[]Cach
 // Cache Fn Default options
 
 type CacheFnDefaultOptions[K comparable, V any] interface {
-	OptFnDefaultGetOpt([]CacheGetOption[K, V])
-	OptFnDefaultSetOpt([]CacheSetOption[K, V])
-	OptFnDefaultDeleteOpt([]CacheDeleteOption[K, V])
+	OptFnDefaultGetOpt([]GetOption[K, V])
+	OptFnDefaultSetOpt([]SetOption[K, V])
+	OptFnDefaultDeleteOpt([]DeleteOption[K, V])
 }
 
 type CacheFnDefaultRefreshOptions[K comparable, V any] interface {
-	OptFnDefaultRefreshOpt([]CacheRefreshOption[K, V])
+	OptFnDefaultRefreshOpt([]RefreshOption[K, V])
 }
 
 // Cache Fn Default options
 
-func WithCacheFnDefaultGetOptions[K comparable, V any](options ...CacheGetOption[K, V]) CacheOption[K, V] {
-	return CacheOptionFunc(func(o any) bool {
+func WithCacheFnDefaultGetOptions[K comparable, V any](options ...GetOption[K, V]) Option[K, V] {
+	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultOptions[K, V]:
 			opt.OptFnDefaultGetOpt(options)
@@ -74,8 +74,8 @@ func WithCacheFnDefaultGetOptions[K comparable, V any](options ...CacheGetOption
 	})
 }
 
-func WithCacheFnDefaultSetOptions[K comparable, V any](options ...CacheSetOption[K, V]) CacheOption[K, V] {
-	return CacheOptionFunc(func(o any) bool {
+func WithCacheFnDefaultSetOptions[K comparable, V any](options ...SetOption[K, V]) Option[K, V] {
+	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultOptions[K, V]:
 			opt.OptFnDefaultSetOpt(options)
@@ -85,8 +85,8 @@ func WithCacheFnDefaultSetOptions[K comparable, V any](options ...CacheSetOption
 	})
 }
 
-func WithCacheFnDefaultDeleteOptions[K comparable, V any](options ...CacheDeleteOption[K, V]) CacheOption[K, V] {
-	return CacheOptionFunc(func(o any) bool {
+func WithCacheFnDefaultDeleteOptions[K comparable, V any](options ...DeleteOption[K, V]) Option[K, V] {
+	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultOptions[K, V]:
 			opt.OptFnDefaultDeleteOpt(options)
@@ -96,8 +96,8 @@ func WithCacheFnDefaultDeleteOptions[K comparable, V any](options ...CacheDelete
 	})
 }
 
-func WithCacheFnDefaultRefreshOptions[K comparable, V any](options ...CacheRefreshOption[K, V]) CacheOption[K, V] {
-	return CacheOptionFunc(func(o any) bool {
+func WithCacheFnDefaultRefreshOptions[K comparable, V any](options ...RefreshOption[K, V]) Option[K, V] {
+	return OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheFnDefaultRefreshOptions[K, V]:
 			opt.OptFnDefaultRefreshOpt(options)
@@ -111,43 +111,43 @@ func WithCacheFnDefaultRefreshOptions[K comparable, V any](options ...CacheRefre
 // Cache get options
 //
 
-type IsCacheGetOption interface {
+type IsGetOption interface {
 	isCacheGetOption()
 }
 
-type IsCacheGetOptionImpl struct {
+type IsGetOptionImpl struct {
 }
 
-func (i IsCacheGetOptionImpl) isCacheGetOption() {}
+func (i IsGetOptionImpl) isCacheGetOption() {}
 
-type CacheGetOption[K comparable, V any] interface {
+type GetOption[K comparable, V any] interface {
 	ApplyCacheGetOpt(any) bool
 }
 
-type CacheGetOptionFunc func(any) bool
+type GetOptionFunc func(any) bool
 
-func (o CacheGetOptionFunc) ApplyCacheGetOpt(c any) bool {
+func (o GetOptionFunc) ApplyCacheGetOpt(c any) bool {
 	return o(c)
 }
 
 // Cache get options: functions
 
-func ParseCacheGetOptions[K comparable, V any](obj IsCacheGetOption, options ...[]CacheGetOption[K, V]) error {
-	return ParseOptions(obj, func(i CacheGetOption[K, V], o IsCacheGetOption) bool {
+func ParseGetOptions[K comparable, V any](obj IsGetOption, options ...[]GetOption[K, V]) error {
+	return parseOptions(obj, func(i GetOption[K, V], o IsGetOption) bool {
 		return i.ApplyCacheGetOpt(o)
 	}, options...)
 }
 
 // Cache get options: default
 
-type CacheGetOptions[K comparable, V any] interface {
+type GetOptions[K comparable, V any] interface {
 	OptCustomOptions([]any)
 }
 
-func WithCacheGetCustomOption[K comparable, V any](options ...any) CacheGetOption[K, V] {
-	return CacheGetOptionFunc(func(o any) bool {
+func WithGetCustomOption[K comparable, V any](options ...any) GetOption[K, V] {
+	return GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheGetOptions[K, V]:
+		case GetOptions[K, V]:
 			opt.OptCustomOptions(options)
 			return true
 		}
@@ -155,8 +155,8 @@ func WithCacheGetCustomOption[K comparable, V any](options ...any) CacheGetOptio
 	})
 }
 
-func AppendCacheGetOptions[K comparable, V any](options ...[]CacheGetOption[K, V]) []CacheGetOption[K, V] {
-	var ret []CacheGetOption[K, V]
+func AppendGetOptions[K comparable, V any](options ...[]GetOption[K, V]) []GetOption[K, V] {
+	var ret []GetOption[K, V]
 	for _, opt := range options {
 		ret = append(ret, opt...)
 	}
@@ -165,36 +165,36 @@ func AppendCacheGetOptions[K comparable, V any](options ...[]CacheGetOption[K, V
 
 // Cache set options
 
-type IsCacheSetOption interface {
+type IsSetOption interface {
 	isCacheSetOption()
 }
 
-type IsCacheSetOptionImpl struct {
+type IsSetOptionImpl struct {
 }
 
-func (i IsCacheSetOptionImpl) isCacheSetOption() {}
+func (i IsSetOptionImpl) isCacheSetOption() {}
 
-type CacheSetOption[K comparable, V any] interface {
+type SetOption[K comparable, V any] interface {
 	ApplyCacheSetOpt(any) bool
 }
 
-type CacheSetOptionFunc func(any) bool
+type SetOptionFunc func(any) bool
 
-func (o CacheSetOptionFunc) ApplyCacheSetOpt(c any) bool {
+func (o SetOptionFunc) ApplyCacheSetOpt(c any) bool {
 	return o(c)
 }
 
 // Cache set options: functions
 
-func ParseCacheSetOptions[K comparable, V any](obj IsCacheSetOption,
-	options ...[]CacheSetOption[K, V]) error {
-	return ParseOptions(obj, func(i CacheSetOption[K, V], o IsCacheSetOption) bool {
+func ParseSetOptions[K comparable, V any](obj IsSetOption,
+	options ...[]SetOption[K, V]) error {
+	return parseOptions(obj, func(i SetOption[K, V], o IsSetOption) bool {
 		return i.ApplyCacheSetOpt(o)
 	}, options...)
 }
 
-func AppendCacheSetOptions[K comparable, V any](options ...[]CacheSetOption[K, V]) []CacheSetOption[K, V] {
-	var ret []CacheSetOption[K, V]
+func AppendSetOptions[K comparable, V any](options ...[]SetOption[K, V]) []SetOption[K, V] {
+	var ret []SetOption[K, V]
 	for _, opt := range options {
 		ret = append(ret, opt...)
 	}
@@ -203,14 +203,14 @@ func AppendCacheSetOptions[K comparable, V any](options ...[]CacheSetOption[K, V
 
 // Cache set options: declarations
 
-type CacheSetOptions[K comparable, V any] interface {
+type SetOptions[K comparable, V any] interface {
 	OptDuration(time.Duration)
 }
 
-func WithCacheSetDuration[K comparable, V any](duration time.Duration) CacheSetOption[K, V] {
-	return CacheSetOptionFunc(func(o any) bool {
+func WithSetDuration[K comparable, V any](duration time.Duration) SetOption[K, V] {
+	return SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheSetOptions[K, V]:
+		case SetOptions[K, V]:
 			opt.OptDuration(duration)
 			return true
 		}
@@ -220,79 +220,79 @@ func WithCacheSetDuration[K comparable, V any](duration time.Duration) CacheSetO
 
 // Cache delete options
 
-type IsCacheDeleteOption interface {
+type IsDeleteOption interface {
 	isCacheDeleteOption()
 }
 
-type IsCacheDeleteOptionImpl struct {
+type IsDeleteOptionImpl struct {
 }
 
-func (i IsCacheDeleteOptionImpl) isCacheDeleteOption() {}
+func (i IsDeleteOptionImpl) isCacheDeleteOption() {}
 
-type CacheDeleteOption[K comparable, V any] interface {
+type DeleteOption[K comparable, V any] interface {
 	ApplyCacheDeleteOpt(any) bool
 }
 
-type CacheDeleteOptionFunc func(any) bool
+type DeleteOptionFunc func(any) bool
 
-func (o CacheDeleteOptionFunc) ApplyCacheDeleteOpt(c any) bool {
+func (o DeleteOptionFunc) ApplyCacheDeleteOpt(c any) bool {
 	return o(c)
 }
 
 // Cache delete options: functions
 
-func ParseCacheDeleteOptions[K comparable, V any](obj IsCacheDeleteOption,
-	options ...[]CacheDeleteOption[K, V]) error {
-	return ParseOptions(obj, func(i CacheDeleteOption[K, V], o IsCacheDeleteOption) bool {
+func ParseDeleteOptions[K comparable, V any](obj IsDeleteOption,
+	options ...[]DeleteOption[K, V]) error {
+	return parseOptions(obj, func(i DeleteOption[K, V], o IsDeleteOption) bool {
 		return i.ApplyCacheDeleteOpt(o)
 	}, options...)
 }
 
-func AppendCacheDeleteOptions[K comparable, V any](options ...[]CacheDeleteOption[K, V]) []CacheDeleteOption[K, V] {
-	var ret []CacheDeleteOption[K, V]
+func AppendDeleteOptions[K comparable, V any](options ...[]DeleteOption[K, V]) []DeleteOption[K, V] {
+	var ret []DeleteOption[K, V]
 	for _, opt := range options {
 		ret = append(ret, opt...)
 	}
 	return ret
 }
 
-// Cache set options: declarations
+// Cache delete options: declarations
 
-type CacheDeleteOptions[K comparable, V any] interface {
+type DeleteOptions[K comparable, V any] interface {
 }
 
 // Cache refresh options
 
-type IsCacheRefreshOption interface {
+type IsRefreshOption interface {
 	isCacheRefreshOption()
 }
 
-type IsCacheRefreshOptionImpl struct {
+type IsRefreshOptionImpl struct {
 }
 
-func (i IsCacheRefreshOptionImpl) isCacheRefreshOption() {}
+func (i IsRefreshOptionImpl) isCacheRefreshOption() {}
 
-type CacheRefreshOption[K comparable, V any] interface {
+type RefreshOption[K comparable, V any] interface {
 	ApplyCacheRefreshOpt(any) bool
 }
 
-type CacheRefreshOptionFunc func(any) bool
+type RefreshOptionFunc func(any) bool
 
-func (o CacheRefreshOptionFunc) ApplyCacheRefreshOpt(c any) bool {
+func (o RefreshOptionFunc) ApplyCacheRefreshOpt(c any) bool {
 	return o(c)
 }
 
 // Cache refresh options: functions
 
-func ParseCacheRefreshOptions[K comparable, V any](obj IsCacheRefreshOption,
-	options ...[]CacheRefreshOption[K, V]) error {
-	return ParseOptions(obj, func(i CacheRefreshOption[K, V], o IsCacheRefreshOption) bool {
+func ParseRefreshOptions[K comparable, V any](obj IsRefreshOption,
+	options ...[]RefreshOption[K, V]) error {
+	return parseOptions(obj, func(i RefreshOption[K, V], o IsRefreshOption) bool {
 		return i.ApplyCacheRefreshOpt(o)
 	}, options...)
 }
 
-func AppendCacheRefreshOptions[K comparable, V any](options ...[]CacheRefreshOption[K, V]) []CacheRefreshOption[K, V] {
-	var ret []CacheRefreshOption[K, V]
+func AppendRefreshOptions[K comparable, V any](options ...[]RefreshOption[K, V]) []RefreshOption[K, V] {
+	var ret []RefreshOption[K, V]
 	for _, opt := range options {
 		ret = append(ret, opt...)
 	}
@@ -301,21 +301,21 @@ func AppendCacheRefreshOptions[K comparable, V any](options ...[]CacheRefreshOpt
 
 // Cache refresh options: declarations
 
-type CacheRefreshFuncOptions struct {
+type RefreshFuncOptions struct {
 	Data any
 }
 
-type CacheRefreshOptions[K comparable, V any] interface {
-	// CacheRefreshFuncOptions
+type RefreshOptions[K comparable, V any] interface {
+	// RefreshFuncOptions
 	OptData(any)
-	OptCacheSetOpt([]CacheSetOption[K, V])
+	OptCacheSetOpt([]SetOption[K, V])
 	OptRefreshFn(CacheRefreshFunc[K, V])
 }
 
-func WithCacheRefreshSetOptions[K comparable, V any](options ...CacheSetOption[K, V]) CacheRefreshOption[K, V] {
-	return CacheRefreshOptionFunc(func(o any) bool {
+func WithRefreshSetOptions[K comparable, V any](options ...SetOption[K, V]) RefreshOption[K, V] {
+	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheRefreshOptions[K, V]:
+		case RefreshOptions[K, V]:
 			opt.OptCacheSetOpt(options)
 			return true
 		}
@@ -323,10 +323,10 @@ func WithCacheRefreshSetOptions[K comparable, V any](options ...CacheSetOption[K
 	})
 }
 
-func WithCacheRefreshData[K comparable, V any](data any) CacheRefreshOption[K, V] {
-	return CacheRefreshOptionFunc(func(o any) bool {
+func WithRefreshData[K comparable, V any](data any) RefreshOption[K, V] {
+	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheRefreshOptions[K, V]:
+		case RefreshOptions[K, V]:
 			opt.OptData(data)
 			return true
 		}
@@ -334,10 +334,10 @@ func WithCacheRefreshData[K comparable, V any](data any) CacheRefreshOption[K, V
 	})
 }
 
-func WithCacheRefreshFunc[K comparable, V any](fn CacheRefreshFunc[K, V]) CacheRefreshOption[K, V] {
-	return CacheRefreshOptionFunc(func(o any) bool {
+func WithRefreshFunc[K comparable, V any](fn CacheRefreshFunc[K, V]) RefreshOption[K, V] {
+	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case CacheRefreshOptions[K, V]:
+		case RefreshOptions[K, V]:
 			opt.OptRefreshFn(fn)
 			return true
 		}

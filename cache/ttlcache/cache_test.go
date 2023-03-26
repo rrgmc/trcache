@@ -71,7 +71,7 @@ func TestCacheOptions(t *testing.T) {
 			WithCacheGetTouch[string, string](true),
 		),
 		trcache.WithCacheFnDefaultRefreshOptions[string, string](
-			trcache.WithCacheRefreshData[string, string]("abc"),
+			trcache.WithRefreshData[string, string]("abc"),
 		),
 	)
 

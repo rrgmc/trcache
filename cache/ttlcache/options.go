@@ -16,7 +16,7 @@ import (
 // }
 
 type CacheOptions[K comparable, V any] interface {
-	trcache.IsCacheOption
+	trcache.IsOption
 	trcache.CacheFnDefaultOptions[K, V]
 	OptName(string)
 	OptValidator(trcache.Validator[V])
@@ -24,10 +24,10 @@ type CacheOptions[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsCacheOptionImpl
-	fnDefaultGet    []trcache.CacheGetOption[K, V]
-	fnDefaultSet    []trcache.CacheSetOption[K, V]
-	fnDefaultDelete []trcache.CacheDeleteOption[K, V]
+	trcache.IsOptionImpl
+	fnDefaultGet    []trcache.GetOption[K, V]
+	fnDefaultSet    []trcache.SetOption[K, V]
+	fnDefaultDelete []trcache.DeleteOption[K, V]
 	name            string
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
@@ -35,15 +35,15 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.CacheGetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultGetOpt(i []trcache.GetOption[K, V]) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.CacheSetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultSetOpt(i []trcache.SetOption[K, V]) {
 	c.fnDefaultSet = i
 }
 
-func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.CacheDeleteOption[K, V]) {
+func (c *cacheOptions[K, V]) OptFnDefaultDeleteOpt(i []trcache.DeleteOption[K, V]) {
 	c.fnDefaultDelete = i
 }
 
@@ -61,8 +61,8 @@ func (c *cacheOptions[K, V]) OptDefaultDuration(duration time.Duration) {
 
 // type Option[K comparable, V any] func(*Cache[K, V])
 
-func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
-	return trcache.CacheOptionFunc(func(o any) bool {
+func WithName[K comparable, V any](name string) trcache.Option[K, V] {
+	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheOptions[K, V]:
 			opt.OptName(name)
@@ -72,8 +72,8 @@ func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
 	})
 }
 
-func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.CacheOption[K, V] {
-	return trcache.CacheOptionFunc(func(o any) bool {
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.Option[K, V] {
+	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheOptions[K, V]:
 			opt.OptValidator(validator)
@@ -83,8 +83,8 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 	})
 }
 
-func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trcache.CacheOption[K, V] {
-	return trcache.CacheOptionFunc(func(o any) bool {
+func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trcache.Option[K, V] {
+	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheOptions[K, V]:
 			opt.OptDefaultDuration(defaultDuration)
@@ -97,13 +97,13 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 // Cache get options
 
 type CacheGetOptions[K comparable, V any] interface {
-	trcache.IsCacheGetOption
-	trcache.CacheGetOptions[K, V]
+	trcache.IsGetOption
+	trcache.GetOptions[K, V]
 	OptTouch(bool)
 }
 
 type cacheGetOptions[K comparable, V any] struct {
-	trcache.IsCacheGetOptionImpl
+	trcache.IsGetOptionImpl
 	customOptions []any
 	touch         bool
 }
@@ -120,8 +120,8 @@ func (c *cacheGetOptions[K, V]) OptTouch(b bool) {
 
 // Cache get options: declarations
 
-func WithCacheGetTouch[K comparable, V any](touch bool) trcache.CacheGetOption[K, V] {
-	return trcache.CacheGetOptionFunc(func(o any) bool {
+func WithCacheGetTouch[K comparable, V any](touch bool) trcache.GetOption[K, V] {
+	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CacheGetOptions[K, V]:
 			opt.OptTouch(touch)
@@ -134,12 +134,12 @@ func WithCacheGetTouch[K comparable, V any](touch bool) trcache.CacheGetOption[K
 // Cache set options
 
 type CacheSetOptions[K comparable, V any] interface {
-	trcache.IsCacheSetOption
-	trcache.CacheSetOptions[K, V]
+	trcache.IsSetOption
+	trcache.SetOptions[K, V]
 }
 
 type cacheSetOptions[K comparable, V any] struct {
-	trcache.IsCacheSetOptionImpl
+	trcache.IsSetOptionImpl
 	duration time.Duration
 }
 
@@ -152,12 +152,12 @@ func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
 // Cache delete options
 
 type CacheDeleteOptions[K comparable, V any] interface {
-	trcache.IsCacheDeleteOption
-	trcache.CacheDeleteOptions[K, V]
+	trcache.IsDeleteOption
+	trcache.DeleteOptions[K, V]
 }
 
 type cacheDeleteOptions[K comparable, V any] struct {
-	trcache.IsCacheDeleteOptionImpl
+	trcache.IsDeleteOptionImpl
 }
 
 var _ CacheDeleteOptions[string, string] = &cacheDeleteOptions[string, string]{}

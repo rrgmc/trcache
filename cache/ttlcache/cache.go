@@ -15,18 +15,18 @@ type Cache[K comparable, V any] struct {
 var _ trcache.Cache[string, string] = &Cache[string, string]{}
 
 func New[K comparable, V any](cache *ttlcache.Cache[K, V],
-	options ...trcache.CacheOption[K, V]) *Cache[K, V] {
+	options ...trcache.Option[K, V]) *Cache[K, V] {
 	ret := &Cache[K, V]{
 		cache: cache,
 		options: cacheOptions[K, V]{
 			defaultDuration: ttlcache.DefaultTTL,
 		},
 	}
-	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
+	_ = trcache.ParseOptions[K, V](&ret.options, options)
 	return ret
 }
 
-func NewDefault[K comparable, V any](options ...trcache.CacheOption[K, V]) *Cache[K, V] {
+func NewDefault[K comparable, V any](options ...trcache.Option[K, V]) *Cache[K, V] {
 	return New(ttlcache.New[K, V](), options...)
 }
 
@@ -39,9 +39,9 @@ func (c *Cache[K, V]) Name() string {
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K,
-	options ...trcache.CacheGetOption[K, V]) (V, error) {
+	options ...trcache.GetOption[K, V]) (V, error) {
 	var optns cacheGetOptions[K, V]
-	_ = trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
+	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	var ttlopt []ttlcache.Option[K, V]
 	if !optns.touch {
@@ -65,16 +65,16 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 }
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
-	options ...trcache.CacheSetOption[K, V]) error {
+	options ...trcache.SetOption[K, V]) error {
 	var optns cacheSetOptions[K, V]
-	_ = trcache.ParseCacheSetOptions(&optns, c.options.fnDefaultSet, options)
+	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
 
 	_ = c.cache.Set(key, value, c.options.defaultDuration)
 	return nil
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K,
-	options ...trcache.CacheDeleteOption[K, V]) error {
+	options ...trcache.DeleteOption[K, V]) error {
 	c.cache.Delete(key)
 	return nil
 }

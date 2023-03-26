@@ -13,9 +13,9 @@ type wrapRefreshCache[K comparable, V any] struct {
 }
 
 func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V],
-	options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
+	options ...trcache.Option[K, V]) trcache.RefreshCache[K, V] {
 	ret := &wrapRefreshCache[K, V]{cache: cache}
-	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
+	_ = trcache.ParseOptions[K, V](&ret.options, options)
 	return ret
 }
 
@@ -24,23 +24,23 @@ func (c *wrapRefreshCache[K, V]) Name() string {
 }
 
 func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K,
-	options ...trcache.CacheGetOption[K, V]) (V, error) {
+	options ...trcache.GetOption[K, V]) (V, error) {
 	return c.cache.Get(ctx, key, options...)
 }
 
 func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V,
-	options ...trcache.CacheSetOption[K, V]) error {
+	options ...trcache.SetOption[K, V]) error {
 	return c.cache.Set(ctx, key, value, options...)
 }
 
 func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
-	options ...trcache.CacheDeleteOption[K, V]) error {
+	options ...trcache.DeleteOption[K, V]) error {
 	return c.cache.Delete(ctx, key, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
+func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption[K, V]) (V, error) {
 	var optns wrapRefreshCacheRefreshOptions[K, V]
-	_ = trcache.ParseCacheRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
+	_ = trcache.ParseRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {
@@ -60,7 +60,7 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 		return empty, errors.New("refresh function not set")
 	}
 
-	ret, err = refreshFn(ctx, key, trcache.CacheRefreshFuncOptions{
+	ret, err = refreshFn(ctx, key, trcache.RefreshFuncOptions{
 		Data: optns.data,
 	})
 	if err != nil {

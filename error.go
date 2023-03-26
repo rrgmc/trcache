@@ -8,8 +8,6 @@ var ErrNotFound = errors.New("not found")
 
 var ErrNotSupported = errors.New("not supported")
 
-var ErrOptionNotSupported = errors.New("option not supported")
-
 type CodecError struct {
 	Err error
 }
@@ -69,4 +67,16 @@ func (e ChainError) Is(err error) bool {
 
 func (e ChainError) As(target any) bool {
 	return errors.As(e.Err, target)
+}
+
+type OptionNotSupportedError[O any] struct {
+	Option O
+}
+
+func NewOptionNotSupportedError[O any](option O) OptionNotSupportedError[O] {
+	return OptionNotSupportedError[O]{}
+}
+
+func (e OptionNotSupportedError[O]) Error() string {
+	return "option not supported"
 }

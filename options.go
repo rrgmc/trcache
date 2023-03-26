@@ -1,6 +1,10 @@
 package trcache
 
-import "time"
+import (
+	"time"
+
+	"go.uber.org/multierr"
+)
 
 //
 // Cache options
@@ -27,12 +31,22 @@ func (o CacheOptionFunc) ApplyCacheOpt(c any) bool {
 
 // Cache options: functions
 
-func ParseCacheOptions[K comparable, V any](obj IsCacheOption, options ...[]CacheOption[K, V]) {
+func ParseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) error {
+	var err error
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
-			_ = opt.ApplyCacheOpt(obj)
+			if !apply(opt, obj) {
+				err = multierr.Append(err, NewOptionNotSupportedError(opt))
+			}
 		}
 	}
+	return err
+}
+
+func ParseCacheOptions[K comparable, V any](obj IsCacheOption, options ...[]CacheOption[K, V]) error {
+	return ParseOptions(obj, func(i CacheOption[K, V], o IsCacheOption) bool {
+		return i.ApplyCacheOpt(o)
+	}, options...)
 }
 
 // Cache Fn Default options
@@ -106,13 +120,10 @@ func (o CacheGetOptionFunc) ApplyCacheGetOpt(c any) bool {
 
 // Cache get options: functions
 
-func ParseCacheGetOptions[K comparable, V any](obj IsCacheGetOption,
-	options ...[]CacheGetOption[K, V]) {
-	for _, optinstance := range options {
-		for _, opt := range optinstance {
-			_ = opt.ApplyCacheGetOpt(obj)
-		}
-	}
+func ParseCacheGetOptions[K comparable, V any](obj IsCacheGetOption, options ...[]CacheGetOption[K, V]) error {
+	return ParseOptions(obj, func(i CacheGetOption[K, V], o IsCacheGetOption) bool {
+		return i.ApplyCacheGetOpt(o)
+	}, options...)
 }
 
 // Cache get options: default
@@ -164,12 +175,10 @@ func (o CacheSetOptionFunc) ApplyCacheSetOpt(c any) bool {
 // Cache set options: functions
 
 func ParseCacheSetOptions[K comparable, V any](obj IsCacheSetOption,
-	options ...[]CacheSetOption[K, V]) {
-	for _, optinstance := range options {
-		for _, opt := range optinstance {
-			_ = opt.ApplyCacheSetOpt(obj)
-		}
-	}
+	options ...[]CacheSetOption[K, V]) error {
+	return ParseOptions(obj, func(i CacheSetOption[K, V], o IsCacheSetOption) bool {
+		return i.ApplyCacheSetOpt(o)
+	}, options...)
 }
 
 func AppendCacheSetOptions[K comparable, V any](options ...[]CacheSetOption[K, V]) []CacheSetOption[K, V] {
@@ -221,12 +230,10 @@ func (o CacheRefreshOptionFunc) ApplyCacheRefreshOpt(c any) bool {
 // Cache refresh options: functions
 
 func ParseCacheRefreshOptions[K comparable, V any](obj IsCacheRefreshOption,
-	options ...[]CacheRefreshOption[K, V]) {
-	for _, optinstance := range options {
-		for _, opt := range optinstance {
-			_ = opt.ApplyCacheRefreshOpt(obj)
-		}
-	}
+	options ...[]CacheRefreshOption[K, V]) error {
+	return ParseOptions(obj, func(i CacheRefreshOption[K, V], o IsCacheRefreshOption) bool {
+		return i.ApplyCacheRefreshOpt(o)
+	}, options...)
 }
 
 func AppendCacheRefreshOptions[K comparable, V any](options ...[]CacheRefreshOption[K, V]) []CacheRefreshOption[K, V] {

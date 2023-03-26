@@ -17,7 +17,7 @@ func New[K comparable, V any](cache []trcache.Cache[K, V], options ...trcache.Ca
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	trcache.ParseCacheOptions[K, V](&ret.options, options)
+	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
 	return ret
 }
 
@@ -35,7 +35,7 @@ func (c *Chain[K, V]) Name() string {
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGetOption[K, V]) (V, error) {
 	var optns cacheGetOptions[K, V]
-	trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
+	_ = trcache.ParseCacheGetOptions(&optns, c.options.fnDefaultGet, options)
 
 	var reterr error
 

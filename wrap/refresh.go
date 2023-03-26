@@ -14,7 +14,7 @@ type wrapRefreshCache[K comparable, V any] struct {
 
 func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V], options ...trcache.CacheOption[K, V]) trcache.RefreshCache[K, V] {
 	ret := &wrapRefreshCache[K, V]{cache: cache}
-	trcache.ParseCacheOptions[K, V](&ret.options, options)
+	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
 	return ret
 }
 
@@ -36,7 +36,7 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K) error {
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.CacheRefreshOption[K, V]) (V, error) {
 	var optns wrapRefreshCacheRefreshOptions[K, V]
-	trcache.ParseCacheRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
+	_ = trcache.ParseCacheRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {

@@ -71,3 +71,32 @@ type DefaultDelFunc[K comparable, V any] struct {
 func (f DefaultDelFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, _ any) error {
 	return c.Handle().Del(ctx, keyValue).Err()
 }
+
+// Helpers
+
+func FirstGetFunc[K comparable, V any](fns ...GetFunc[K, V]) GetFunc[K, V] {
+	for _, fn := range fns {
+		if fn != nil {
+			return fn
+		}
+	}
+	panic("no GetFunc function to call")
+}
+
+func FirstSetFunc[K comparable, V any](fns ...SetFunc[K, V]) SetFunc[K, V] {
+	for _, fn := range fns {
+		if fn != nil {
+			return fn
+		}
+	}
+	panic("no SetFunc function to call")
+}
+
+func FirstDelFunc[K comparable, V any](fns ...DelFunc[K, V]) DelFunc[K, V] {
+	for _, fn := range fns {
+		if fn != nil {
+			return fn
+		}
+	}
+	panic("no DelFunc function to call")
+}

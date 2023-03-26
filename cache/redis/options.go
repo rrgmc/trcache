@@ -143,12 +143,14 @@ type CacheGetOptions[K comparable, V any] interface {
 	trcache.IsCacheGetOption
 	trcache.CacheGetOptions[K, V]
 	OptCustomParams(any)
+	OptGetFunc(GetFunc[K, V])
 }
 
 type cacheGetOptions[K comparable, V any] struct {
 	trcache.IsCacheGetOptionImpl
 	customOptions []any
 	customParams  any
+	getFunc       GetFunc[K, V]
 }
 
 var _ CacheGetOptions[string, string] = &cacheGetOptions[string, string]{}
@@ -159,6 +161,10 @@ func (c *cacheGetOptions[K, V]) OptCustomOptions(anies []any) {
 
 func (c *cacheGetOptions[K, V]) OptCustomParams(params any) {
 	c.customParams = params
+}
+
+func (c *cacheGetOptions[K, V]) OptGetFunc(fn GetFunc[K, V]) {
+	c.getFunc = fn
 }
 
 func WithCacheGetCustomParam[K comparable, V any](param any) trcache.CacheGetOption[K, V] {
@@ -172,18 +178,31 @@ func WithCacheGetCustomParam[K comparable, V any](param any) trcache.CacheGetOpt
 	})
 }
 
+func WithCacheGetGetFunc[K comparable, V any](fn GetFunc[K, V]) trcache.CacheGetOption[K, V] {
+	return trcache.CacheGetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case CacheGetOptions[K, V]:
+			opt.OptGetFunc(fn)
+			return true
+		}
+		return false
+	})
+}
+
 // Cache set options
 
 type CacheSetOptions[K comparable, V any] interface {
 	trcache.IsCacheSetOption
 	trcache.CacheSetOptions[K, V]
 	OptCustomParams(any)
+	OptSetFunc(SetFunc[K, V])
 }
 
 type cacheSetOptions[K comparable, V any] struct {
 	trcache.IsCacheSetOptionImpl
 	duration     time.Duration
 	customParams any
+	setFunc      SetFunc[K, V]
 }
 
 var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
@@ -196,21 +215,42 @@ func (c *cacheSetOptions[K, V]) OptCustomParams(customParams any) {
 	c.customParams = customParams
 }
 
+func (c *cacheSetOptions[K, V]) OptSetFunc(fn SetFunc[K, V]) {
+	c.setFunc = fn
+}
+
+func WithCacheSetSetFunc[K comparable, V any](fn SetFunc[K, V]) trcache.CacheSetOption[K, V] {
+	return trcache.CacheSetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case CacheSetOptions[K, V]:
+			opt.OptSetFunc(fn)
+			return true
+		}
+		return false
+	})
+}
+
 // Cache delete options
 
 type CacheDeleteOptions[K comparable, V any] interface {
 	trcache.IsCacheDeleteOption
 	trcache.CacheDeleteOptions[K, V]
 	OptCustomParams(any)
+	OptDelFunc(DelFunc[K, V])
 }
 
 type cacheDeleteOptions[K comparable, V any] struct {
 	trcache.IsCacheDeleteOptionImpl
 	customParams any
+	delFunc      DelFunc[K, V]
 }
 
 var _ CacheDeleteOptions[string, string] = &cacheDeleteOptions[string, string]{}
 
 func (c *cacheDeleteOptions[K, V]) OptCustomParams(customParams any) {
 	c.customParams = customParams
+}
+
+func (c *cacheDeleteOptions[K, V]) OptDelFunc(fn DelFunc[K, V]) {
+	c.delFunc = fn
 }

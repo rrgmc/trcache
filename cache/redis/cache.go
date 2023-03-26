@@ -54,7 +54,8 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 		return empty, err
 	}
 
-	value, err := c.options.getFunc.Get(ctx, c, keyValue, optns.customParams)
+	value, err := FirstGetFunc(optns.getFunc, c.options.getFunc).
+		Get(ctx, c, keyValue, optns.customParams)
 	if err != nil {
 		var empty V
 		return empty, err
@@ -99,7 +100,8 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		return err
 	}
 
-	return c.options.setFunc.Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
+	return FirstSetFunc(optns.setFunc, c.options.setFunc).
+		Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
 
 	// return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
 }
@@ -113,7 +115,8 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.Cach
 		return err
 	}
 
-	return c.options.delFunc.Delete(ctx, c, keyValue, optns.customParams)
+	return FirstDelFunc(optns.delFunc, c.options.delFunc).
+		Delete(ctx, c, keyValue, optns.customParams)
 	// return c.redis.Del(ctx, keyValue).Err()
 }
 

@@ -16,17 +16,23 @@ type CacheOptions[K comparable, V any] interface {
 	OptValueCodec(trcache.Codec[V])
 	OptValidator(trcache.Validator[V])
 	OptDefaultDuration(time.Duration)
+	OptGetFunc(GetFunc[K, V])
+	OptSetFunc(SetFunc[K, V])
+	OptDelFunc(DelFunc[K, V])
 }
 
 type cacheOptions[K comparable, V any] struct {
 	trcache.IsCacheOptionImpl
+	fnDefaultGet    []trcache.CacheGetOption[K, V]
+	fnDefaultSet    []trcache.CacheSetOption[K, V]
 	name            string
 	keyCodec        trcache.KeyCodec[K]
 	valueCodec      trcache.Codec[V]
 	validator       trcache.Validator[V]
 	defaultDuration time.Duration
-	fnDefaultGet    []trcache.CacheGetOption[K, V]
-	fnDefaultSet    []trcache.CacheSetOption[K, V]
+	getFunc         GetFunc[K, V]
+	setFunc         SetFunc[K, V]
+	delFunc         DelFunc[K, V]
 }
 
 var _ CacheOptions[string, string] = &cacheOptions[string, string]{}
@@ -57,6 +63,18 @@ func (c *cacheOptions[K, V]) OptValidator(t trcache.Validator[V]) {
 
 func (c *cacheOptions[K, V]) OptDefaultDuration(duration time.Duration) {
 	c.defaultDuration = duration
+}
+
+func (c *cacheOptions[K, V]) OptGetFunc(fn GetFunc[K, V]) {
+	c.getFunc = fn
+}
+
+func (c *cacheOptions[K, V]) OptSetFunc(fn SetFunc[K, V]) {
+	c.setFunc = fn
+}
+
+func (c *cacheOptions[K, V]) OptDelFunc(fn DelFunc[K, V]) {
+	c.delFunc = fn
 }
 
 func WithName[K comparable, V any](name string) trcache.CacheOption[K, V] {
@@ -154,15 +172,21 @@ func WithCacheGetCustomParam[K comparable, V any](param any) trcache.CacheGetOpt
 type CacheSetOptions[K comparable, V any] interface {
 	trcache.IsCacheSetOption
 	trcache.CacheSetOptions[K, V]
+	OptCustomParams(any)
 }
 
 type cacheSetOptions[K comparable, V any] struct {
 	trcache.IsCacheSetOptionImpl
-	duration time.Duration
+	duration     time.Duration
+	customParams any
 }
 
 var _ CacheSetOptions[string, string] = &cacheSetOptions[string, string]{}
 
 func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
 	c.duration = duration
+}
+
+func (c *cacheSetOptions[K, V]) OptCustomParams(customParams any) {
+	c.customParams = customParams
 }

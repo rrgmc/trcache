@@ -21,6 +21,9 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.CacheOptio
 		redis: redis,
 		options: cacheOptions[K, V]{
 			defaultDuration: 0, // 0 means default for go-redis
+			getFunc:         DefaultGetFunc[K, V]{},
+			setFunc:         DefaultSetFunc[K, V]{},
+			delFunc:         DefaultDelFunc[K, V]{},
 		},
 	}
 	_ = trcache.ParseCacheOptions[K, V](&ret.options, options)
@@ -51,14 +54,20 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 		return empty, err
 	}
 
-	value, err := c.redis.Get(ctx, keyValue).Result()
+	value, err := c.options.getFunc.Get(ctx, c, keyValue, optns.customParams)
 	if err != nil {
 		var empty V
-		if errors.Is(err, redis.Nil) {
-			return empty, trcache.ErrNotFound
-		}
 		return empty, err
 	}
+
+	// value, err := c.redis.Get(ctx, keyValue).Result()
+	// if err != nil {
+	// 	var empty V
+	// 	if errors.Is(err, redis.Nil) {
+	// 		return empty, trcache.ErrNotFound
+	// 	}
+	// 	return empty, err
+	// }
 
 	dec, err := c.options.valueCodec.Unmarshal(ctx, value)
 	if err != nil {
@@ -90,7 +99,9 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		return err
 	}
 
-	return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
+	return c.options.setFunc.Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
+
+	// return c.redis.Set(ctx, keyValue, enc, c.options.defaultDuration).Err()
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K) error {

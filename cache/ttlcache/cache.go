@@ -25,6 +25,14 @@ func New[K comparable, V any](cache *ttlcache.Cache[K, V], options ...trcache.Ca
 	return ret
 }
 
+func NewDefault[K comparable, V any](options ...trcache.CacheOption[K, V]) *Cache[K, V] {
+	return New(ttlcache.New[K, V](), options...)
+}
+
+func (c *Cache[K, V]) Handle() *ttlcache.Cache[K, V] {
+	return c.cache
+}
+
 func (c *Cache[K, V]) Name() string {
 	return c.options.name
 }

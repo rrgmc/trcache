@@ -60,28 +60,37 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K, options ...trcache.CacheGe
 	}
 
 	var empty V
-	return empty, trcache.NewChainError("no cache to get", reterr)
+	return empty, NewChainError(ChainErrorTypeError, "no cache to get", reterr)
 }
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.CacheSetOption[K, V]) error {
 	var reterr error
 
+	success := false
 	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)...); err == nil {
-			return nil
-		} else {
+		if err := cache.Set(ctx, key, value, trcache.AppendCacheSetOptions(c.options.fnDefaultSet, options)...); err != nil {
 			reterr = multierr.Append(reterr, err)
+		} else {
+			success = true
 		}
 	}
 
-	return trcache.NewChainError("no cache to get", reterr)
+	if reterr != nil {
+		errType := ChainErrorTypeError
+		if success {
+			// at least one was set
+			errType = ChainErrorTypeIncomplete
+		}
+		return NewChainError(errType, "error setting cache", reterr)
+	}
+	return nil
 }
 
 func (c *Chain[K, V]) Delete(ctx context.Context, key K) error {
 	var reterr error
-	success := false
 
 	// delete from all
+	success := false
 	for _, cache := range c.caches {
 		if err := cache.Delete(ctx, key); err != nil {
 			reterr = multierr.Append(reterr, err)
@@ -93,5 +102,5 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K) error {
 	if success || reterr == nil {
 		return nil
 	}
-	return trcache.NewChainError("no cache to get", reterr)
+	return NewChainError(ChainErrorTypeError, "no cache to delete", reterr)
 }

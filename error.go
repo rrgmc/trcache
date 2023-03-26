@@ -48,27 +48,6 @@ func (e *ErrInvalidValueType) Error() string {
 	return e.Message
 }
 
-type ChainError struct {
-	Message string
-	Err     error
-}
-
-func NewChainError(message string, err error) ChainError {
-	return ChainError{message, err}
-}
-
-func (e ChainError) Error() string {
-	return e.Message
-}
-
-func (e ChainError) Is(err error) bool {
-	return errors.Is(e.Err, err)
-}
-
-func (e ChainError) As(target any) bool {
-	return errors.As(e.Err, target)
-}
-
 type OptionNotSupportedError[O any] struct {
 	Option O
 }

@@ -33,6 +33,10 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.CacheOptio
 	return ret, nil
 }
 
+func (c *Cache[K, V]) Handle() *redis.Client {
+	return c.redis
+}
+
 func (c *Cache[K, V]) Name() string {
 	return c.options.name
 }

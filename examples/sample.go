@@ -6,7 +6,6 @@ import (
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/cache/ttlcache"
 	"github.com/RangelReale/trcache/chain"
-	"github.com/jellydator/ttlcache/v3"
 )
 
 func main() {
@@ -16,8 +15,8 @@ func main() {
 }
 
 func sampleChain(ctx context.Context) {
-	cache1 := trttlcache.New[string, string](ttlcache.New[string, string]())
-	cache2 := trttlcache.New[string, string](ttlcache.New[string, string]())
+	cache1 := trttlcache.NewDefault[string, string]()
+	cache2 := trttlcache.NewDefault[string, string]()
 
 	cache := chain.New[string, string]([]trcache.Cache[string, string]{
 		cache1, cache2,

@@ -154,21 +154,49 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption[K, V]) error {
+	var optns deleteOptions[K, V]
+	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
+
+	if optns.deleteStrategy == nil {
+		optns.deleteStrategy = &DeleteStrategyDeleteAll[K, V]{}
+	}
+
 	var reterr error
 
 	// delete from all
 	success := false
 	callOpts := trcache.AppendDeleteOptions(c.options.fnDefaultDelete, options)
-	for _, cache := range c.caches {
-		if err := cache.Delete(ctx, key, callOpts...); err != nil {
+	for cacheIdx, cache := range c.caches {
+		switch optns.deleteStrategy.BeforeDelete(ctx, cacheIdx, cache, key) {
+		case DeleteStrategyBeforeResultSkip:
+			continue
+		case DeleteStrategyBeforeResultDelete:
+			break
+		}
+
+		err := cache.Delete(ctx, key, callOpts...)
+
+		switch optns.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err) {
+		case DeleteStrategyAfterResultReturn:
+			return err
+		case DeleteStrategyAfterResultContinueWithError:
 			reterr = multierr.Append(reterr, err)
-		} else {
+		case DeleteStrategyAfterResultContinue:
+			break
+		}
+
+		if err != nil {
 			success = true
 		}
 	}
 
-	if success || reterr == nil {
-		return nil
+	if reterr != nil {
+		errType := ChainErrorTypeError
+		if success {
+			// at least one was set
+			errType = ChainErrorTypeIncomplete
+		}
+		return NewChainError(errType, "error deleting cache", reterr)
 	}
-	return NewChainError(ChainErrorTypeError, "no cache to delete", reterr)
+	return nil
 }

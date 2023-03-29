@@ -255,7 +255,60 @@ func (c *setOptions[K, V]) OptSetStrategy(s SetStrategy[K, V]) {
 	c.setStrategy = s
 }
 
-// Implementations
+// Cache delete options definitions
+
+type DeleteStrategyBeforeResult int
+type DeleteStrategyAfterResult int
+
+const (
+	DeleteStrategyBeforeResultDelete DeleteStrategyBeforeResult = iota
+	DeleteStrategyBeforeResultSkip
+)
+
+const (
+	DeleteStrategyAfterResultContinue DeleteStrategyAfterResult = iota
+	DeleteStrategyAfterResultReturn
+	DeleteStrategyAfterResultContinueWithError
+)
+
+type DeleteStrategy[K comparable, V any] interface {
+	BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult
+	AfterDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult
+}
+
+type DeleteStrategyFunc[K comparable, V any] struct {
+	BeforeDeleteFn func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult
+	AfterDeleteFn  func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult
+}
+
+func (f DeleteStrategyFunc[K, V]) BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult {
+	return f.BeforeDeleteFn(ctx, cacheIdx, cache, key)
+}
+
+func (f DeleteStrategyFunc[K, V]) AfterDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult {
+	return f.AfterDeleteFn(ctx, cacheIdx, cache, key, err)
+}
+
+// Cache delete options
+
+type DeleteOptions[K comparable, V any] interface {
+	trcache.IsDeleteOption
+	trcache.DeleteOptions[K, V]
+	OptDeleteStrategy(DeleteStrategy[K, V])
+}
+
+type deleteOptions[K comparable, V any] struct {
+	trcache.IsDeleteOptionImpl
+	deleteStrategy DeleteStrategy[K, V]
+}
+
+var _ DeleteOptions[string, string] = &deleteOptions[string, string]{}
+
+func (c *deleteOptions[K, V]) OptDeleteStrategy(s DeleteStrategy[K, V]) {
+	c.deleteStrategy = s
+}
+
+// Implementations: Get strategy
 
 type GetStrategyGetFirstSetPrevious[K comparable, V any] struct {
 }
@@ -282,7 +335,7 @@ func (f GetStrategyGetFirstSetPrevious[K, V]) AfterSet(ctx context.Context, gotC
 	return GetStrategyAfterSetResultContinue
 }
 
-// Implementations
+// Implementations: Set Strategy
 
 type SetStrategySetAll[K comparable, V any] struct {
 }
@@ -293,4 +346,17 @@ func (f SetStrategySetAll[K, V]) BeforeSet(ctx context.Context, cacheIdx int, ca
 
 func (f SetStrategySetAll[K, V]) AfterSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult {
 	return SetStrategyAfterResultContinue
+}
+
+// Implementations: Delete Strategy
+
+type DeleteStrategyDeleteAll[K comparable, V any] struct {
+}
+
+func (f DeleteStrategyDeleteAll[K, V]) BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult {
+	return DeleteStrategyBeforeResultDelete
+}
+
+func (f DeleteStrategyDeleteAll[K, V]) AfterDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult {
+	return DeleteStrategyAfterResultContinue
 }

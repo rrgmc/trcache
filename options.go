@@ -29,6 +29,26 @@ func (o OptionFunc) ApplyCacheOpt(c any) bool {
 	return o(c)
 }
 
+// Cache options: builder
+
+type OptionBuilderBase[K comparable, V any] struct {
+	opt []Option[K, V]
+}
+
+func (ob *OptionBuilderBase[K, V]) AppendOptions(opt ...Option[K, V]) {
+	ob.opt = append(ob.opt, opt...)
+}
+
+func (ob *OptionBuilderBase[K, V]) ApplyCacheOpt(o any) bool {
+	found := false
+	for _, opt := range ob.opt {
+		if ok := opt.ApplyCacheOpt(o); ok {
+			found = true
+		}
+	}
+	return found
+}
+
 // Cache options: functions
 
 func parseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) error {
@@ -107,59 +127,10 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 	})
 }
 
-// type OptionIntf[K comparable, V any] interface {
-// }
-//
-// type OptionBuilderIntf[K comparable, V any, O OptionIntf[K, V]] interface {
-// 	Build() []O[K, V]
-// }
-//
-// type OptionBuilderIntfImpl[K comparable, V any, O any] struct {
-// 	opt []O[K, V]
-// }
-//
-// func NewOptionBuilderIntfImpl[K comparable, V any, O any]() *OptionBuilderIntfImpl[K, V, O] {
-// 	return &OptionBuilderIntfImpl[K, V, O]{}
-// }
-//
-// func (ob *OptionBuilderIntfImpl[K, V, O]) With(builder OptionBuilderIntf[K, V, O]) *OptionBuilderIntfImpl[K, V, O] {
-// 	ob.opt = append(ob.opt, builder.Build()...)
-// 	return ob
-// }
-//
-// func (o *OptionBuilderIntfImpl[K, V, O]) Build() []O[K, V] {
-// 	return o.opt
-// }
-
-type OptionBuilderIntf[O any] interface {
-	Build() []O
-}
-
-type OptionBuilderIntfImpl[O any] struct {
-	opt []O
-}
-
-func NewOptionBuilderIntfImpl[O any]() *OptionBuilderIntfImpl[O] {
-	return &OptionBuilderIntfImpl[O]{}
-}
-
-func (ob *OptionBuilderIntfImpl[O]) With(builder OptionBuilderIntf[O]) *OptionBuilderIntfImpl[O] {
-	ob.opt = append(ob.opt, builder.Build()...)
-	return ob
-}
-
-func (o *OptionBuilderIntfImpl[O]) Build() []O {
-	return o.opt
-}
-
-// Options
-
-func NewOptionBuilderImpl[K comparable, V any]() *OptionBuilderIntfImpl[Option[K, V]] {
-	return &OptionBuilderIntfImpl[Option[K, V]]{}
-}
+// Default options builder
 
 type OptionBuilder[K comparable, V any] struct {
-	opt []Option[K, V]
+	OptionBuilderBase[K, V]
 }
 
 func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
@@ -167,31 +138,19 @@ func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
 }
 
 func (ob *OptionBuilder[K, V]) WithCallDefaultGetOptions(options ...GetOption[K, V]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithCallDefaultGetOptions[K, V](options...))
+	ob.AppendOptions(WithCallDefaultGetOptions[K, V](options...))
 	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithCallDefaultSetOptions(options ...SetOption[K, V]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithCallDefaultSetOptions[K, V](options...))
+	ob.AppendOptions(WithCallDefaultSetOptions[K, V](options...))
 	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOption[K, V]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithCallDefaultDeleteOptions[K, V](options...))
+	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))
 	return ob
 }
-
-func (ob *OptionBuilder[K, V]) Build() []Option[K, V] {
-	return ob.opt
-}
-
-// func Tst() {
-// 	ob := NewOptionBuilder[string, string]().
-// 		WithCallDefaultGetOptions(
-// 			WithGetCustomOption(),
-// 		).
-// 		Build()
-// }
 
 //
 // Cache get options
@@ -216,16 +175,32 @@ func (o GetOptionFunc) ApplyCacheGetOpt(c any) bool {
 	return o(c)
 }
 
+// Cache get options: builder
+
+type GetOptionBuilderBase[K comparable, V any] struct {
+	opt []GetOption[K, V]
+}
+
+func (ob *GetOptionBuilderBase[K, V]) AppendOptions(opt ...GetOption[K, V]) {
+	ob.opt = append(ob.opt, opt...)
+}
+
+func (ob *GetOptionBuilderBase[K, V]) ApplyCacheGetOpt(o any) bool {
+	found := false
+	for _, opt := range ob.opt {
+		if ok := opt.ApplyCacheGetOpt(o); ok {
+			found = true
+		}
+	}
+	return found
+}
+
 // Cache get options: functions
 
 func ParseGetOptions[K comparable, V any](obj IsGetOption, options ...[]GetOption[K, V]) error {
 	return parseOptions(obj, func(i GetOption[K, V], o IsGetOption) bool {
 		return i.ApplyCacheGetOpt(o)
 	}, options...)
-}
-
-func NewGetOptionBuilderImpl[K comparable, V any]() *OptionBuilderIntfImpl[GetOption[K, V]] {
-	return &OptionBuilderIntfImpl[GetOption[K, V]]{}
 }
 
 // Cache get options: default
@@ -272,6 +247,26 @@ type SetOptionFunc func(any) bool
 
 func (o SetOptionFunc) ApplyCacheSetOpt(c any) bool {
 	return o(c)
+}
+
+// Cache set options: builder
+
+type SetOptionBuilderBase[K comparable, V any] struct {
+	opt []SetOption[K, V]
+}
+
+func (ob *SetOptionBuilderBase[K, V]) AppendOptions(opt ...SetOption[K, V]) {
+	ob.opt = append(ob.opt, opt...)
+}
+
+func (ob *SetOptionBuilderBase[K, V]) ApplyCacheSetOpt(o any) bool {
+	found := false
+	for _, opt := range ob.opt {
+		if ok := opt.ApplyCacheSetOpt(o); ok {
+			found = true
+		}
+	}
+	return found
 }
 
 // Cache set options: functions
@@ -329,6 +324,26 @@ func (o DeleteOptionFunc) ApplyCacheDeleteOpt(c any) bool {
 	return o(c)
 }
 
+// Cache delete options: builder
+
+type DeleteOptionBuilderBase[K comparable, V any] struct {
+	opt []DeleteOption[K, V]
+}
+
+func (ob *DeleteOptionBuilderBase[K, V]) AppendOptions(opt ...DeleteOption[K, V]) {
+	ob.opt = append(ob.opt, opt...)
+}
+
+func (ob *DeleteOptionBuilderBase[K, V]) ApplyCacheDeleteOpt(o any) bool {
+	found := false
+	for _, opt := range ob.opt {
+		if ok := opt.ApplyCacheDeleteOpt(o); ok {
+			found = true
+		}
+	}
+	return found
+}
+
 // Cache delete options: functions
 
 func ParseDeleteOptions[K comparable, V any](obj IsDeleteOption,
@@ -370,6 +385,26 @@ type RefreshOptionFunc func(any) bool
 
 func (o RefreshOptionFunc) ApplyCacheRefreshOpt(c any) bool {
 	return o(c)
+}
+
+// Cache refresh options: builder
+
+type RefreshOptionBuilderBase[K comparable, V any] struct {
+	opt []RefreshOption[K, V]
+}
+
+func (ob *RefreshOptionBuilderBase[K, V]) AppendOptions(opt ...RefreshOption[K, V]) {
+	ob.opt = append(ob.opt, opt...)
+}
+
+func (ob *RefreshOptionBuilderBase[K, V]) ApplyCacheRefreshOpt(o any) bool {
+	found := false
+	for _, opt := range ob.opt {
+		if ok := opt.ApplyCacheRefreshOpt(o); ok {
+			found = true
+		}
+	}
+	return found
 }
 
 // Cache refresh options: functions

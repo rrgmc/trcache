@@ -140,7 +140,7 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 // Options builder
 
 type OptionBuilder[K comparable, V any] struct {
-	opt []trcache.Option[K, V]
+	trcache.OptionBuilderBase[K, V]
 }
 
 func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
@@ -148,32 +148,28 @@ func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
 }
 
 func (ob *OptionBuilder[K, V]) WithName(name string) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithName[K, V](name))
+	ob.AppendOptions(WithName[K, V](name))
 	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithKeyCodec(keyCodec trcache.KeyCodec[K]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithKeyCodec[K, V](keyCodec))
+	ob.AppendOptions(WithKeyCodec[K, V](keyCodec))
 	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithValueCodec(valueCodec trcache.Codec[V]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithValueCodec[K, V](valueCodec))
+	ob.AppendOptions(WithValueCodec[K, V](valueCodec))
 	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithValidator[K, V](validator))
+	ob.AppendOptions(WithValidator[K, V](validator))
 	return ob
 }
 
 func (ob *OptionBuilder[K, V]) WithDefaultDuration(defaultDuration time.Duration) *OptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithDefaultDuration[K, V](defaultDuration))
+	ob.AppendOptions(WithDefaultDuration[K, V](defaultDuration))
 	return ob
-}
-
-func (ob *OptionBuilder[K, V]) Build() []trcache.Option[K, V] {
-	return ob.opt
 }
 
 // Cache get options
@@ -228,10 +224,10 @@ func WithGetRedisGetFunc[K comparable, V any](fn RedisGetFunc[K, V]) trcache.Get
 	})
 }
 
-// Options Get
+// Options Get builder
 
 type GetOptionBuilder[K comparable, V any] struct {
-	opt []trcache.GetOption[K, V]
+	trcache.GetOptionBuilderBase[K, V]
 }
 
 func NewGetOptionBuilder[K comparable, V any]() *GetOptionBuilder[K, V] {
@@ -239,12 +235,13 @@ func NewGetOptionBuilder[K comparable, V any]() *GetOptionBuilder[K, V] {
 }
 
 func (ob *GetOptionBuilder[K, V]) WithGetRedisGetFunc(fn RedisGetFunc[K, V]) *GetOptionBuilder[K, V] {
-	ob.opt = append(ob.opt, WithGetRedisGetFunc[K, V](fn))
+	ob.AppendOptions(WithGetRedisGetFunc[K, V](fn))
 	return ob
 }
 
-func (ob *GetOptionBuilder[K, V]) Build() []trcache.GetOption[K, V] {
-	return ob.opt
+func (ob *GetOptionBuilder[K, V]) WithGetRedisGetFuncFunc(fn RedisGetFuncFunc[K, V]) *GetOptionBuilder[K, V] {
+	ob.AppendOptions(WithGetRedisGetFunc[K, V](fn))
+	return ob
 }
 
 // Cache set options
@@ -288,6 +285,26 @@ func WithSetRedisSetFunc[K comparable, V any](fn RedisSetFunc[K, V]) trcache.Set
 	})
 }
 
+// Options Set builder
+
+type SetOptionBuilder[K comparable, V any] struct {
+	trcache.SetOptionBuilderBase[K, V]
+}
+
+func NewSetOptionBuilder[K comparable, V any]() *SetOptionBuilder[K, V] {
+	return &SetOptionBuilder[K, V]{}
+}
+
+func (ob *SetOptionBuilder[K, V]) WithSetRedisSetFunc(fn RedisSetFunc[K, V]) *SetOptionBuilder[K, V] {
+	ob.AppendOptions(WithSetRedisSetFunc[K, V](fn))
+	return ob
+}
+
+func (ob *SetOptionBuilder[K, V]) WithSetRedisSetFuncFunc(fn RedisSetFuncFunc[K, V]) *SetOptionBuilder[K, V] {
+	ob.AppendOptions(WithSetRedisSetFunc[K, V](fn))
+	return ob
+}
+
 // Cache delete options
 
 type DeleteOptions[K comparable, V any] interface {
@@ -322,4 +339,24 @@ func WithDeleteRedisDelFunc[K comparable, V any](fn RedisDelFunc[K, V]) trcache.
 		}
 		return false
 	})
+}
+
+// Options Delete builder
+
+type DeleteOptionBuilder[K comparable, V any] struct {
+	trcache.DeleteOptionBuilderBase[K, V]
+}
+
+func NewDeleteOptionBuilder[K comparable, V any]() *DeleteOptionBuilder[K, V] {
+	return &DeleteOptionBuilder[K, V]{}
+}
+
+func (ob *DeleteOptionBuilder[K, V]) WithDeleteRedisDelFunc(fn RedisDelFunc[K, V]) *DeleteOptionBuilder[K, V] {
+	ob.AppendOptions(WithDeleteRedisDelFunc[K, V](fn))
+	return ob
+}
+
+func (ob *DeleteOptionBuilder[K, V]) WithDeleteRedisDelFuncFunc(fn RedisDelFuncFunc[K, V]) *DeleteOptionBuilder[K, V] {
+	ob.AppendOptions(WithDeleteRedisDelFunc[K, V](fn))
+	return ob
 }

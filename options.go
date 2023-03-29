@@ -29,7 +29,7 @@ func (o OptionFunc) ApplyCacheOpt(c any) bool {
 	return o(c)
 }
 
-// Cache options: builder
+// Cache options: builder base
 
 type OptionBuilderBase[K comparable, V any] struct {
 	opt []Option[K, V]
@@ -175,7 +175,7 @@ func (o GetOptionFunc) ApplyCacheGetOpt(c any) bool {
 	return o(c)
 }
 
-// Cache get options: builder
+// Cache get options: builder base
 
 type GetOptionBuilderBase[K comparable, V any] struct {
 	opt []GetOption[K, V]
@@ -249,7 +249,7 @@ func (o SetOptionFunc) ApplyCacheSetOpt(c any) bool {
 	return o(c)
 }
 
-// Cache set options: builder
+// Cache set options: builder base
 
 type SetOptionBuilderBase[K comparable, V any] struct {
 	opt []SetOption[K, V]
@@ -324,7 +324,7 @@ func (o DeleteOptionFunc) ApplyCacheDeleteOpt(c any) bool {
 	return o(c)
 }
 
-// Cache delete options: builder
+// Cache delete options: builder base
 
 type DeleteOptionBuilderBase[K comparable, V any] struct {
 	opt []DeleteOption[K, V]

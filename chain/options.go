@@ -1,6 +1,8 @@
 package chain
 
 import (
+	"context"
+
 	"github.com/RangelReale/trcache"
 )
 
@@ -83,18 +85,77 @@ func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Op
 	})
 }
 
+// Cache get options definitions
+
+type GetStrategyBeforeResult int
+type GetStrategyAfterResult int
+type GetStrategyBeforeSetResult int
+type GetStrategyAfterSetResult int
+
+const (
+	GetStrategyBeforeResultGet GetStrategyBeforeResult = iota
+	GetStrategyBeforeResultSkip
+)
+
+const (
+	GetStrategyAfterResultReturn GetStrategyAfterResult = iota
+	GetStrategyAfterResultSkip
+)
+
+const (
+	GetStrategyBeforeSetResultSet GetStrategyBeforeSetResult = iota
+	GetStrategyBeforeSetResultSkip
+)
+
+const (
+	GetStrategyAfterSetResultContinue GetStrategyAfterSetResult = iota
+	GetStrategyAfterSetResultReturn
+)
+
+type GetStrategy[K comparable, V any] interface {
+	BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult
+	AfterGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult
+	BeforeSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult
+	AfterSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult
+}
+
+type GetStrategyFunc[K comparable, V any] struct {
+	BeforeGetFn func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult
+	AfterGetFn  func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult
+	BeforeSetFn func(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult
+	AfterSetFn  func(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult
+}
+
+func (f GetStrategyFunc[K, V]) BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult {
+	return f.BeforeGetFn(ctx, cacheIdx, cache, key)
+}
+
+func (f GetStrategyFunc[K, V]) AfterGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult {
+	return f.AfterGetFn(ctx, cacheIdx, cache, key, value, err)
+}
+
+func (f GetStrategyFunc[K, V]) BeforeSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult {
+	return f.BeforeSetFn(ctx, gotCacheIdx, cacheIdx, cache, key, value)
+}
+
+func (f GetStrategyFunc[K, V]) AfterSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult {
+	return f.AfterSetFn(ctx, gotCacheIdx, cacheIdx, cache, key, value, err)
+}
+
 // Cache get options
 
 type GetOptions[K comparable, V any] interface {
 	trcache.IsGetOption
 	trcache.GetOptions[K, V]
 	OptSetPreviousOnGetOptions([]trcache.SetOption[K, V])
+	OptGetStrategy(GetStrategy[K, V])
 }
 
 type getOptions[K comparable, V any] struct {
 	trcache.IsGetOptionImpl
 	customOptions           []any
 	setPreviousOnGetOptions []trcache.SetOption[K, V]
+	getStrategy             GetStrategy[K, V]
 }
 
 var _ GetOptions[string, string] = &getOptions[string, string]{}
@@ -107,6 +168,10 @@ func (c *getOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.SetOption[K, V
 	c.setPreviousOnGetOptions = i
 }
 
+func (c *getOptions[K, V]) OptGetStrategy(s GetStrategy[K, V]) {
+	c.getStrategy = s
+}
+
 // Cache get options: declarations
 
 func WithGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
@@ -114,6 +179,17 @@ func WithGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOpt
 		switch opt := options.(type) {
 		case GetOptions[K, V]:
 			opt.OptSetPreviousOnGetOptions(optns)
+			return true
+		}
+		return false
+	})
+}
+
+func WithGetStrategy[K comparable, V any](s GetStrategy[K, V]) trcache.GetOption[K, V] {
+	return trcache.GetOptionFunc(func(options any) bool {
+		switch opt := options.(type) {
+		case GetOptions[K, V]:
+			opt.OptGetStrategy(s)
 			return true
 		}
 		return false
@@ -137,3 +213,30 @@ func WithGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOpt
 // func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
 // 	c.duration = duration
 // }
+
+// Implementations
+
+type GetStrategyGetFirstSetPrevious[K comparable, V any] struct {
+}
+
+func (f GetStrategyGetFirstSetPrevious[K, V]) BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult {
+	return GetStrategyBeforeResultGet
+}
+
+func (f GetStrategyGetFirstSetPrevious[K, V]) AfterGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult {
+	if err == nil {
+		return GetStrategyAfterResultReturn
+	}
+	return GetStrategyAfterResultSkip
+}
+
+func (f GetStrategyGetFirstSetPrevious[K, V]) BeforeSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult {
+	if cacheIdx < gotCacheIdx {
+		return GetStrategyBeforeSetResultSet
+	}
+	return GetStrategyBeforeSetResultSkip
+}
+
+func (f GetStrategyGetFirstSetPrevious[K, V]) AfterSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult {
+	return GetStrategyAfterSetResultContinue
+}

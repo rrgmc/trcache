@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/cache/ttlcache"
@@ -23,4 +24,10 @@ func sampleChain(ctx context.Context) {
 	})
 
 	cache.Set(ctx, "a", "b")
+
+	v, err := cache.Get(ctx, "a")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Print(v)
 }

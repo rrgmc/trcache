@@ -40,31 +40,79 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
+	if optns.getStrategy == nil {
+		optns.getStrategy = GetStrategyGetFirstSetPrevious[K, V]{}
+	}
+
 	var reterr error
 
-	setPrevious := func(cacheIdx int, value V) {
-		if c.options.setPreviousOnGet {
-			for p := cacheIdx - 1; p >= 0; p++ {
-				err := c.caches[p].Set(ctx, key, value, optns.setPreviousOnGetOptions...)
-				if err != nil {
-					// do nothing
-				}
-			}
-		}
-	}
+	// setPrevious := func(cacheIdx int, value V) {
+	// 	if c.options.setPreviousOnGet {
+	// 		for p := cacheIdx - 1; p >= 0; p++ {
+	// 			err := c.caches[p].Set(ctx, key, value, optns.setPreviousOnGetOptions...)
+	// 			if err != nil {
+	// 				// do nothing
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	gotCacheIdx := -1
+	var ret V
 
 	callOpts := trcache.AppendGetOptions(c.options.fnDefaultGet, options)
 	for cacheIdx, cache := range c.caches {
-		if ret, err := cache.Get(ctx, key, callOpts...); err == nil {
-			setPrevious(cacheIdx, ret)
-			return ret, nil
-		} else {
-			reterr = multierr.Append(reterr, err)
+		switch optns.getStrategy.BeforeGet(ctx, cacheIdx, cache, key) {
+		case GetStrategyBeforeResultSkip:
+			continue
+		case GetStrategyBeforeResultGet:
+			break
+		}
+
+		value, err := cache.Get(ctx, key, callOpts...)
+
+		switch optns.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err) {
+		case GetStrategyAfterResultSkip:
+			// reterr = multierr.Append(reterr, err)
+			continue
+		case GetStrategyAfterResultReturn:
+			break
+		}
+
+		gotCacheIdx = cacheIdx
+		ret = value
+		reterr = err
+		break
+	}
+
+	if reterr != nil {
+		var empty V
+		return empty, reterr
+	}
+	if gotCacheIdx == -1 {
+		var empty V
+		return empty, NewChainError(ChainErrorTypeError, "no cache to get", reterr)
+	}
+
+	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
+		switch optns.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
+		case GetStrategyBeforeSetResultSkip:
+			continue
+		case GetStrategyBeforeSetResultSet:
+			break
+		}
+
+		err := c.caches[cacheIdx].Set(ctx, key, ret, optns.setPreviousOnGetOptions...)
+
+		switch optns.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err) {
+		case GetStrategyAfterSetResultReturn:
+			return ret, err
+		case GetStrategyAfterSetResultContinue:
+			break
 		}
 	}
 
-	var empty V
-	return empty, NewChainError(ChainErrorTypeError, "no cache to get", reterr)
+	return ret, reterr
 }
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,

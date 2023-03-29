@@ -133,7 +133,7 @@ type OptionBuilder[K comparable, V any] struct {
 	OptionBuilderBase[K, V]
 }
 
-func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
+func Opt[K comparable, V any]() *OptionBuilder[K, V] {
 	return &OptionBuilder[K, V]{}
 }
 

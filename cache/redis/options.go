@@ -143,7 +143,7 @@ type OptionBuilder[K comparable, V any] struct {
 	trcache.OptionBuilderBase[K, V]
 }
 
-func NewOptionBuilder[K comparable, V any]() *OptionBuilder[K, V] {
+func Opt[K comparable, V any]() *OptionBuilder[K, V] {
 	return &OptionBuilder[K, V]{}
 }
 
@@ -230,7 +230,7 @@ type GetOptionBuilder[K comparable, V any] struct {
 	trcache.GetOptionBuilderBase[K, V]
 }
 
-func NewGetOptionBuilder[K comparable, V any]() *GetOptionBuilder[K, V] {
+func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
 	return &GetOptionBuilder[K, V]{}
 }
 
@@ -291,7 +291,7 @@ type SetOptionBuilder[K comparable, V any] struct {
 	trcache.SetOptionBuilderBase[K, V]
 }
 
-func NewSetOptionBuilder[K comparable, V any]() *SetOptionBuilder[K, V] {
+func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
 	return &SetOptionBuilder[K, V]{}
 }
 
@@ -347,7 +347,7 @@ type DeleteOptionBuilder[K comparable, V any] struct {
 	trcache.DeleteOptionBuilderBase[K, V]
 }
 
-func NewDeleteOptionBuilder[K comparable, V any]() *DeleteOptionBuilder[K, V] {
+func DeleteOpt[K comparable, V any]() *DeleteOptionBuilder[K, V] {
 	return &DeleteOptionBuilder[K, V]{}
 }
 

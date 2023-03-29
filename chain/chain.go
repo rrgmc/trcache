@@ -106,14 +106,37 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption[K, V]) error {
+	var optns setOptions[K, V]
+	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
+
+	if optns.setStrategy == nil {
+		optns.setStrategy = &SetStrategySetAll[K, V]{}
+	}
+
 	var reterr error
 
 	success := false
 	callOpts := trcache.AppendSetOptions(c.options.fnDefaultSet, options)
-	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, callOpts...); err != nil {
+	for cacheIdx, cache := range c.caches {
+		switch optns.setStrategy.BeforeSet(ctx, cacheIdx, cache, key, value) {
+		case SetStrategyBeforeResultSkip:
+			continue
+		case SetStrategyBeforeResultSet:
+			break
+		}
+
+		err := cache.Set(ctx, key, value, callOpts...)
+
+		switch optns.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err) {
+		case SetStrategyAfterResultReturn:
+			return err
+		case SetStrategyAfterResultContinueWithError:
 			reterr = multierr.Append(reterr, err)
-		} else {
+		case SetStrategyAfterResultContinue:
+			break
+		}
+
+		if err != nil {
 			success = true
 		}
 	}

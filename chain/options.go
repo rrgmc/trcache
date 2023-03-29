@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"time"
 
 	"github.com/RangelReale/trcache"
 )
@@ -196,23 +197,63 @@ func WithGetStrategy[K comparable, V any](s GetStrategy[K, V]) trcache.GetOption
 	})
 }
 
-// // Cache set options
-//
-// type SetOptions[K comparable, V any] interface {
-// 	trcache.IsSetOption
-// 	trcache.SetOptions[K, V]
-// }
-//
-// type cacheSetOptions[K comparable, V any] struct {
-// 	trcache.IsSetOptionImpl
-// 	duration time.Duration
-// }
-//
-// var _ SetOptions[string, string] = &cacheSetOptions[string, string]{}
-//
-// func (c *cacheSetOptions[K, V]) OptDuration(duration time.Duration) {
-// 	c.duration = duration
-// }
+// Cache set options definitions
+
+type SetStrategyBeforeResult int
+type SetStrategyAfterResult int
+
+const (
+	SetStrategyBeforeResultSet SetStrategyBeforeResult = iota
+	SetStrategyBeforeResultSkip
+)
+
+const (
+	SetStrategyAfterResultContinue SetStrategyAfterResult = iota
+	SetStrategyAfterResultReturn
+	SetStrategyAfterResultContinueWithError
+)
+
+type SetStrategy[K comparable, V any] interface {
+	BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult
+	AfterSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult
+}
+
+type SetStrategyFunc[K comparable, V any] struct {
+	BeforeSetFn func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult
+	AfterSetFn  func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult
+}
+
+func (f SetStrategyFunc[K, V]) BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult {
+	return f.BeforeSetFn(ctx, cacheIdx, cache, key, value)
+}
+
+func (f SetStrategyFunc[K, V]) AfterSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult {
+	return f.AfterSetFn(ctx, cacheIdx, cache, key, value, err)
+}
+
+// Cache set options
+
+type SetOptions[K comparable, V any] interface {
+	trcache.IsSetOption
+	trcache.SetOptions[K, V]
+	OptSetStrategy(SetStrategy[K, V])
+}
+
+type setOptions[K comparable, V any] struct {
+	trcache.IsSetOptionImpl
+	duration    time.Duration
+	setStrategy SetStrategy[K, V]
+}
+
+var _ SetOptions[string, string] = &setOptions[string, string]{}
+
+func (c *setOptions[K, V]) OptDuration(duration time.Duration) {
+	c.duration = duration
+}
+
+func (c *setOptions[K, V]) OptSetStrategy(s SetStrategy[K, V]) {
+	c.setStrategy = s
+}
 
 // Implementations
 
@@ -239,4 +280,17 @@ func (f GetStrategyGetFirstSetPrevious[K, V]) BeforeSet(ctx context.Context, got
 
 func (f GetStrategyGetFirstSetPrevious[K, V]) AfterSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult {
 	return GetStrategyAfterSetResultContinue
+}
+
+// Implementations
+
+type SetStrategySetAll[K comparable, V any] struct {
+}
+
+func (f SetStrategySetAll[K, V]) BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult {
+	return SetStrategyBeforeResultSet
+}
+
+func (f SetStrategySetAll[K, V]) AfterSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult {
+	return SetStrategyAfterResultContinue
 }

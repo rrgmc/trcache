@@ -46,17 +46,6 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 	var reterr error
 
-	// setPrevious := func(cacheIdx int, value V) {
-	// 	if c.options.setPreviousOnGet {
-	// 		for p := cacheIdx - 1; p >= 0; p++ {
-	// 			err := c.caches[p].Set(ctx, key, value, optns.setPreviousOnGetOptions...)
-	// 			if err != nil {
-	// 				// do nothing
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	gotCacheIdx := -1
 	var ret V
 
@@ -73,7 +62,6 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 		switch optns.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err) {
 		case GetStrategyAfterResultSkip:
-			// reterr = multierr.Append(reterr, err)
 			continue
 		case GetStrategyAfterResultReturn:
 			break
@@ -91,9 +79,10 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	}
 	if gotCacheIdx == -1 {
 		var empty V
-		return empty, NewChainError(ChainErrorTypeError, "no cache to get", reterr)
+		return empty, trcache.ErrNotFound
 	}
 
+	callSetOpts := trcache.AppendSetOptions(c.options.fnDefaultSet, optns.setOptions)
 	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
 		switch optns.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
 		case GetStrategyBeforeSetResultSkip:
@@ -102,7 +91,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 			break
 		}
 
-		err := c.caches[cacheIdx].Set(ctx, key, ret, optns.setPreviousOnGetOptions...)
+		err := c.caches[cacheIdx].Set(ctx, key, ret, callSetOpts...)
 
 		switch optns.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err) {
 		case GetStrategyAfterSetResultReturn:

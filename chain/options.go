@@ -147,15 +147,15 @@ func (f GetStrategyFunc[K, V]) AfterSet(ctx context.Context, gotCacheIdx, cacheI
 type GetOptions[K comparable, V any] interface {
 	trcache.IsGetOption
 	trcache.GetOptions[K, V]
-	OptSetPreviousOnGetOptions([]trcache.SetOption[K, V])
+	OptSetOptions([]trcache.SetOption[K, V])
 	OptGetStrategy(GetStrategy[K, V])
 }
 
 type getOptions[K comparable, V any] struct {
 	trcache.IsGetOptionImpl
-	customOptions           []any
-	setPreviousOnGetOptions []trcache.SetOption[K, V]
-	getStrategy             GetStrategy[K, V]
+	customOptions []any
+	setOptions    []trcache.SetOption[K, V]
+	getStrategy   GetStrategy[K, V]
 }
 
 var _ GetOptions[string, string] = &getOptions[string, string]{}
@@ -164,8 +164,8 @@ func (c *getOptions[K, V]) OptCustomOptions(anies []any) {
 	c.customOptions = anies
 }
 
-func (c *getOptions[K, V]) OptSetPreviousOnGetOptions(i []trcache.SetOption[K, V]) {
-	c.setPreviousOnGetOptions = i
+func (c *getOptions[K, V]) OptSetOptions(i []trcache.SetOption[K, V]) {
+	c.setOptions = i
 }
 
 func (c *getOptions[K, V]) OptGetStrategy(s GetStrategy[K, V]) {
@@ -174,11 +174,11 @@ func (c *getOptions[K, V]) OptGetStrategy(s GetStrategy[K, V]) {
 
 // Cache get options: declarations
 
-func WithGetSetPreviousOnGetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
+func WithGetSetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
 	return trcache.GetOptionFunc(func(options any) bool {
 		switch opt := options.(type) {
 		case GetOptions[K, V]:
-			opt.OptSetPreviousOnGetOptions(optns)
+			opt.OptSetOptions(optns)
 			return true
 		}
 		return false

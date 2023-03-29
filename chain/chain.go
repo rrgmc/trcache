@@ -40,43 +40,103 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
+	if optns.getStrategy == nil {
+		optns.getStrategy = GetStrategyGetFirstSetPrevious[K, V]{}
+	}
+
 	var reterr error
 
-	setPrevious := func(cacheIdx int, value V) {
-		if c.options.setPreviousOnGet {
-			for p := cacheIdx - 1; p >= 0; p++ {
-				err := c.caches[p].Set(ctx, key, value, optns.setPreviousOnGetOptions...)
-				if err != nil {
-					// do nothing
-				}
-			}
-		}
-	}
+	gotCacheIdx := -1
+	var ret V
 
 	callOpts := trcache.AppendGetOptions(c.options.fnDefaultGet, options)
 	for cacheIdx, cache := range c.caches {
-		if ret, err := cache.Get(ctx, key, callOpts...); err == nil {
-			setPrevious(cacheIdx, ret)
-			return ret, nil
-		} else {
-			reterr = multierr.Append(reterr, err)
+		switch optns.getStrategy.BeforeGet(ctx, cacheIdx, cache, key) {
+		case GetStrategyBeforeResultSkip:
+			continue
+		case GetStrategyBeforeResultGet:
+			break
+		}
+
+		value, err := cache.Get(ctx, key, callOpts...)
+
+		switch optns.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err) {
+		case GetStrategyAfterResultSkip:
+			continue
+		case GetStrategyAfterResultReturn:
+			break
+		}
+
+		gotCacheIdx = cacheIdx
+		ret = value
+		reterr = err
+		break
+	}
+
+	if reterr != nil {
+		var empty V
+		return empty, reterr
+	}
+	if gotCacheIdx == -1 {
+		var empty V
+		return empty, trcache.ErrNotFound
+	}
+
+	callSetOpts := trcache.AppendSetOptions(c.options.fnDefaultSet, optns.setOptions)
+	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
+		switch optns.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
+		case GetStrategyBeforeSetResultSkip:
+			continue
+		case GetStrategyBeforeSetResultSet:
+			break
+		}
+
+		err := c.caches[cacheIdx].Set(ctx, key, ret, callSetOpts...)
+
+		switch optns.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err) {
+		case GetStrategyAfterSetResultReturn:
+			return ret, err
+		case GetStrategyAfterSetResultContinue:
+			break
 		}
 	}
 
-	var empty V
-	return empty, NewChainError(ChainErrorTypeError, "no cache to get", reterr)
+	return ret, reterr
 }
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption[K, V]) error {
+	var optns setOptions[K, V]
+	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
+
+	if optns.setStrategy == nil {
+		optns.setStrategy = &SetStrategySetAll[K, V]{}
+	}
+
 	var reterr error
 
 	success := false
 	callOpts := trcache.AppendSetOptions(c.options.fnDefaultSet, options)
-	for _, cache := range c.caches {
-		if err := cache.Set(ctx, key, value, callOpts...); err != nil {
+	for cacheIdx, cache := range c.caches {
+		switch optns.setStrategy.BeforeSet(ctx, cacheIdx, cache, key, value) {
+		case SetStrategyBeforeResultSkip:
+			continue
+		case SetStrategyBeforeResultSet:
+			break
+		}
+
+		err := cache.Set(ctx, key, value, callOpts...)
+
+		switch optns.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err) {
+		case SetStrategyAfterResultReturn:
+			return err
+		case SetStrategyAfterResultContinueWithError:
 			reterr = multierr.Append(reterr, err)
-		} else {
+		case SetStrategyAfterResultContinue:
+			break
+		}
+
+		if err != nil {
 			success = true
 		}
 	}
@@ -94,21 +154,49 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption[K, V]) error {
+	var optns deleteOptions[K, V]
+	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
+
+	if optns.deleteStrategy == nil {
+		optns.deleteStrategy = &DeleteStrategyDeleteAll[K, V]{}
+	}
+
 	var reterr error
 
 	// delete from all
 	success := false
 	callOpts := trcache.AppendDeleteOptions(c.options.fnDefaultDelete, options)
-	for _, cache := range c.caches {
-		if err := cache.Delete(ctx, key, callOpts...); err != nil {
+	for cacheIdx, cache := range c.caches {
+		switch optns.deleteStrategy.BeforeDelete(ctx, cacheIdx, cache, key) {
+		case DeleteStrategyBeforeResultSkip:
+			continue
+		case DeleteStrategyBeforeResultDelete:
+			break
+		}
+
+		err := cache.Delete(ctx, key, callOpts...)
+
+		switch optns.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err) {
+		case DeleteStrategyAfterResultReturn:
+			return err
+		case DeleteStrategyAfterResultContinueWithError:
 			reterr = multierr.Append(reterr, err)
-		} else {
+		case DeleteStrategyAfterResultContinue:
+			break
+		}
+
+		if err != nil {
 			success = true
 		}
 	}
 
-	if success || reterr == nil {
-		return nil
+	if reterr != nil {
+		errType := ChainErrorTypeError
+		if success {
+			// at least one was set
+			errType = ChainErrorTypeIncomplete
+		}
+		return NewChainError(errType, "error deleting cache", reterr)
 	}
-	return NewChainError(ChainErrorTypeError, "no cache to delete", reterr)
+	return nil
 }

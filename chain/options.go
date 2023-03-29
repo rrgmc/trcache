@@ -10,7 +10,7 @@ import (
 // Option
 
 type Options[K comparable, V any] interface {
-	trcache.IsOption
+	trcache.IsOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(string)
 	OptRefreshFunc(trcache.CacheRefreshFunc[K, V])
@@ -18,7 +18,7 @@ type Options[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsOptionImpl
+	trcache.IsOptionsImpl
 	fnDefaultGet     []trcache.GetOption[K, V]
 	fnDefaultSet     []trcache.SetOption[K, V]
 	fnDefaultDelete  []trcache.DeleteOption[K, V]
@@ -146,14 +146,14 @@ func (f GetStrategyFunc[K, V]) AfterSet(ctx context.Context, gotCacheIdx, cacheI
 // Cache get options
 
 type GetOptions[K comparable, V any] interface {
-	trcache.IsGetOption
+	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
 	OptSetOptions([]trcache.SetOption[K, V])
 	OptGetStrategy(GetStrategy[K, V])
 }
 
 type getOptions[K comparable, V any] struct {
-	trcache.IsGetOptionImpl
+	trcache.IsGetOptionsImpl
 	customOptions []any
 	setOptions    []trcache.SetOption[K, V]
 	getStrategy   GetStrategy[K, V]
@@ -234,13 +234,13 @@ func (f SetStrategyFunc[K, V]) AfterSet(ctx context.Context, cacheIdx int, cache
 // Cache set options
 
 type SetOptions[K comparable, V any] interface {
-	trcache.IsSetOption
+	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
 	OptSetStrategy(SetStrategy[K, V])
 }
 
 type setOptions[K comparable, V any] struct {
-	trcache.IsSetOptionImpl
+	trcache.IsSetOptionsImpl
 	duration    time.Duration
 	setStrategy SetStrategy[K, V]
 }
@@ -292,13 +292,13 @@ func (f DeleteStrategyFunc[K, V]) AfterDelete(ctx context.Context, cacheIdx int,
 // Cache delete options
 
 type DeleteOptions[K comparable, V any] interface {
-	trcache.IsDeleteOption
+	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]
 	OptDeleteStrategy(DeleteStrategy[K, V])
 }
 
 type deleteOptions[K comparable, V any] struct {
-	trcache.IsDeleteOptionImpl
+	trcache.IsDeleteOptionsImpl
 	deleteStrategy DeleteStrategy[K, V]
 }
 

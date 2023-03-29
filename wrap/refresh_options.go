@@ -7,13 +7,13 @@ import (
 // Option
 
 type WrapRefreshOptions[K comparable, V any] interface {
-	trcache.IsOption
+	trcache.IsOptions
 	trcache.CallDefaultRefreshOptions[K, V]
 	OptRefreshFunc(trcache.CacheRefreshFunc[K, V])
 }
 
 type wrapRefreshOptions[K comparable, V any] struct {
-	trcache.IsOptionImpl
+	trcache.IsOptionsImpl
 	refreshFunc      trcache.CacheRefreshFunc[K, V]
 	fnDefaultRefresh []trcache.RefreshOption[K, V]
 }
@@ -48,12 +48,12 @@ func WithWrapRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFu
 // Cache set options
 
 type WrapRefreshRefreshOptions[K comparable, V any] interface {
-	trcache.IsRefreshOption
+	trcache.IsRefreshOptions
 	trcache.RefreshOptions[K, V]
 }
 
 type wrapRefreshRefreshOptions[K comparable, V any] struct {
-	trcache.IsRefreshOptionImpl
+	trcache.IsRefreshOptionsImpl
 	data        any
 	cacheSetOpt []trcache.SetOption[K, V]
 	refreshFn   trcache.CacheRefreshFunc[K, V]

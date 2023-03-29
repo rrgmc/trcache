@@ -9,7 +9,7 @@ import (
 // Option
 
 type Options[K comparable, V any] interface {
-	trcache.IsOption
+	trcache.IsOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(string)
 	OptKeyCodec(trcache.KeyCodec[K])
@@ -22,7 +22,7 @@ type Options[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsOptionImpl
+	trcache.IsOptionsImpl
 	fnDefaultGet    []trcache.GetOption[K, V]
 	fnDefaultSet    []trcache.SetOption[K, V]
 	fnDefaultDelete []trcache.DeleteOption[K, V]
@@ -175,14 +175,14 @@ func (ob *OptionBuilder[K, V]) WithDefaultDuration(defaultDuration time.Duration
 // Cache get options
 
 type GetOptions[K comparable, V any] interface {
-	trcache.IsGetOption
+	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
 	OptCustomParams(any)
 	OptRedisGetFunc(RedisGetFunc[K, V])
 }
 
 type getOptions[K comparable, V any] struct {
-	trcache.IsGetOptionImpl
+	trcache.IsGetOptionsImpl
 	customOptions []any
 	customParams  any
 	redisGetFunc  RedisGetFunc[K, V]
@@ -247,14 +247,14 @@ func (ob *GetOptionBuilder[K, V]) WithGetRedisGetFuncFunc(fn RedisGetFuncFunc[K,
 // Cache set options
 
 type SetOptions[K comparable, V any] interface {
-	trcache.IsSetOption
+	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
 	OptCustomParams(any)
 	OptRedisSetFunc(RedisSetFunc[K, V])
 }
 
 type setOptions[K comparable, V any] struct {
-	trcache.IsSetOptionImpl
+	trcache.IsSetOptionsImpl
 	duration     time.Duration
 	customParams any
 	redisSetFunc RedisSetFunc[K, V]
@@ -308,14 +308,14 @@ func (ob *SetOptionBuilder[K, V]) WithSetRedisSetFuncFunc(fn RedisSetFuncFunc[K,
 // Cache delete options
 
 type DeleteOptions[K comparable, V any] interface {
-	trcache.IsDeleteOption
+	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]
 	OptCustomParams(any)
 	OptRedisDelFunc(RedisDelFunc[K, V])
 }
 
 type deleteOptions[K comparable, V any] struct {
-	trcache.IsDeleteOptionImpl
+	trcache.IsDeleteOptionsImpl
 	customParams any
 	redisDelFunc RedisDelFunc[K, V]
 }

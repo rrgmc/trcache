@@ -9,7 +9,7 @@ import (
 // Option
 
 type Options[K comparable, V any] interface {
-	trcache.IsOption
+	trcache.IsOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(string)
 	OptValidator(trcache.Validator[V])
@@ -17,7 +17,7 @@ type Options[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsOptionImpl
+	trcache.IsOptionsImpl
 	fnDefaultGet    []trcache.GetOption[K, V]
 	fnDefaultSet    []trcache.SetOption[K, V]
 	fnDefaultDelete []trcache.DeleteOption[K, V]
@@ -88,13 +88,13 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 // Cache get options
 
 type GetOptions[K comparable, V any] interface {
-	trcache.IsGetOption
+	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
 	OptTouch(bool)
 }
 
 type getOptions[K comparable, V any] struct {
-	trcache.IsGetOptionImpl
+	trcache.IsGetOptionsImpl
 	customOptions []any
 	touch         bool
 }
@@ -125,12 +125,12 @@ func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption[K, V] {
 // Cache set options
 
 type SetOptions[K comparable, V any] interface {
-	trcache.IsSetOption
+	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
 }
 
 type setOptions[K comparable, V any] struct {
-	trcache.IsSetOptionImpl
+	trcache.IsSetOptionsImpl
 	duration time.Duration
 }
 
@@ -143,12 +143,12 @@ func (c *setOptions[K, V]) OptDuration(duration time.Duration) {
 // Cache delete options
 
 type DeleteOptions[K comparable, V any] interface {
-	trcache.IsDeleteOption
+	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]
 }
 
 type deleteOptions[K comparable, V any] struct {
-	trcache.IsDeleteOptionImpl
+	trcache.IsDeleteOptionsImpl
 }
 
 var _ DeleteOptions[string, string] = &deleteOptions[string, string]{}

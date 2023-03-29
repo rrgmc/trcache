@@ -2,22 +2,20 @@ package trcache
 
 import (
 	"time"
-
-	"go.uber.org/multierr"
 )
 
 //
-// Cache options
+// Options
 //
 
-type IsOption interface {
-	isCacheOption()
+type IsOptions interface {
+	isCacheOptions()
 }
 
-type IsOptionImpl struct {
+type IsOptionsImpl struct {
 }
 
-func (i IsOptionImpl) isCacheOption() {}
+func (i IsOptionsImpl) isCacheOptions() {}
 
 type Option[K comparable, V any] interface {
 	ApplyCacheOpt(any) bool
@@ -51,20 +49,8 @@ func (ob *OptionBuilderBase[K, V]) ApplyCacheOpt(o any) bool {
 
 // Cache options: functions
 
-func parseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) error {
-	var err error
-	for _, optinstance := range options {
-		for _, opt := range optinstance {
-			if !apply(opt, obj) {
-				err = multierr.Append(err, NewOptionNotSupportedError(opt))
-			}
-		}
-	}
-	return err
-}
-
-func ParseOptions[K comparable, V any](obj IsOption, options ...[]Option[K, V]) error {
-	return parseOptions(obj, func(i Option[K, V], o IsOption) bool {
+func ParseOptions[K comparable, V any](obj IsOptions, options ...[]Option[K, V]) error {
+	return parseOptions(obj, func(i Option[K, V], o IsOptions) bool {
 		return i.ApplyCacheOpt(o)
 	}, options...)
 }
@@ -156,14 +142,14 @@ func (ob *OptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOpt
 // Cache get options
 //
 
-type IsGetOption interface {
-	isCacheGetOption()
+type IsGetOptions interface {
+	isCacheGetOptions()
 }
 
-type IsGetOptionImpl struct {
+type IsGetOptionsImpl struct {
 }
 
-func (i IsGetOptionImpl) isCacheGetOption() {}
+func (i IsGetOptionsImpl) isCacheGetOptions() {}
 
 type GetOption[K comparable, V any] interface {
 	ApplyCacheGetOpt(any) bool
@@ -197,8 +183,8 @@ func (ob *GetOptionBuilderBase[K, V]) ApplyCacheGetOpt(o any) bool {
 
 // Cache get options: functions
 
-func ParseGetOptions[K comparable, V any](obj IsGetOption, options ...[]GetOption[K, V]) error {
-	return parseOptions(obj, func(i GetOption[K, V], o IsGetOption) bool {
+func ParseGetOptions[K comparable, V any](obj IsGetOptions, options ...[]GetOption[K, V]) error {
+	return parseOptions(obj, func(i GetOption[K, V], o IsGetOptions) bool {
 		return i.ApplyCacheGetOpt(o)
 	}, options...)
 }
@@ -228,16 +214,18 @@ func AppendGetOptions[K comparable, V any](options ...[]GetOption[K, V]) []GetOp
 	return ret
 }
 
+//
 // Cache set options
+//
 
-type IsSetOption interface {
-	isCacheSetOption()
+type IsSetOptions interface {
+	isCacheSetOptions()
 }
 
-type IsSetOptionImpl struct {
+type IsSetOptionsImpl struct {
 }
 
-func (i IsSetOptionImpl) isCacheSetOption() {}
+func (i IsSetOptionsImpl) isCacheSetOptions() {}
 
 type SetOption[K comparable, V any] interface {
 	ApplyCacheSetOpt(any) bool
@@ -271,9 +259,9 @@ func (ob *SetOptionBuilderBase[K, V]) ApplyCacheSetOpt(o any) bool {
 
 // Cache set options: functions
 
-func ParseSetOptions[K comparable, V any](obj IsSetOption,
+func ParseSetOptions[K comparable, V any](obj IsSetOptions,
 	options ...[]SetOption[K, V]) error {
-	return parseOptions(obj, func(i SetOption[K, V], o IsSetOption) bool {
+	return parseOptions(obj, func(i SetOption[K, V], o IsSetOptions) bool {
 		return i.ApplyCacheSetOpt(o)
 	}, options...)
 }
@@ -303,16 +291,18 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption[K, V
 	})
 }
 
+//
 // Cache delete options
+//
 
-type IsDeleteOption interface {
-	isCacheDeleteOption()
+type IsDeleteOptions interface {
+	isCacheDeleteOptions()
 }
 
-type IsDeleteOptionImpl struct {
+type IsDeleteOptionsImpl struct {
 }
 
-func (i IsDeleteOptionImpl) isCacheDeleteOption() {}
+func (i IsDeleteOptionsImpl) isCacheDeleteOptions() {}
 
 type DeleteOption[K comparable, V any] interface {
 	ApplyCacheDeleteOpt(any) bool
@@ -346,9 +336,9 @@ func (ob *DeleteOptionBuilderBase[K, V]) ApplyCacheDeleteOpt(o any) bool {
 
 // Cache delete options: functions
 
-func ParseDeleteOptions[K comparable, V any](obj IsDeleteOption,
+func ParseDeleteOptions[K comparable, V any](obj IsDeleteOptions,
 	options ...[]DeleteOption[K, V]) error {
-	return parseOptions(obj, func(i DeleteOption[K, V], o IsDeleteOption) bool {
+	return parseOptions(obj, func(i DeleteOption[K, V], o IsDeleteOptions) bool {
 		return i.ApplyCacheDeleteOpt(o)
 	}, options...)
 }
@@ -366,16 +356,18 @@ func AppendDeleteOptions[K comparable, V any](options ...[]DeleteOption[K, V]) [
 type DeleteOptions[K comparable, V any] interface {
 }
 
+//
 // Cache refresh options
+//
 
-type IsRefreshOption interface {
-	isCacheRefreshOption()
+type IsRefreshOptions interface {
+	isCacheRefreshOptions()
 }
 
-type IsRefreshOptionImpl struct {
+type IsRefreshOptionsImpl struct {
 }
 
-func (i IsRefreshOptionImpl) isCacheRefreshOption() {}
+func (i IsRefreshOptionsImpl) isCacheRefreshOptions() {}
 
 type RefreshOption[K comparable, V any] interface {
 	ApplyCacheRefreshOpt(any) bool
@@ -409,9 +401,9 @@ func (ob *RefreshOptionBuilderBase[K, V]) ApplyCacheRefreshOpt(o any) bool {
 
 // Cache refresh options: functions
 
-func ParseRefreshOptions[K comparable, V any](obj IsRefreshOption,
+func ParseRefreshOptions[K comparable, V any](obj IsRefreshOptions,
 	options ...[]RefreshOption[K, V]) error {
-	return parseOptions(obj, func(i RefreshOption[K, V], o IsRefreshOption) bool {
+	return parseOptions(obj, func(i RefreshOption[K, V], o IsRefreshOptions) bool {
 		return i.ApplyCacheRefreshOpt(o)
 	}, options...)
 }

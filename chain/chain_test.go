@@ -54,9 +54,10 @@ func TestChainGetStrategyDefault(t *testing.T) {
 	c := New[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2, mockCache3,
 	},
-		trcache.WithCallDefaultGetOptions[string, string](
-			WithGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
-		),
+		trcache.RootOpt[string, string]().
+			WithCallDefaultGetOptions(
+				WithGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
+			),
 	)
 
 	value, err := c.Get(ctx, "a")

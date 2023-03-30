@@ -27,7 +27,7 @@ func TestFuncGet(t *testing.T) {
 		Opt[string, string]().
 			WithValueCodec(codec.NewForwardCodec[string]()).
 			WithDefaultDuration(time.Minute),
-		trcache.Opt[string, string]().
+		trcache.RootOpt[string, string]().
 			WithCallDefaultGetOptions(GetOpt[string, string]().
 				WithGetRedisGetFuncFunc(func(ctx context.Context, c *Cache[string, string], keyValue string, customParams any) (string, error) {
 					value, err := c.Handle().HGet(ctx, keyValue, "f1").Result()

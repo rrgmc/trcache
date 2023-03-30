@@ -18,7 +18,7 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	_ = trcache.ParseOptions[K, V](&ret.options, options)
+	_ = trcache.ParseRootOptions[K, V](&ret.options, options)
 	return ret
 }
 

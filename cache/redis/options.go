@@ -9,7 +9,7 @@ import (
 // Option
 
 type Options[K comparable, V any] interface {
-	trcache.IsOptions
+	trcache.IsRootOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(string)
 	OptKeyCodec(trcache.KeyCodec[K])
@@ -22,7 +22,7 @@ type Options[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsOptionsImpl
+	trcache.IsRootOptionsImpl
 	fnDefaultGet    []trcache.GetOption[K, V]
 	fnDefaultSet    []trcache.SetOption[K, V]
 	fnDefaultDelete []trcache.DeleteOption[K, V]

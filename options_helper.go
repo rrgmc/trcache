@@ -4,19 +4,18 @@ import "go.uber.org/multierr"
 
 // options builder
 
-type optionBuilderBase[O any] struct {
-	opt   []O
-	apply func(O, any) bool
+type optionBuilder[O Option] struct {
+	opt []O
 }
 
-func (ob *optionBuilderBase[O]) AppendOptions(opt ...O) {
+func (ob *optionBuilder[O]) AppendOptions(opt ...O) {
 	ob.opt = append(ob.opt, opt...)
 }
 
-func (ob *optionBuilderBase[O]) doApply(o any) bool {
+func (ob *optionBuilder[O]) doApply(o any) bool {
 	found := false
 	for _, opt := range ob.opt {
-		if ok := ob.apply(opt, o); ok {
+		if ok := opt.ApplyCacheOpt(o); ok {
 			found = true
 		}
 	}
@@ -25,14 +24,24 @@ func (ob *optionBuilderBase[O]) doApply(o any) bool {
 
 // parse options
 
-func parseOptions[I any, O any](obj I, apply func(O, I) bool, options ...[]O) error {
+func parseOptions[O Option](obj any, options ...[]O) error {
 	var err error
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
-			if !apply(opt, obj) {
+			if !opt.ApplyCacheOpt(obj) {
 				err = multierr.Append(err, NewOptionNotSupportedError(opt))
 			}
 		}
 	}
 	return err
+}
+
+// append options
+
+func appendOptions[O Option](options ...[]O) []O {
+	var ret []O
+	for _, opt := range options {
+		ret = append(ret, opt...)
+	}
+	return ret
 }

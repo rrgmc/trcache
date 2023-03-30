@@ -26,7 +26,7 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.Option[K, 
 			redisDelFunc:    DefaultRedisDelFunc[K, V]{},
 		},
 	}
-	_ = trcache.ParseOptions[K, V](&ret.options, options)
+	_ = trcache.ParseRootOptions[K, V](&ret.options, options)
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}

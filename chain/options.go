@@ -10,7 +10,7 @@ import (
 // Option
 
 type Options[K comparable, V any] interface {
-	trcache.IsOptions
+	trcache.IsRootOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(string)
 	OptRefreshFunc(trcache.CacheRefreshFunc[K, V])
@@ -18,10 +18,10 @@ type Options[K comparable, V any] interface {
 }
 
 type cacheOptions[K comparable, V any] struct {
-	trcache.IsOptionsImpl
-	fnDefaultGet     []trcache.GetOption[K, V]
-	fnDefaultSet     []trcache.SetOption[K, V]
-	fnDefaultDelete  []trcache.DeleteOption[K, V]
+	trcache.IsRootOptionsImpl
+	fnDefaultGet     []trcache.GetOption
+	fnDefaultSet     []trcache.SetOption
+	fnDefaultDelete  []trcache.DeleteOption
 	name             string
 	refreshFunc      trcache.CacheRefreshFunc[K, V]
 	setPreviousOnGet bool
@@ -29,15 +29,15 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ Options[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptCallDefaultGetOpt(i []trcache.GetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultGetOpt(i []trcache.GetOption) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptCallDefaultSetOpt(i []trcache.SetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultSetOpt(i []trcache.SetOption) {
 	c.fnDefaultSet = i
 }
 
-func (c *cacheOptions[K, V]) OptCallDefaultDeleteOpt(i []trcache.DeleteOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultDeleteOpt(i []trcache.DeleteOption) {
 	c.fnDefaultDelete = i
 }
 
@@ -53,7 +53,7 @@ func (c *cacheOptions[K, V]) OptSetPreviousOnGet(b bool) {
 	c.setPreviousOnGet = b
 }
 
-func WithName[K comparable, V any](name string) trcache.Option[K, V] {
+func WithName[K comparable, V any](name string) trcache.Option {
 	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
@@ -64,7 +64,7 @@ func WithName[K comparable, V any](name string) trcache.Option[K, V] {
 	})
 }
 
-func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.Option[K, V] {
+func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.Option {
 	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
@@ -75,7 +75,7 @@ func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K
 	})
 }
 
-func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Option[K, V] {
+func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.Option {
 	return trcache.OptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
@@ -148,14 +148,14 @@ func (f GetStrategyFunc[K, V]) AfterSet(ctx context.Context, gotCacheIdx, cacheI
 type GetOptions[K comparable, V any] interface {
 	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
-	OptSetOptions([]trcache.SetOption[K, V])
+	OptSetOptions([]trcache.SetOption)
 	OptGetStrategy(GetStrategy[K, V])
 }
 
 type getOptions[K comparable, V any] struct {
 	trcache.IsGetOptionsImpl
 	customOptions []any
-	setOptions    []trcache.SetOption[K, V]
+	setOptions    []trcache.SetOption
 	getStrategy   GetStrategy[K, V]
 }
 
@@ -165,7 +165,7 @@ func (c *getOptions[K, V]) OptCustomOptions(anies []any) {
 	c.customOptions = anies
 }
 
-func (c *getOptions[K, V]) OptSetOptions(i []trcache.SetOption[K, V]) {
+func (c *getOptions[K, V]) OptSetOptions(i []trcache.SetOption) {
 	c.setOptions = i
 }
 
@@ -175,7 +175,7 @@ func (c *getOptions[K, V]) OptGetStrategy(s GetStrategy[K, V]) {
 
 // Cache get options: declarations
 
-func WithGetSetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) trcache.GetOption[K, V] {
+func WithGetSetOptions[K comparable, V any](optns ...trcache.SetOption) trcache.GetOption {
 	return trcache.GetOptionFunc(func(options any) bool {
 		switch opt := options.(type) {
 		case GetOptions[K, V]:
@@ -186,7 +186,7 @@ func WithGetSetOptions[K comparable, V any](optns ...trcache.SetOption[K, V]) tr
 	})
 }
 
-func WithGetStrategy[K comparable, V any](s GetStrategy[K, V]) trcache.GetOption[K, V] {
+func WithGetStrategy[K comparable, V any](s GetStrategy[K, V]) trcache.GetOption {
 	return trcache.GetOptionFunc(func(options any) bool {
 		switch opt := options.(type) {
 		case GetOptions[K, V]:

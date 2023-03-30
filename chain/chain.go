@@ -14,17 +14,17 @@ type Chain[K comparable, V any] struct {
 }
 
 func New[K comparable, V any](cache []trcache.Cache[K, V],
-	options ...trcache.Option[K, V]) *Chain[K, V] {
+	options ...trcache.RootOption) *Chain[K, V] {
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	_ = trcache.ParseRootOptions[K, V](&ret.options, options)
+	_ = trcache.ParseRootOptions(&ret.options, options)
 	return ret
 }
 
 func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V],
-	options ...trcache.Option[K, V]) trcache.RefreshCache[K, V] {
-	// var wopt []wrap.WrapRefreshOption[K, V]
+	options ...trcache.RootOption) trcache.RefreshCache[K, V] {
+	// var wopt []wrap.WrapRefreshOption
 	// if ret.refreshFunc != nil {
 	// 	wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](ret.refreshFunc))
 	// }
@@ -36,7 +36,7 @@ func (c *Chain[K, V]) Name() string {
 }
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
-	options ...trcache.GetOption[K, V]) (V, error) {
+	options ...trcache.GetOption) (V, error) {
 	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
@@ -105,7 +105,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 }
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
-	options ...trcache.SetOption[K, V]) error {
+	options ...trcache.SetOption) error {
 	var optns setOptions[K, V]
 	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
 
@@ -153,7 +153,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 }
 
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
-	options ...trcache.DeleteOption[K, V]) error {
+	options ...trcache.DeleteOption) error {
 	var optns deleteOptions[K, V]
 	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
 

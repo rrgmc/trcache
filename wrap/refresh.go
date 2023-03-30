@@ -13,9 +13,9 @@ type wrapRefreshCache[K comparable, V any] struct {
 }
 
 func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V],
-	options ...trcache.Option[K, V]) trcache.RefreshCache[K, V] {
+	options ...trcache.RootOption) trcache.RefreshCache[K, V] {
 	ret := &wrapRefreshCache[K, V]{cache: cache}
-	_ = trcache.ParseRootOptions[K, V](&ret.options, options)
+	_ = trcache.ParseRootOptions(&ret.options, options)
 	return ret
 }
 
@@ -24,21 +24,21 @@ func (c *wrapRefreshCache[K, V]) Name() string {
 }
 
 func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K,
-	options ...trcache.GetOption[K, V]) (V, error) {
+	options ...trcache.GetOption) (V, error) {
 	return c.cache.Get(ctx, key, options...)
 }
 
 func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V,
-	options ...trcache.SetOption[K, V]) error {
+	options ...trcache.SetOption) error {
 	return c.cache.Set(ctx, key, value, options...)
 }
 
 func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
-	options ...trcache.DeleteOption[K, V]) error {
+	options ...trcache.DeleteOption) error {
 	return c.cache.Delete(ctx, key, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption[K, V]) (V, error) {
+func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
 	var optns wrapRefreshRefreshOptions[K, V]
 	_ = trcache.ParseRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
 

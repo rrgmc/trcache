@@ -23,9 +23,9 @@ type Options[K comparable, V any] interface {
 
 type cacheOptions[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
-	fnDefaultGet    []trcache.GetOption[K, V]
-	fnDefaultSet    []trcache.SetOption[K, V]
-	fnDefaultDelete []trcache.DeleteOption[K, V]
+	fnDefaultGet    []trcache.GetOption
+	fnDefaultSet    []trcache.SetOption
+	fnDefaultDelete []trcache.DeleteOption
 	name            string
 	keyCodec        trcache.KeyCodec[K]
 	valueCodec      trcache.Codec[V]
@@ -38,15 +38,15 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ Options[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptCallDefaultGetOpt(i []trcache.GetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultGetOpt(i []trcache.GetOption) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptCallDefaultSetOpt(i []trcache.SetOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultSetOpt(i []trcache.SetOption) {
 	c.fnDefaultSet = i
 }
 
-func (c *cacheOptions[K, V]) OptCallDefaultDeleteOpt(i []trcache.DeleteOption[K, V]) {
+func (c *cacheOptions[K, V]) OptCallDefaultDeleteOpt(i []trcache.DeleteOption) {
 	c.fnDefaultDelete = i
 }
 
@@ -82,8 +82,8 @@ func (c *cacheOptions[K, V]) OptRedisDelFunc(fn RedisDelFunc[K, V]) {
 	c.redisDelFunc = fn
 }
 
-func WithName[K comparable, V any](name string) trcache.Option[K, V] {
-	return trcache.OptionFunc(func(o any) bool {
+func WithName[K comparable, V any](name string) trcache.RootOption {
+	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
 			opt.OptName(name)
@@ -93,8 +93,8 @@ func WithName[K comparable, V any](name string) trcache.Option[K, V] {
 	})
 }
 
-func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.Option[K, V] {
-	return trcache.OptionFunc(func(o any) bool {
+func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.RootOption {
+	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
 			opt.OptKeyCodec(keyCodec)
@@ -104,8 +104,8 @@ func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.Opt
 	})
 }
 
-func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.Option[K, V] {
-	return trcache.OptionFunc(func(o any) bool {
+func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.RootOption {
+	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
 			opt.OptValueCodec(valueCodec)
@@ -115,8 +115,8 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.Op
 	})
 }
 
-func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.Option[K, V] {
-	return trcache.OptionFunc(func(o any) bool {
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
+	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
 			opt.OptValidator(validator)
@@ -126,8 +126,8 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 	})
 }
 
-func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trcache.Option[K, V] {
-	return trcache.OptionFunc(func(o any) bool {
+func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trcache.RootOption {
+	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
 			opt.OptDefaultDuration(defaultDuration)
@@ -140,7 +140,7 @@ func WithDefaultDuration[K comparable, V any](defaultDuration time.Duration) trc
 // Options builder
 
 type OptionBuilder[K comparable, V any] struct {
-	trcache.OptionBuilderBase[K, V]
+	trcache.RootOptionBuilderBase
 }
 
 func Opt[K comparable, V any]() *OptionBuilder[K, V] {
@@ -202,7 +202,7 @@ func (c *getOptions[K, V]) OptRedisGetFunc(fn RedisGetFunc[K, V]) {
 	c.redisGetFunc = fn
 }
 
-func WithGetCustomParam[K comparable, V any](param any) trcache.GetOption[K, V] {
+func WithGetCustomParam[K comparable, V any](param any) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
@@ -213,7 +213,7 @@ func WithGetCustomParam[K comparable, V any](param any) trcache.GetOption[K, V] 
 	})
 }
 
-func WithGetRedisGetFunc[K comparable, V any](fn RedisGetFunc[K, V]) trcache.GetOption[K, V] {
+func WithGetRedisGetFunc[K comparable, V any](fn RedisGetFunc[K, V]) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
@@ -227,7 +227,7 @@ func WithGetRedisGetFunc[K comparable, V any](fn RedisGetFunc[K, V]) trcache.Get
 // Options Get builder
 
 type GetOptionBuilder[K comparable, V any] struct {
-	trcache.GetOptionBuilderBase[K, V]
+	trcache.GetOptionBuilderBase
 }
 
 func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
@@ -274,7 +274,7 @@ func (c *setOptions[K, V]) OptRedisSetFunc(fn RedisSetFunc[K, V]) {
 	c.redisSetFunc = fn
 }
 
-func WithSetRedisSetFunc[K comparable, V any](fn RedisSetFunc[K, V]) trcache.SetOption[K, V] {
+func WithSetRedisSetFunc[K comparable, V any](fn RedisSetFunc[K, V]) trcache.SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
@@ -288,7 +288,7 @@ func WithSetRedisSetFunc[K comparable, V any](fn RedisSetFunc[K, V]) trcache.Set
 // Options Set builder
 
 type SetOptionBuilder[K comparable, V any] struct {
-	trcache.SetOptionBuilderBase[K, V]
+	trcache.SetOptionBuilderBase
 }
 
 func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
@@ -330,7 +330,7 @@ func (c *deleteOptions[K, V]) OptRedisDelFunc(fn RedisDelFunc[K, V]) {
 	c.redisDelFunc = fn
 }
 
-func WithDeleteRedisDelFunc[K comparable, V any](fn RedisDelFunc[K, V]) trcache.DeleteOption[K, V] {
+func WithDeleteRedisDelFunc[K comparable, V any](fn RedisDelFunc[K, V]) trcache.DeleteOption {
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case DeleteOptions[K, V]:
@@ -344,7 +344,7 @@ func WithDeleteRedisDelFunc[K comparable, V any](fn RedisDelFunc[K, V]) trcache.
 // Options Delete builder
 
 type DeleteOptionBuilder[K comparable, V any] struct {
-	trcache.DeleteOptionBuilderBase[K, V]
+	trcache.DeleteOptionBuilderBase
 }
 
 func DeleteOpt[K comparable, V any]() *DeleteOptionBuilder[K, V] {

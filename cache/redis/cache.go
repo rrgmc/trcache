@@ -16,7 +16,7 @@ type Cache[K comparable, V any] struct {
 	redis   *redis.Client
 }
 
-func New[K comparable, V any](redis *redis.Client, options ...trcache.Option[K, V]) (*Cache[K, V], error) {
+func New[K comparable, V any](redis *redis.Client, options ...trcache.RootOption) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
 		redis: redis,
 		options: cacheOptions[K, V]{
@@ -26,7 +26,7 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.Option[K, 
 			redisDelFunc:    DefaultRedisDelFunc[K, V]{},
 		},
 	}
-	_ = trcache.ParseRootOptions[K, V](&ret.options, options)
+	_ = trcache.ParseRootOptions(&ret.options, options)
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
@@ -44,7 +44,7 @@ func (c *Cache[K, V]) Name() string {
 	return c.options.name
 }
 
-func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption[K, V]) (V, error) {
+func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption) (V, error) {
 	var optns getOptions[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
 
@@ -77,7 +77,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOpti
 	return dec, nil
 }
 
-func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption[K, V]) error {
+func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption) error {
 	var optns setOptions[K, V]
 	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
 
@@ -95,7 +95,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
 }
 
-func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption[K, V]) error {
+func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption) error {
 	var optns deleteOptions[K, V]
 	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
 

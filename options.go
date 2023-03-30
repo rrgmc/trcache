@@ -59,23 +59,10 @@ var _ RootOption = RootOptionFunc(func(a any) bool {
 
 // Cache options: builder base
 
-// type OptionBuilderBase struct {
-// 	opt []Option
-// }
-//
-// func (ob *OptionBuilderBase) AppendOptions(opt ...Option) {
-// 	ob.opt = append(ob.opt, opt...)
-// }
-//
-// func (ob *OptionBuilderBase) ApplyCacheOpt(o any) bool {
-// 	found := false
-// 	for _, opt := range ob.opt {
-// 		if ok := opt.ApplyCacheOpt(o); ok {
-// 			found = true
-// 		}
-// 	}
-// 	return found
-// }
+type RootOptionBuilderBase struct {
+	IsRootOption
+	optionBuilder[RootOption]
+}
 
 // Cache options: functions
 
@@ -148,7 +135,7 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 // Root options builder
 
 type RootOptionBuilder[K comparable, V any] struct {
-	optionBuilder[RootOption]
+	RootOptionBuilderBase
 }
 
 func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
@@ -221,23 +208,10 @@ var _ GetOption = GetOptionFunc(func(a any) bool {
 
 // Cache get options: builder base
 
-// type GetOptionBuilderBase[K comparable, V any] struct {
-// 	opt []GetOption[K, V]
-// }
-//
-// func (ob *GetOptionBuilderBase[K, V]) AppendOptions(opt ...GetOption[K, V]) {
-// 	ob.opt = append(ob.opt, opt...)
-// }
-//
-// func (ob *GetOptionBuilderBase[K, V]) ApplyCacheGetOpt(o any) bool {
-// 	found := false
-// 	for _, opt := range ob.opt {
-// 		if ok := opt.ApplyCacheGetOpt(o); ok {
-// 			found = true
-// 		}
-// 	}
-// 	return found
-// }
+type GetOptionBuilderBase struct {
+	IsGetOption
+	optionBuilder[GetOption]
+}
 
 // Cache get options: functions
 
@@ -305,6 +279,13 @@ var _ SetOption = SetOptionFunc(func(a any) bool {
 	return true
 })
 
+// Cache set options: builder base
+
+type SetOptionBuilderBase struct {
+	IsSetOption
+	optionBuilder[SetOption]
+}
+
 // Cache set options: functions
 
 func ParseSetOptions(obj IsSetOptions, options ...[]SetOption) error {
@@ -371,6 +352,13 @@ var _ DeleteOption = DeleteOptionFunc(func(a any) bool {
 	return true
 })
 
+// Cache delete options: builder base
+
+type DeleteOptionBuilderBase struct {
+	IsDeleteOption
+	optionBuilder[DeleteOption]
+}
+
 // Cache delete options: functions
 
 func ParseDeleteOptions(obj IsDeleteOptions, options ...[]DeleteOption) error {
@@ -424,6 +412,13 @@ func (f RefreshOptionFunc) ApplyCacheOpt(c any) bool {
 var _ RefreshOption = RefreshOptionFunc(func(a any) bool {
 	return true
 })
+
+// Cache refresh options: builder base
+
+type RefreshOptionBuilderBase struct {
+	IsRefreshOption
+	optionBuilder[RefreshOption]
+}
 
 // Cache refresh options: functions
 

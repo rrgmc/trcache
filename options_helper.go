@@ -12,7 +12,7 @@ func (ob *optionBuilder[O]) AppendOptions(opt ...O) {
 	ob.opt = append(ob.opt, opt...)
 }
 
-func (ob *optionBuilder[O]) doApply(o any) bool {
+func (ob *optionBuilder[O]) ApplyCacheOpt(o any) bool {
 	found := false
 	for _, opt := range ob.opt {
 		if ok := opt.ApplyCacheOpt(o); ok {

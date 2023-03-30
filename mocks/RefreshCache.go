@@ -23,7 +23,7 @@ func (_m *RefreshCache[K, V]) EXPECT() *RefreshCache_Expecter[K, V] {
 }
 
 // Delete provides a mock function with given fields: ctx, key, options
-func (_m *RefreshCache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption[K, V]) error {
+func (_m *RefreshCache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption) error {
 	_va := make([]interface{}, len(options))
 	for _i := range options {
 		_va[_i] = options[_i]
@@ -34,7 +34,7 @@ func (_m *RefreshCache[K, V]) Delete(ctx context.Context, key K, options ...trca
 	ret := _m.Called(_ca...)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.DeleteOption[K, V]) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.DeleteOption) error); ok {
 		r0 = rf(ctx, key, options...)
 	} else {
 		r0 = ret.Error(0)
@@ -51,18 +51,18 @@ type RefreshCache_Delete_Call[K comparable, V interface{}] struct {
 // Delete is a helper method to define mock.On call
 //   - ctx context.Context
 //   - key K
-//   - options ...trcache.DeleteOption[K,V]
+//   - options ...trcache.DeleteOption
 func (_e *RefreshCache_Expecter[K, V]) Delete(ctx interface{}, key interface{}, options ...interface{}) *RefreshCache_Delete_Call[K, V] {
 	return &RefreshCache_Delete_Call[K, V]{Call: _e.mock.On("Delete",
 		append([]interface{}{ctx, key}, options...)...)}
 }
 
-func (_c *RefreshCache_Delete_Call[K, V]) Run(run func(ctx context.Context, key K, options ...trcache.DeleteOption[K, V])) *RefreshCache_Delete_Call[K, V] {
+func (_c *RefreshCache_Delete_Call[K, V]) Run(run func(ctx context.Context, key K, options ...trcache.DeleteOption)) *RefreshCache_Delete_Call[K, V] {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]trcache.DeleteOption[K, V], len(args)-2)
+		variadicArgs := make([]trcache.DeleteOption, len(args)-2)
 		for i, a := range args[2:] {
 			if a != nil {
-				variadicArgs[i] = a.(trcache.DeleteOption[K, V])
+				variadicArgs[i] = a.(trcache.DeleteOption)
 			}
 		}
 		run(args[0].(context.Context), args[1].(K), variadicArgs...)
@@ -75,13 +75,13 @@ func (_c *RefreshCache_Delete_Call[K, V]) Return(_a0 error) *RefreshCache_Delete
 	return _c
 }
 
-func (_c *RefreshCache_Delete_Call[K, V]) RunAndReturn(run func(context.Context, K, ...trcache.DeleteOption[K, V]) error) *RefreshCache_Delete_Call[K, V] {
+func (_c *RefreshCache_Delete_Call[K, V]) RunAndReturn(run func(context.Context, K, ...trcache.DeleteOption) error) *RefreshCache_Delete_Call[K, V] {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Get provides a mock function with given fields: ctx, key, options
-func (_m *RefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption[K, V]) (V, error) {
+func (_m *RefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption) (V, error) {
 	_va := make([]interface{}, len(options))
 	for _i := range options {
 		_va[_i] = options[_i]
@@ -93,16 +93,16 @@ func (_m *RefreshCache[K, V]) Get(ctx context.Context, key K, options ...trcache
 
 	var r0 V
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.GetOption[K, V]) (V, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.GetOption) (V, error)); ok {
 		return rf(ctx, key, options...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.GetOption[K, V]) V); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.GetOption) V); ok {
 		r0 = rf(ctx, key, options...)
 	} else {
 		r0 = ret.Get(0).(V)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, K, ...trcache.GetOption[K, V]) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, K, ...trcache.GetOption) error); ok {
 		r1 = rf(ctx, key, options...)
 	} else {
 		r1 = ret.Error(1)
@@ -119,18 +119,18 @@ type RefreshCache_Get_Call[K comparable, V interface{}] struct {
 // Get is a helper method to define mock.On call
 //   - ctx context.Context
 //   - key K
-//   - options ...trcache.GetOption[K,V]
+//   - options ...trcache.GetOption
 func (_e *RefreshCache_Expecter[K, V]) Get(ctx interface{}, key interface{}, options ...interface{}) *RefreshCache_Get_Call[K, V] {
 	return &RefreshCache_Get_Call[K, V]{Call: _e.mock.On("Get",
 		append([]interface{}{ctx, key}, options...)...)}
 }
 
-func (_c *RefreshCache_Get_Call[K, V]) Run(run func(ctx context.Context, key K, options ...trcache.GetOption[K, V])) *RefreshCache_Get_Call[K, V] {
+func (_c *RefreshCache_Get_Call[K, V]) Run(run func(ctx context.Context, key K, options ...trcache.GetOption)) *RefreshCache_Get_Call[K, V] {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]trcache.GetOption[K, V], len(args)-2)
+		variadicArgs := make([]trcache.GetOption, len(args)-2)
 		for i, a := range args[2:] {
 			if a != nil {
-				variadicArgs[i] = a.(trcache.GetOption[K, V])
+				variadicArgs[i] = a.(trcache.GetOption)
 			}
 		}
 		run(args[0].(context.Context), args[1].(K), variadicArgs...)
@@ -143,13 +143,13 @@ func (_c *RefreshCache_Get_Call[K, V]) Return(_a0 V, _a1 error) *RefreshCache_Ge
 	return _c
 }
 
-func (_c *RefreshCache_Get_Call[K, V]) RunAndReturn(run func(context.Context, K, ...trcache.GetOption[K, V]) (V, error)) *RefreshCache_Get_Call[K, V] {
+func (_c *RefreshCache_Get_Call[K, V]) RunAndReturn(run func(context.Context, K, ...trcache.GetOption) (V, error)) *RefreshCache_Get_Call[K, V] {
 	_c.Call.Return(run)
 	return _c
 }
 
 // GetOrRefresh provides a mock function with given fields: ctx, key, options
-func (_m *RefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption[K, V]) (V, error) {
+func (_m *RefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
 	_va := make([]interface{}, len(options))
 	for _i := range options {
 		_va[_i] = options[_i]
@@ -161,16 +161,16 @@ func (_m *RefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options .
 
 	var r0 V
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.RefreshOption[K, V]) (V, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.RefreshOption) (V, error)); ok {
 		return rf(ctx, key, options...)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.RefreshOption[K, V]) V); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, ...trcache.RefreshOption) V); ok {
 		r0 = rf(ctx, key, options...)
 	} else {
 		r0 = ret.Get(0).(V)
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, K, ...trcache.RefreshOption[K, V]) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, K, ...trcache.RefreshOption) error); ok {
 		r1 = rf(ctx, key, options...)
 	} else {
 		r1 = ret.Error(1)
@@ -187,18 +187,18 @@ type RefreshCache_GetOrRefresh_Call[K comparable, V interface{}] struct {
 // GetOrRefresh is a helper method to define mock.On call
 //   - ctx context.Context
 //   - key K
-//   - options ...trcache.RefreshOption[K,V]
+//   - options ...trcache.RefreshOption
 func (_e *RefreshCache_Expecter[K, V]) GetOrRefresh(ctx interface{}, key interface{}, options ...interface{}) *RefreshCache_GetOrRefresh_Call[K, V] {
 	return &RefreshCache_GetOrRefresh_Call[K, V]{Call: _e.mock.On("GetOrRefresh",
 		append([]interface{}{ctx, key}, options...)...)}
 }
 
-func (_c *RefreshCache_GetOrRefresh_Call[K, V]) Run(run func(ctx context.Context, key K, options ...trcache.RefreshOption[K, V])) *RefreshCache_GetOrRefresh_Call[K, V] {
+func (_c *RefreshCache_GetOrRefresh_Call[K, V]) Run(run func(ctx context.Context, key K, options ...trcache.RefreshOption)) *RefreshCache_GetOrRefresh_Call[K, V] {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]trcache.RefreshOption[K, V], len(args)-2)
+		variadicArgs := make([]trcache.RefreshOption, len(args)-2)
 		for i, a := range args[2:] {
 			if a != nil {
-				variadicArgs[i] = a.(trcache.RefreshOption[K, V])
+				variadicArgs[i] = a.(trcache.RefreshOption)
 			}
 		}
 		run(args[0].(context.Context), args[1].(K), variadicArgs...)
@@ -211,7 +211,7 @@ func (_c *RefreshCache_GetOrRefresh_Call[K, V]) Return(_a0 V, _a1 error) *Refres
 	return _c
 }
 
-func (_c *RefreshCache_GetOrRefresh_Call[K, V]) RunAndReturn(run func(context.Context, K, ...trcache.RefreshOption[K, V]) (V, error)) *RefreshCache_GetOrRefresh_Call[K, V] {
+func (_c *RefreshCache_GetOrRefresh_Call[K, V]) RunAndReturn(run func(context.Context, K, ...trcache.RefreshOption) (V, error)) *RefreshCache_GetOrRefresh_Call[K, V] {
 	_c.Call.Return(run)
 	return _c
 }
@@ -258,7 +258,7 @@ func (_c *RefreshCache_Name_Call[K, V]) RunAndReturn(run func() string) *Refresh
 }
 
 // Set provides a mock function with given fields: ctx, key, value, options
-func (_m *RefreshCache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption[K, V]) error {
+func (_m *RefreshCache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption) error {
 	_va := make([]interface{}, len(options))
 	for _i := range options {
 		_va[_i] = options[_i]
@@ -269,7 +269,7 @@ func (_m *RefreshCache[K, V]) Set(ctx context.Context, key K, value V, options .
 	ret := _m.Called(_ca...)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, K, V, ...trcache.SetOption[K, V]) error); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, K, V, ...trcache.SetOption) error); ok {
 		r0 = rf(ctx, key, value, options...)
 	} else {
 		r0 = ret.Error(0)
@@ -287,18 +287,18 @@ type RefreshCache_Set_Call[K comparable, V interface{}] struct {
 //   - ctx context.Context
 //   - key K
 //   - value V
-//   - options ...trcache.SetOption[K,V]
+//   - options ...trcache.SetOption
 func (_e *RefreshCache_Expecter[K, V]) Set(ctx interface{}, key interface{}, value interface{}, options ...interface{}) *RefreshCache_Set_Call[K, V] {
 	return &RefreshCache_Set_Call[K, V]{Call: _e.mock.On("Set",
 		append([]interface{}{ctx, key, value}, options...)...)}
 }
 
-func (_c *RefreshCache_Set_Call[K, V]) Run(run func(ctx context.Context, key K, value V, options ...trcache.SetOption[K, V])) *RefreshCache_Set_Call[K, V] {
+func (_c *RefreshCache_Set_Call[K, V]) Run(run func(ctx context.Context, key K, value V, options ...trcache.SetOption)) *RefreshCache_Set_Call[K, V] {
 	_c.Call.Run(func(args mock.Arguments) {
-		variadicArgs := make([]trcache.SetOption[K, V], len(args)-3)
+		variadicArgs := make([]trcache.SetOption, len(args)-3)
 		for i, a := range args[3:] {
 			if a != nil {
-				variadicArgs[i] = a.(trcache.SetOption[K, V])
+				variadicArgs[i] = a.(trcache.SetOption)
 			}
 		}
 		run(args[0].(context.Context), args[1].(K), args[2].(V), variadicArgs...)
@@ -311,7 +311,7 @@ func (_c *RefreshCache_Set_Call[K, V]) Return(_a0 error) *RefreshCache_Set_Call[
 	return _c
 }
 
-func (_c *RefreshCache_Set_Call[K, V]) RunAndReturn(run func(context.Context, K, V, ...trcache.SetOption[K, V]) error) *RefreshCache_Set_Call[K, V] {
+func (_c *RefreshCache_Set_Call[K, V]) RunAndReturn(run func(context.Context, K, V, ...trcache.SetOption) error) *RefreshCache_Set_Call[K, V] {
 	_c.Call.Return(run)
 	return _c
 }

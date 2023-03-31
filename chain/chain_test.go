@@ -19,23 +19,23 @@ func TestChain(t *testing.T) {
 	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything).Return("", trcache.ErrNotFound)
 	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything).Return("", trcache.ErrNotFound)
 
-	mockCache1.EXPECT().Name().Return("c1")
-	// mockCache2.EXPECT().Get(mock.Anything, "a").Return("12", nil)
+	mockCache1.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
+	mockCache2.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
 
 	c := NewRefresh[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
-		trcache.WithCallDefaultRefreshOptions[string, string](
-			trcache.WithRefreshRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
-				return "abc", nil
-			}),
-			trcache.WithRefreshData[string, string]("abc"),
+		trcache.WithCallDefaultRefreshOptions[string, string](trcache.RefreshOpt[string, string]().
+			WithRefreshRefreshFunc(func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
+				return "abc" + options.Data.(string), nil
+			}).
+			WithRefreshData("123"),
 		),
 	)
 
 	value, err := c.GetOrRefresh(ctx, "a")
 	require.NoError(t, err)
-	require.Equal(t, "abc", value)
+	require.Equal(t, "abc123", value)
 }
 
 func TestChainGetStrategyDefault(t *testing.T) {

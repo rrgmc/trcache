@@ -12,9 +12,9 @@ import (
 type Options[K comparable, V any] interface {
 	trcache.IsRootOptions
 	trcache.CallDefaultOptions[K, V]
-	OptName(string)
-	OptValidator(trcache.Validator[V])
-	OptDefaultDuration(time.Duration)
+	OptName(name string)
+	OptValidator(validator trcache.Validator[V])
+	OptDefaultDuration(duration time.Duration)
 }
 
 type cacheOptions[K comparable, V any] struct {
@@ -59,7 +59,7 @@ func (c *cacheOptions[K, V]) OptDefaultDuration(duration time.Duration) {
 type GetOptions[K comparable, V any] interface {
 	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
-	OptTouch(bool)
+	OptTouch(touch bool)
 }
 
 type getOptions[K comparable, V any] struct {

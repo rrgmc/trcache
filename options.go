@@ -10,14 +10,14 @@ import "time"
 
 // +troptgen root
 type CallDefaultOptions[K comparable, V any] interface {
-	OptCallDefaultGetOptions(...GetOption)
-	OptCallDefaultSetOptions(...SetOption)
-	OptCallDefaultDeleteOptions(...DeleteOption)
+	OptCallDefaultGetOptions(options ...GetOption)
+	OptCallDefaultSetOptions(options ...SetOption)
+	OptCallDefaultDeleteOptions(options ...DeleteOption)
 }
 
 // +troptgen root
 type CallDefaultRefreshOptions[K comparable, V any] interface {
-	OptCallDefaultRefreshOptions(...RefreshOption)
+	OptCallDefaultRefreshOptions(options ...RefreshOption)
 }
 
 //
@@ -26,7 +26,7 @@ type CallDefaultRefreshOptions[K comparable, V any] interface {
 
 // +troptgen get
 type GetOptions[K comparable, V any] interface {
-	OptCustomOptions([]any)
+	OptCustomOptions(customOptions []any)
 }
 
 //
@@ -35,7 +35,7 @@ type GetOptions[K comparable, V any] interface {
 
 // +troptgen set
 type SetOptions[K comparable, V any] interface {
-	OptDuration(time.Duration)
+	OptDuration(duration time.Duration)
 }
 
 // +troptgen delete
@@ -52,9 +52,9 @@ type RefreshFuncOptions struct {
 
 // +troptgen refresh
 type RefreshOptions[K comparable, V any] interface {
-	OptData(any)
-	OptSetOptions([]SetOption)
-	OptRefreshFunc(CacheRefreshFunc[K, V])
+	OptData(data any)
+	OptSetOptions(options ...SetOption)
+	OptRefreshFunc(refreshFunc CacheRefreshFunc[K, V])
 }
 
 //go:generate troptgen

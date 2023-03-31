@@ -3,91 +3,91 @@ package trcache
 
 import "time"
 
-func WithCallDefaultDeleteOptions[K comparable, V any](p0 ...DeleteOption) RootOption {
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
-			opt.OptCallDefaultDeleteOptions(p0...)
+			opt.OptCallDefaultDeleteOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithCallDefaultGetOptions[K comparable, V any](p0 ...GetOption) RootOption {
+func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
-			opt.OptCallDefaultGetOptions(p0...)
+			opt.OptCallDefaultGetOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithCallDefaultSetOptions[K comparable, V any](p0 ...SetOption) RootOption {
+func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
-			opt.OptCallDefaultSetOptions(p0...)
+			opt.OptCallDefaultSetOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithCallDefaultRefreshOptions[K comparable, V any](p0 ...RefreshOption) RootOption {
+func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultRefreshOptions[K, V]:
-			opt.OptCallDefaultRefreshOptions(p0...)
+			opt.OptCallDefaultRefreshOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](p0 []interface{}) GetOption {
+func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
 	return GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
-			opt.OptCustomOptions(p0)
+			opt.OptCustomOptions(customOptions)
 			return true
 		}
 		return false
 	})
 }
-func WithSetDuration[K comparable, V any](p0 time.Duration) SetOption {
+func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
-			opt.OptDuration(p0)
+			opt.OptDuration(duration)
 			return true
 		}
 		return false
 	})
 }
-func WithRefreshData[K comparable, V any](p0 interface{}) RefreshOption {
+func WithRefreshData[K comparable, V any](data interface{}) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V]:
-			opt.OptData(p0)
+			opt.OptData(data)
 			return true
 		}
 		return false
 	})
 }
-func WithRefreshRefreshFunc[K comparable, V any](p0 CacheRefreshFunc[K, V]) RefreshOption {
+func WithRefreshRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V]:
-			opt.OptRefreshFunc(p0)
+			opt.OptRefreshFunc(refreshFunc)
 			return true
 		}
 		return false
 	})
 }
-func WithRefreshSetOptions[K comparable, V any](p0 []SetOption) RefreshOption {
+func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V]:
-			opt.OptSetOptions(p0)
+			opt.OptSetOptions(options...)
 			return true
 		}
 		return false
@@ -101,20 +101,20 @@ type RootOptionBuilder[K comparable, V any] struct {
 func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
 	return &RootOptionBuilder[K, V]{}
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(p0 ...DeleteOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(p0 ...GetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultGetOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(options ...GetOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultGetOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(p0 ...SetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultSetOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(options ...SetOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultSetOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultRefreshOptions(p0 ...RefreshOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultRefreshOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultRefreshOptions(options ...RefreshOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultRefreshOptions[K, V](options...))
 	return ob
 }
 
@@ -125,8 +125,8 @@ type GetOptionBuilder[K comparable, V any] struct {
 func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
 	return &GetOptionBuilder[K, V]{}
 }
-func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(p0 []interface{}) *GetOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetCustomOptions[K, V](p0))
+func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(customOptions []interface{}) *GetOptionBuilder[K, V] {
+	ob.AppendOptions(WithGetCustomOptions[K, V](customOptions))
 	return ob
 }
 
@@ -137,8 +137,8 @@ type SetOptionBuilder[K comparable, V any] struct {
 func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
 	return &SetOptionBuilder[K, V]{}
 }
-func (ob *SetOptionBuilder[K, V]) WithSetDuration(p0 time.Duration) *SetOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetDuration[K, V](p0))
+func (ob *SetOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *SetOptionBuilder[K, V] {
+	ob.AppendOptions(WithSetDuration[K, V](duration))
 	return ob
 }
 
@@ -157,15 +157,15 @@ type RefreshOptionBuilder[K comparable, V any] struct {
 func RefreshOpt[K comparable, V any]() *RefreshOptionBuilder[K, V] {
 	return &RefreshOptionBuilder[K, V]{}
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshData(p0 interface{}) *RefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshData[K, V](p0))
+func (ob *RefreshOptionBuilder[K, V]) WithRefreshData(data interface{}) *RefreshOptionBuilder[K, V] {
+	ob.AppendOptions(WithRefreshData[K, V](data))
 	return ob
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshRefreshFunc(p0 CacheRefreshFunc[K, V]) *RefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshRefreshFunc[K, V](p0))
+func (ob *RefreshOptionBuilder[K, V]) WithRefreshRefreshFunc(refreshFunc CacheRefreshFunc[K, V]) *RefreshOptionBuilder[K, V] {
+	ob.AppendOptions(WithRefreshRefreshFunc[K, V](refreshFunc))
 	return ob
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshSetOptions(p0 []SetOption) *RefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshSetOptions[K, V](p0))
+func (ob *RefreshOptionBuilder[K, V]) WithRefreshSetOptions(options ...SetOption) *RefreshOptionBuilder[K, V] {
+	ob.AppendOptions(WithRefreshSetOptions[K, V](options...))
 	return ob
 }

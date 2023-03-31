@@ -6,121 +6,121 @@ import (
 	"time"
 )
 
-func WithCallDefaultDeleteOptions[K comparable, V any](p0 ...trcache.DeleteOption) trcache.RootOption {
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
-			opt.OptCallDefaultDeleteOptions(p0...)
+			opt.OptCallDefaultDeleteOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithCallDefaultGetOptions[K comparable, V any](p0 ...trcache.GetOption) trcache.RootOption {
+func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
-			opt.OptCallDefaultGetOptions(p0...)
+			opt.OptCallDefaultGetOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithCallDefaultSetOptions[K comparable, V any](p0 ...trcache.SetOption) trcache.RootOption {
+func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
-			opt.OptCallDefaultSetOptions(p0...)
+			opt.OptCallDefaultSetOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithName[K comparable, V any](p0 string) trcache.RootOption {
+func WithName[K comparable, V any](name string) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
-			opt.OptName(p0)
+			opt.OptName(name)
 			return true
 		}
 		return false
 	})
 }
-func WithRefreshFunc[K comparable, V any](p0 trcache.CacheRefreshFunc[K, V]) trcache.RootOption {
+func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
-			opt.OptRefreshFunc(p0)
+			opt.OptRefreshFunc(refreshFunc)
 			return true
 		}
 		return false
 	})
 }
-func WithSetPreviousOnGet[K comparable, V any](p0 bool) trcache.RootOption {
+func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
-			opt.OptSetPreviousOnGet(p0)
+			opt.OptSetPreviousOnGet(setPreviousOnGet)
 			return true
 		}
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](p0 []interface{}) trcache.GetOption {
+func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
-			opt.OptCustomOptions(p0)
+			opt.OptCustomOptions(customOptions)
 			return true
 		}
 		return false
 	})
 }
-func WithGetGetStrategy[K comparable, V any](p0 GetStrategy[K, V]) trcache.GetOption {
+func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
-			opt.OptGetStrategy(p0)
+			opt.OptGetStrategy(getStrategy)
 			return true
 		}
 		return false
 	})
 }
-func WithGetSetOptions[K comparable, V any](p0 []trcache.SetOption) trcache.GetOption {
+func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
-			opt.OptSetOptions(p0)
+			opt.OptSetOptions(options...)
 			return true
 		}
 		return false
 	})
 }
-func WithSetDuration[K comparable, V any](p0 time.Duration) trcache.SetOption {
+func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
-			opt.OptDuration(p0)
+			opt.OptDuration(duration)
 			return true
 		}
 		return false
 	})
 }
-func WithSetSetStrategy[K comparable, V any](p0 SetStrategy[K, V]) trcache.SetOption {
+func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache.SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
-			opt.OptSetStrategy(p0)
+			opt.OptSetStrategy(setStrategy)
 			return true
 		}
 		return false
 	})
 }
-func WithDeleteDeleteStrategy[K comparable, V any](p0 DeleteStrategy[K, V]) trcache.DeleteOption {
+func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) trcache.DeleteOption {
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case DeleteOptions[K, V]:
-			opt.OptDeleteStrategy(p0)
+			opt.OptDeleteStrategy(deleteStrategy)
 			return true
 		}
 		return false
@@ -134,28 +134,28 @@ type RootOptionBuilder[K comparable, V any] struct {
 func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
 	return &RootOptionBuilder[K, V]{}
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(p0 ...trcache.DeleteOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...trcache.DeleteOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(p0 ...trcache.GetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultGetOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(options ...trcache.GetOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultGetOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(p0 ...trcache.SetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultSetOptions[K, V](p0...))
+func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(options ...trcache.SetOption) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithCallDefaultSetOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithName(p0 string) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithName[K, V](p0))
+func (ob *RootOptionBuilder[K, V]) WithName(name string) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithName[K, V](name))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithRefreshFunc(p0 trcache.CacheRefreshFunc[K, V]) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshFunc[K, V](p0))
+func (ob *RootOptionBuilder[K, V]) WithRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithRefreshFunc[K, V](refreshFunc))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithSetPreviousOnGet(p0 bool) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetPreviousOnGet[K, V](p0))
+func (ob *RootOptionBuilder[K, V]) WithSetPreviousOnGet(setPreviousOnGet bool) *RootOptionBuilder[K, V] {
+	ob.AppendOptions(WithSetPreviousOnGet[K, V](setPreviousOnGet))
 	return ob
 }
 
@@ -166,16 +166,16 @@ type GetOptionBuilder[K comparable, V any] struct {
 func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
 	return &GetOptionBuilder[K, V]{}
 }
-func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(p0 []interface{}) *GetOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetCustomOptions[K, V](p0))
+func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(customOptions []interface{}) *GetOptionBuilder[K, V] {
+	ob.AppendOptions(WithGetCustomOptions[K, V](customOptions))
 	return ob
 }
-func (ob *GetOptionBuilder[K, V]) WithGetGetStrategy(p0 GetStrategy[K, V]) *GetOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetGetStrategy[K, V](p0))
+func (ob *GetOptionBuilder[K, V]) WithGetGetStrategy(getStrategy GetStrategy[K, V]) *GetOptionBuilder[K, V] {
+	ob.AppendOptions(WithGetGetStrategy[K, V](getStrategy))
 	return ob
 }
-func (ob *GetOptionBuilder[K, V]) WithGetSetOptions(p0 []trcache.SetOption) *GetOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetSetOptions[K, V](p0))
+func (ob *GetOptionBuilder[K, V]) WithGetSetOptions(options ...trcache.SetOption) *GetOptionBuilder[K, V] {
+	ob.AppendOptions(WithGetSetOptions[K, V](options...))
 	return ob
 }
 
@@ -186,12 +186,12 @@ type SetOptionBuilder[K comparable, V any] struct {
 func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
 	return &SetOptionBuilder[K, V]{}
 }
-func (ob *SetOptionBuilder[K, V]) WithSetDuration(p0 time.Duration) *SetOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetDuration[K, V](p0))
+func (ob *SetOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *SetOptionBuilder[K, V] {
+	ob.AppendOptions(WithSetDuration[K, V](duration))
 	return ob
 }
-func (ob *SetOptionBuilder[K, V]) WithSetSetStrategy(p0 SetStrategy[K, V]) *SetOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetSetStrategy[K, V](p0))
+func (ob *SetOptionBuilder[K, V]) WithSetSetStrategy(setStrategy SetStrategy[K, V]) *SetOptionBuilder[K, V] {
+	ob.AppendOptions(WithSetSetStrategy[K, V](setStrategy))
 	return ob
 }
 
@@ -202,7 +202,7 @@ type DeleteOptionBuilder[K comparable, V any] struct {
 func DeleteOpt[K comparable, V any]() *DeleteOptionBuilder[K, V] {
 	return &DeleteOptionBuilder[K, V]{}
 }
-func (ob *DeleteOptionBuilder[K, V]) WithDeleteDeleteStrategy(p0 DeleteStrategy[K, V]) *DeleteOptionBuilder[K, V] {
-	ob.AppendOptions(WithDeleteDeleteStrategy[K, V](p0))
+func (ob *DeleteOptionBuilder[K, V]) WithDeleteDeleteStrategy(deleteStrategy DeleteStrategy[K, V]) *DeleteOptionBuilder[K, V] {
+	ob.AppendOptions(WithDeleteDeleteStrategy[K, V](deleteStrategy))
 	return ob
 }

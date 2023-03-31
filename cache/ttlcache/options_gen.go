@@ -6,36 +6,6 @@ import (
 	"time"
 )
 
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptCallDefaultDeleteOptions(options...)
-			return true
-		}
-		return false
-	})
-}
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptCallDefaultGetOptions(options...)
-			return true
-		}
-		return false
-	})
-}
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptCallDefaultSetOptions(options...)
-			return true
-		}
-		return false
-	})
-}
 func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -66,31 +36,11 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
-	return trcache.GetOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case GetOptions[K, V]:
-			opt.OptCustomOptions(customOptions)
-			return true
-		}
-		return false
-	})
-}
 func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
 			opt.OptTouch(touch)
-			return true
-		}
-		return false
-	})
-}
-func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
-	return trcache.SetOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case SetOptions[K, V]:
-			opt.OptDuration(duration)
 			return true
 		}
 		return false
@@ -103,18 +53,6 @@ type RootOptionBuilder[K comparable, V any] struct {
 
 func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
 	return &RootOptionBuilder[K, V]{}
-}
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...trcache.DeleteOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))
-	return ob
-}
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(options ...trcache.GetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultGetOptions[K, V](options...))
-	return ob
-}
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(options ...trcache.SetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultSetOptions[K, V](options...))
-	return ob
 }
 func (ob *RootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *RootOptionBuilder[K, V] {
 	ob.AppendOptions(WithDefaultDuration[K, V](duration))
@@ -136,31 +74,7 @@ type GetOptionBuilder[K comparable, V any] struct {
 func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
 	return &GetOptionBuilder[K, V]{}
 }
-func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(customOptions []interface{}) *GetOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetCustomOptions[K, V](customOptions))
-	return ob
-}
 func (ob *GetOptionBuilder[K, V]) WithGetTouch(touch bool) *GetOptionBuilder[K, V] {
 	ob.AppendOptions(WithGetTouch[K, V](touch))
 	return ob
-}
-
-type SetOptionBuilder[K comparable, V any] struct {
-	trcache.SetOptionBuilderBase
-}
-
-func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
-	return &SetOptionBuilder[K, V]{}
-}
-func (ob *SetOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *SetOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetDuration[K, V](duration))
-	return ob
-}
-
-type DeleteOptionBuilder[K comparable, V any] struct {
-	trcache.DeleteOptionBuilderBase
-}
-
-func DeleteOpt[K comparable, V any]() *DeleteOptionBuilder[K, V] {
-	return &DeleteOptionBuilder[K, V]{}
 }

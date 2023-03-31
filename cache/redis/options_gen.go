@@ -6,36 +6,6 @@ import (
 	"time"
 )
 
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptCallDefaultDeleteOptions(options...)
-			return true
-		}
-		return false
-	})
-}
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptCallDefaultGetOptions(options...)
-			return true
-		}
-		return false
-	})
-}
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptCallDefaultSetOptions(options...)
-			return true
-		}
-		return false
-	})
-}
 func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -116,16 +86,6 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.Ro
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
-	return trcache.GetOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case GetOptions[K, V]:
-			opt.OptCustomOptions(customOptions)
-			return true
-		}
-		return false
-	})
-}
 func WithGetCustomParams[K comparable, V any](customParams interface{}) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -151,16 +111,6 @@ func WithSetCustomParams[K comparable, V any](customParams interface{}) trcache.
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
 			opt.OptCustomParams(customParams)
-			return true
-		}
-		return false
-	})
-}
-func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
-	return trcache.SetOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case SetOptions[K, V]:
-			opt.OptDuration(duration)
 			return true
 		}
 		return false
@@ -204,18 +154,6 @@ type RootOptionBuilder[K comparable, V any] struct {
 func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
 	return &RootOptionBuilder[K, V]{}
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...trcache.DeleteOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))
-	return ob
-}
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(options ...trcache.GetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultGetOptions[K, V](options...))
-	return ob
-}
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(options ...trcache.SetOption) *RootOptionBuilder[K, V] {
-	ob.AppendOptions(WithCallDefaultSetOptions[K, V](options...))
-	return ob
-}
 func (ob *RootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *RootOptionBuilder[K, V] {
 	ob.AppendOptions(WithDefaultDuration[K, V](duration))
 	return ob
@@ -256,10 +194,6 @@ type GetOptionBuilder[K comparable, V any] struct {
 func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
 	return &GetOptionBuilder[K, V]{}
 }
-func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(customOptions []interface{}) *GetOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetCustomOptions[K, V](customOptions))
-	return ob
-}
 func (ob *GetOptionBuilder[K, V]) WithGetCustomParams(customParams interface{}) *GetOptionBuilder[K, V] {
 	ob.AppendOptions(WithGetCustomParams[K, V](customParams))
 	return ob
@@ -278,10 +212,6 @@ func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
 }
 func (ob *SetOptionBuilder[K, V]) WithSetCustomParams(customParams interface{}) *SetOptionBuilder[K, V] {
 	ob.AppendOptions(WithSetCustomParams[K, V](customParams))
-	return ob
-}
-func (ob *SetOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *SetOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetDuration[K, V](duration))
 	return ob
 }
 func (ob *SetOptionBuilder[K, V]) WithSetRedisSetFunc(redisSetFunc RedisSetFunc[K, V]) *SetOptionBuilder[K, V] {

@@ -28,15 +28,15 @@ type cacheOptions[K comparable, V any] struct {
 
 var _ Options[string, string] = &cacheOptions[string, string]{}
 
-func (c *cacheOptions[K, V]) OptCallDefaultGetOpt(i []trcache.GetOption) {
+func (c *cacheOptions[K, V]) OptCallDefaultGetOptions(i []trcache.GetOption) {
 	c.fnDefaultGet = i
 }
 
-func (c *cacheOptions[K, V]) OptCallDefaultSetOpt(i []trcache.SetOption) {
+func (c *cacheOptions[K, V]) OptCallDefaultSetOptions(i []trcache.SetOption) {
 	c.fnDefaultSet = i
 }
 
-func (c *cacheOptions[K, V]) OptCallDefaultDeleteOpt(i []trcache.DeleteOption) {
+func (c *cacheOptions[K, V]) OptCallDefaultDeleteOptions(i []trcache.DeleteOption) {
 	c.fnDefaultDelete = i
 }
 

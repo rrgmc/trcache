@@ -12,14 +12,14 @@ import (
 
 // +troptgen root
 type CallDefaultOptions[K comparable, V any] interface {
-	OptCallDefaultGetOpt([]GetOption)
-	OptCallDefaultSetOpt([]SetOption)
-	OptCallDefaultDeleteOpt([]DeleteOption)
+	OptCallDefaultGetOptions([]GetOption)
+	OptCallDefaultSetOptions([]SetOption)
+	OptCallDefaultDeleteOptions([]DeleteOption)
 }
 
 // +troptgen root
 type CallDefaultRefreshOptions[K comparable, V any] interface {
-	OptCallDefaultRefreshOpt([]RefreshOption)
+	OptCallDefaultRefreshOptions([]RefreshOption)
 }
 
 // Root Call Default options
@@ -28,7 +28,7 @@ func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption) RootOp
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
-			opt.OptCallDefaultGetOpt(options)
+			opt.OptCallDefaultGetOptions(options)
 			return true
 		}
 		return false
@@ -39,7 +39,7 @@ func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOp
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
-			opt.OptCallDefaultSetOpt(options)
+			opt.OptCallDefaultSetOptions(options)
 			return true
 		}
 		return false
@@ -50,7 +50,7 @@ func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) 
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
-			opt.OptCallDefaultDeleteOpt(options)
+			opt.OptCallDefaultDeleteOptions(options)
 			return true
 		}
 		return false
@@ -61,7 +61,7 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultRefreshOptions[K, V]:
-			opt.OptCallDefaultRefreshOpt(options)
+			opt.OptCallDefaultRefreshOptions(options)
 			return true
 		}
 		return false
@@ -102,7 +102,7 @@ type GetOptions[K comparable, V any] interface {
 	OptCustomOptions([]any)
 }
 
-func WithGetCustomOption[K comparable, V any](options ...any) GetOption {
+func WithGetCustomOptions[K comparable, V any](options ...any) GetOption {
 	return GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
@@ -152,15 +152,15 @@ type RefreshFuncOptions struct {
 // +troptgen refresh
 type RefreshOptions[K comparable, V any] interface {
 	OptData(any)
-	OptCacheSetOpt([]SetOption)
-	OptRefreshFn(CacheRefreshFunc[K, V])
+	OptSetOptions([]SetOption)
+	OptFunc(CacheRefreshFunc[K, V])
 }
 
 func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V]:
-			opt.OptCacheSetOpt(options)
+			opt.OptSetOptions(options)
 			return true
 		}
 		return false
@@ -182,7 +182,7 @@ func WithRefreshFunc[K comparable, V any](fn CacheRefreshFunc[K, V]) RefreshOpti
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V]:
-			opt.OptRefreshFn(fn)
+			opt.OptFunc(fn)
 			return true
 		}
 		return false

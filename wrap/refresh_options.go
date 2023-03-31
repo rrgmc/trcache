@@ -20,7 +20,7 @@ type wrapRefreshOptions[K comparable, V any] struct {
 
 var _ WrapRefreshOptions[string, string] = &wrapRefreshOptions[string, string]{}
 
-func (w *wrapRefreshOptions[K, V]) OptCallDefaultRefreshOpt(i []trcache.RefreshOption) {
+func (w *wrapRefreshOptions[K, V]) OptCallDefaultRefreshOptions(i []trcache.RefreshOption) {
 	w.fnDefaultRefresh = i
 }
 
@@ -65,10 +65,10 @@ func (w *wrapRefreshRefreshOptions[K, V]) OptData(a any) {
 	w.data = a
 }
 
-func (w *wrapRefreshRefreshOptions[K, V]) OptCacheSetOpt(i []trcache.SetOption) {
+func (w *wrapRefreshRefreshOptions[K, V]) OptSetOptions(i []trcache.SetOption) {
 	w.cacheSetOpt = w.cacheSetOpt
 }
 
-func (w *wrapRefreshRefreshOptions[K, V]) OptRefreshFn(c trcache.CacheRefreshFunc[K, V]) {
+func (w *wrapRefreshRefreshOptions[K, V]) OptFunc(c trcache.CacheRefreshFunc[K, V]) {
 	w.refreshFn = c
 }

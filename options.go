@@ -54,7 +54,7 @@ type RefreshFuncOptions struct {
 type RefreshOptions[K comparable, V any] interface {
 	OptData(any)
 	OptSetOptions([]SetOption)
-	OptFunc(CacheRefreshFunc[K, V])
+	OptRefreshFunc(CacheRefreshFunc[K, V])
 }
 
 //go:generate troptgen

@@ -73,11 +73,11 @@ func WithRefreshData[K comparable, V any](p0 interface{}) RefreshOption {
 		return false
 	})
 }
-func WithRefreshFunc[K comparable, V any](p0 CacheRefreshFunc[K, V]) RefreshOption {
+func WithRefreshRefreshFunc[K comparable, V any](p0 CacheRefreshFunc[K, V]) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V]:
-			opt.OptFunc(p0)
+			opt.OptRefreshFunc(p0)
 			return true
 		}
 		return false
@@ -161,8 +161,8 @@ func (ob *RefreshOptionBuilder[K, V]) WithRefreshData(p0 interface{}) *RefreshOp
 	ob.AppendOptions(WithRefreshData[K, V](p0))
 	return ob
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshFunc(p0 CacheRefreshFunc[K, V]) *RefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshFunc[K, V](p0))
+func (ob *RefreshOptionBuilder[K, V]) WithRefreshRefreshFunc(p0 CacheRefreshFunc[K, V]) *RefreshOptionBuilder[K, V] {
+	ob.AppendOptions(WithRefreshRefreshFunc[K, V](p0))
 	return ob
 }
 func (ob *RefreshOptionBuilder[K, V]) WithRefreshSetOptions(p0 []SetOption) *RefreshOptionBuilder[K, V] {

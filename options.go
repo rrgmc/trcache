@@ -10,12 +10,14 @@ import (
 
 // Root Call Default options
 
+// +troptgen root
 type CallDefaultOptions[K comparable, V any] interface {
 	OptCallDefaultGetOpt([]GetOption)
 	OptCallDefaultSetOpt([]SetOption)
 	OptCallDefaultDeleteOpt([]DeleteOption)
 }
 
+// +troptgen root
 type CallDefaultRefreshOptions[K comparable, V any] interface {
 	OptCallDefaultRefreshOpt([]RefreshOption)
 }
@@ -95,6 +97,7 @@ func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...Delet
 // Get options
 //
 
+// +troptgen get
 type GetOptions[K comparable, V any] interface {
 	OptCustomOptions([]any)
 }
@@ -114,6 +117,7 @@ func WithGetCustomOption[K comparable, V any](options ...any) GetOption {
 // Set options
 //
 
+// +troptgen set
 type SetOptions[K comparable, V any] interface {
 	OptDuration(time.Duration)
 }
@@ -133,6 +137,7 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 // Delete options
 //
 
+// +troptgen delete
 type DeleteOptions[K comparable, V any] interface {
 }
 
@@ -144,6 +149,7 @@ type RefreshFuncOptions struct {
 	Data any
 }
 
+// +troptgen refresh
 type RefreshOptions[K comparable, V any] interface {
 	OptData(any)
 	OptCacheSetOpt([]SetOption)

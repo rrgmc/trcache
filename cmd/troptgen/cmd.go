@@ -100,6 +100,10 @@ func runMain() error {
 				return fmt.Errorf("only interface types are supported: %s", obj.String())
 			}
 
+			if *prefix != "" && !strings.HasPrefix(namedType.Obj().Name(), *prefix) {
+				continue
+			}
+
 			interfaceType, ok := namedType.Underlying().(*types.Interface)
 			if !ok {
 				return fmt.Errorf("only interface types are supported: %s", obj.String())

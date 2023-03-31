@@ -266,3 +266,20 @@ func FromParams(params *types.Tuple, variadic bool) *jen.Statement {
 		}
 	})
 }
+
+func CallFromParams(params *types.Tuple, variadic bool) *jen.Statement {
+	return jen.CallFunc(func(g *jen.Group) {
+		for p := 0; p < params.Len(); p++ {
+			prm := params.At(p)
+			fname := prm.Name()
+			if fname == "" {
+				fname = fmt.Sprintf("p%d", p)
+			}
+			if variadic && p == params.Len()-1 {
+				g.Id(fname).Op("...")
+			} else {
+				g.Id(fname)
+			}
+		}
+	})
+}

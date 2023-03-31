@@ -56,7 +56,7 @@ func TestChainGetStrategyDefault(t *testing.T) {
 	},
 		trcache.RootOpt[string, string]().
 			WithCallDefaultGetOptions(
-				WithGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
+				WithGetGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
 			),
 	)
 

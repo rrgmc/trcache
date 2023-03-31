@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"go/ast"
 	"go/parser"
@@ -15,7 +16,11 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
+var prefix = flag.String("prefix", "", "option prefix")
+
 func main() {
+	flag.Parse()
+
 	err := runMain()
 	if err != nil {
 		panic(err)
@@ -102,9 +107,11 @@ func runMain() error {
 
 			_, optbok := optionsbuilder[directiveCmd]
 			if !optbok {
+				optionsBuilderName := fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD)
+
 				optionsbuilder[directiveCmd] = []jen.Code{}
 				optionsbuilder[directiveCmd] = append(optionsbuilder[directiveCmd],
-					jen.Type().Id(fmt.Sprintf("%sOptionBuilder", UCDirectiveCMD)).
+					jen.Type().Id(optionsBuilderName).
 						Add(FromTypeParams(namedType.TypeParams())).
 						Struct(
 							// jen.Id(fmt.Sprintf("%sOptionBuilderBase", UCDirectiveCMD)),
@@ -114,10 +121,10 @@ func runMain() error {
 					jen.Func().Id(fmt.Sprintf("%sOpt", UCDirectiveCMD)).
 						Add(FromTypeParams(namedType.TypeParams())).
 						Params().
-						Id(fmt.Sprintf("*%sOptionBuilder", UCDirectiveCMD)).Add(CallFromTypeParams(namedType.TypeParams())).
+						Id(fmt.Sprintf("*%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams())).
 						Block(
 							jen.Return(
-								jen.Id(fmt.Sprintf("&%sOptionBuilder", UCDirectiveCMD)).Add(CallFromTypeParams(namedType.TypeParams())).Values(jen.Dict{}),
+								jen.Id(fmt.Sprintf("&%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams())).Values(jen.Dict{}),
 							),
 						),
 				)
@@ -130,7 +137,7 @@ func runMain() error {
 
 				// generate a "With" function for each interface method
 				fsig := interfaceType.Method(i).Type().(*types.Signature)
-				methodName := fmt.Sprintf("With%s%s", UCDirectiveCMDOptional, strings.TrimPrefix(interfaceType.Method(i).Name(), "Opt"))
+				methodName := fmt.Sprintf("With%s%s%s", *prefix, UCDirectiveCMDOptional, strings.TrimPrefix(interfaceType.Method(i).Name(), "Opt"))
 				f.Func().Id(methodName).
 					Add(FromTypeParams(namedType.TypeParams())).
 					Add(FromParams(fsig.Params(), fsig.Variadic())).
@@ -155,12 +162,14 @@ func runMain() error {
 					)
 
 				// generate an "OptionsBuilder" method for each interface method
+				optionsBuilderName := fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD)
+
 				optionsbuilder[directiveCmd] = append(optionsbuilder[directiveCmd],
 					jen.Func().
-						Params(jen.Id("ob").Id(fmt.Sprintf("*%sOptionBuilder", UCDirectiveCMD)).Add(CallFromTypeParams(namedType.TypeParams()))).
+						Params(jen.Id("ob").Id(fmt.Sprintf("*%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams()))).
 						Id(methodName).
 						Add(FromParams(fsig.Params(), fsig.Variadic())).
-						Id(fmt.Sprintf("*%sOptionBuilder", UCDirectiveCMD)).Add(CallFromTypeParams(namedType.TypeParams())).
+						Id(fmt.Sprintf("*%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams())).
 						Block(
 							jen.Id("ob").Dot("AppendOptions").Call(
 								jen.Id(methodName).Add(CallFromTypeParams(namedType.TypeParams()).

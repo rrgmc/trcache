@@ -58,4 +58,4 @@ func (w *wrapRefreshRefreshOptions[K, V]) OptRefreshFunc(c trcache.CacheRefreshF
 	w.refreshFn = c
 }
 
-//go:generate troptgen
+//go:generate troptgen -prefix Wrap

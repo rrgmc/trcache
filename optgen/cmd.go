@@ -9,7 +9,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	_ "github.com/RangelReale/trcache"
 	"github.com/dave/jennifer/jen"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"

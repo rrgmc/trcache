@@ -186,3 +186,5 @@ type RefreshOptions[K comparable, V any] interface {
 // 		return false
 // 	})
 // }
+
+//go:generate go run github.com/RangelReale/trcache/optgen

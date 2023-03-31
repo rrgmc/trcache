@@ -1,4 +1,4 @@
-module github.com/RangelReale/trcache/optgen
+module github.com/RangelReale/trcache/troptgen
 
 go 1.19
 

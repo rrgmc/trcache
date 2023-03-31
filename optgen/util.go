@@ -250,6 +250,15 @@ func FromTypeParams(t *types.TypeParamList) *jen.Statement {
 	})
 }
 
+func CallFromTypeParams(t *types.TypeParamList) *jen.Statement {
+	return jen.TypesFunc(func(g *jen.Group) {
+		for inIdx := 0; inIdx < t.Len(); inIdx++ {
+			tp := t.At(inIdx)
+			g.Id(tp.String())
+		}
+	})
+}
+
 func FromParams(params *types.Tuple, variadic bool) *jen.Statement {
 	return jen.ParamsFunc(func(g *jen.Group) {
 		for p := 0; p < params.Len(); p++ {

@@ -7,7 +7,23 @@ import (
 	"github.com/dave/jennifer/jen"
 )
 
-func QualFromType(typ types.Type) *jen.Statement {
+type qualFromTypeOptions struct {
+	variadic bool
+}
+
+type QualFromTypeOption func(*qualFromTypeOptions)
+
+func WithQualFromTypeVariadic(variadic bool) QualFromTypeOption {
+	return func(o *qualFromTypeOptions) {
+		o.variadic = true
+	}
+}
+
+func QualFromType(typ types.Type, options ...QualFromTypeOption) *jen.Statement {
+	var optns qualFromTypeOptions
+	for _, opt := range options {
+		opt(&optns)
+	}
 
 	switch t := typ.(type) {
 	case nil:
@@ -16,6 +32,9 @@ func QualFromType(typ types.Type) *jen.Statement {
 	case *types.Array:
 		return jen.Index(jen.Lit(t.Len())).Add(QualFromType(t.Elem()))
 	case *types.Slice:
+		if optns.variadic {
+			return jen.Op("...").Add(QualFromType(t.Elem()))
+		}
 		return jen.Index().Add(QualFromType(t.Elem()))
 	case *types.Struct:
 		return jen.StructFunc(func(g *jen.Group) {
@@ -33,15 +52,40 @@ func QualFromType(typ types.Type) *jen.Statement {
 	case *types.Tuple:
 		// TODO
 	case *types.Signature:
-		return jen.Func().ParamsFunc(func(g *jen.Group) {
-			for inIdx := 0; inIdx < t.Params().Len(); inIdx++ {
-				g.Add(QualFromType(t.Params().At(inIdx).Type()))
+		ret := jen.Func().TypesFunc(func(g *jen.Group) {
+			for inIdx := 0; inIdx < t.TypeParams().Len(); inIdx++ {
+				tp := t.TypeParams().At(inIdx)
+				fid := g.Id(tp.String())
+
+				switch tp.Underlying().String() {
+				case "interface{comparable}":
+					fid.Comparable()
+				case "any":
+					fid.Any()
+				default:
+					fid.Id(tp.String())
+				}
 			}
 		}).ParamsFunc(func(g *jen.Group) {
-			for outIdx := 0; outIdx < t.Results().Len(); outIdx++ {
-				g.Add(QualFromType(t.Results().At(outIdx).Type()))
+			for inIdx := 0; inIdx < t.Params().Len(); inIdx++ {
+				fname := t.Params().At(inIdx).Name()
+				if fname == "" {
+					fname = fmt.Sprintf("p%d", inIdx)
+				}
+				g.Id(fname).Add(QualFromType(t.Params().At(inIdx).Type()))
 			}
 		})
+		if t.Results().Len() == 1 {
+			return ret.Add(QualFromType(t.Results().At(0).Type()))
+		} else if t.Results().Len() > 1 {
+			ret.Parens(jen.ListFunc(func(g *jen.Group) {
+				for outIdx := 0; outIdx < t.Results().Len(); outIdx++ {
+					g.Add(QualFromType(t.Results().At(outIdx).Type()))
+				}
+			}))
+		}
+		return ret
+
 	case *types.Union:
 		// TODO
 	case *types.Interface:
@@ -73,16 +117,20 @@ func QualFromType(typ types.Type) *jen.Statement {
 			panic(fmt.Errorf("unexpected ChanDir: %v", t.Dir()))
 		}
 	case *types.Named:
-		if t.Obj().Pkg() == nil {
-			return jen.Id(t.Obj().Name())
+		var ftypes []jen.Code
+		for p := 0; p < t.TypeParams().Len(); p++ {
+			fid := jen.Id(t.TypeParams().At(p).String())
+			ftypes = append(ftypes, fid)
 		}
-		return jen.Qual(t.Obj().Pkg().Path(), t.Obj().Name())
+
+		if t.Obj().Pkg() == nil {
+			return jen.Id(t.Obj().Name()).Types(ftypes...)
+		}
+		return jen.Qual(t.Obj().Pkg().Path(), t.Obj().Name()).Types(ftypes...)
 	case *types.TypeParam:
-		// TODO
 		if t.Obj() == nil {
 			return jen.Id("UNNAMED")
 		}
-		// return jen.Id(t.Obj().Name())
 		return jen.Qual(t.Obj().Pkg().Path(), t.Obj().Name())
 	}
 
@@ -172,4 +220,49 @@ func QualFromType(typ types.Type) *jen.Statement {
 	// default:
 	// 	panic(fmt.Errorf("unknown go type kind: %v", tp.Kind()))
 	// }
+}
+
+func FromTypeParam(tp *types.TypeParam) *jen.Statement {
+	switch tp.Underlying().String() {
+	case "interface{comparable}":
+		return jen.Comparable()
+	case "any":
+		return jen.Any()
+	default:
+		return jen.Id(tp.String())
+	}
+}
+
+func FromTypeParams(t *types.TypeParamList) *jen.Statement {
+	return jen.TypesFunc(func(g *jen.Group) {
+		for inIdx := 0; inIdx < t.Len(); inIdx++ {
+			tp := t.At(inIdx)
+			g.Id(tp.String()).Add(FromTypeParam(tp))
+			// switch tp.Underlying().String() {
+			// case "interface{comparable}":
+			// 	fid.Comparable()
+			// case "any":
+			// 	fid.Any()
+			// default:
+			// 	fid.Id(tp.String())
+			// }
+		}
+	})
+}
+
+func FromParams(params *types.Tuple, variadic bool) *jen.Statement {
+	return jen.ParamsFunc(func(g *jen.Group) {
+		for p := 0; p < params.Len(); p++ {
+			prm := params.At(p)
+			fname := prm.Name()
+			if fname == "" {
+				fname = fmt.Sprintf("p%d", p)
+			}
+			var qparams []QualFromTypeOption
+			if variadic && p == params.Len()-1 {
+				qparams = append(qparams, WithQualFromTypeVariadic(true))
+			}
+			g.Id(fname).Add(QualFromType(prm.Type(), qparams...))
+		}
+	})
 }

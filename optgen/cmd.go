@@ -91,9 +91,11 @@ func runMain() error {
 				continue
 			}
 			scmd := strings.TrimSpace(strings.TrimPrefix(stype.comment.Text, directiveLine))
+			ucscmdtype := cases.Title(language.Und).String(scmd)
 			if scmd == "root" {
 				scmd = ""
 			}
+			ucscmd := cases.Title(language.Und).String(scmd)
 
 			fmt.Println(strings.Repeat("=", 20))
 			fmt.Println(obj.Name(), stype.comment)
@@ -131,8 +133,9 @@ func runMain() error {
 				}
 
 				var fparams []jen.Code
-				for p := 0; p < interfaceType.Method(i).Type().(*types.Signature).Params().Len(); p++ {
-					prm := interfaceType.Method(i).Type().(*types.Signature).Params().At(p)
+				fsig := interfaceType.Method(i).Type().(*types.Signature)
+				for p := 0; p < fsig.Params().Len(); p++ {
+					prm := fsig.Params().At(p)
 					fname := prm.Name()
 					if fname == "" {
 						fname = fmt.Sprintf("p%d", p)
@@ -140,22 +143,46 @@ func runMain() error {
 
 					fid := jen.Id(fname)
 					fid.Add(QualFromType(prm.Type().Underlying()))
-					// fid.Add(QualFromType(types.TypeString(prm.Type().Underlying())
-					// fid.Id(types.TypeString(prm.Type().Underlying(), func(p *types.Package) string {
-					// 	if p == pkg.Types {
-					// 		return ""
-					// 	}
-					// 	f.ImportName(p.Path(), p.Name())
-					// 	return p.Path()
-					// }))
-					// fid.Id("any")
 					fparams = append(fparams, fid)
 				}
 
-				f.Func().Id(fmt.Sprintf("With%s%s", cases.Title(language.Und).String(scmd), strings.TrimPrefix(interfaceType.Method(i).Name(), "Opt"))).
-					Types(ftypes...).
-					Params(fparams...).
-					Block()
+				f.Func().Id(fmt.Sprintf("With%s%s", ucscmd, strings.TrimPrefix(interfaceType.Method(i).Name(), "Opt"))).
+					Add(FromTypeParams(namedType.TypeParams())).
+					Add(FromParams(fsig.Params(), fsig.Variadic())).
+					Qual("github.com/RangelReale/trcache", fmt.Sprintf("%sOption", ucscmdtype)).
+					Block(
+						jen.Return(
+							jen.Qual("github.com/RangelReale/trcache", fmt.Sprintf("%sOptionFunc", ucscmdtype)).Call(
+								jen.Func().
+									Params(jen.Id("o").Id("any")).
+									Bool().
+									BlockFunc(func(g *jen.Group) {
+										var bparams []jen.Code
+										for p := 0; p < fsig.Params().Len(); p++ {
+											prm := fsig.Params().At(p)
+											fname := prm.Name()
+											if fname == "" {
+												fname = fmt.Sprintf("p%d", p)
+											}
+											fid := jen.Id(fname)
+											if fsig.Variadic() && p == fsig.Params().Len()-1 {
+												fid.Op("...")
+											}
+											bparams = append(bparams, fid)
+										}
+
+										g.Switch(jen.Id("opt").Op(":=").Id("o.(type)").Block(
+											// jen.Case(jen.Id(namedType.String())).Block(),
+											jen.Case(QualFromType(namedType)).Block(
+												jen.Id("opt").Dot(interfaceType.Method(i).Name()).Call(bparams...),
+											),
+											jen.Return(jen.True()),
+										))
+
+										g.Return(jen.False())
+									})),
+						),
+					)
 			}
 		}
 

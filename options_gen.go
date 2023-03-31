@@ -142,14 +142,6 @@ func (ob *SetOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *SetOp
 	return ob
 }
 
-type DeleteOptionBuilder[K comparable, V any] struct {
-	DeleteOptionBuilderBase
-}
-
-func DeleteOpt[K comparable, V any]() *DeleteOptionBuilder[K, V] {
-	return &DeleteOptionBuilder[K, V]{}
-}
-
 type RefreshOptionBuilder[K comparable, V any] struct {
 	RefreshOptionBuilderBase
 }

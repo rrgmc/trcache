@@ -3,51 +3,11 @@ package wrap
 
 import trcache "github.com/RangelReale/trcache"
 
-func WithWrapCallDefaultRefreshOptions[K comparable, V any](options ...trcache.RefreshOption) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case WrapRefreshOptions[K, V]:
-			opt.OptCallDefaultRefreshOptions(options...)
-			return true
-		}
-		return false
-	})
-}
 func WithWrapDefaultRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case WrapRefreshOptions[K, V]:
 			opt.OptDefaultRefreshFunc(refreshFunc)
-			return true
-		}
-		return false
-	})
-}
-func WithWrapRefreshData[K comparable, V any](data interface{}) trcache.RefreshOption {
-	return trcache.RefreshOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case WrapRefreshRefreshOptions[K, V]:
-			opt.OptData(data)
-			return true
-		}
-		return false
-	})
-}
-func WithWrapRefreshRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.RefreshOption {
-	return trcache.RefreshOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case WrapRefreshRefreshOptions[K, V]:
-			opt.OptRefreshFunc(refreshFunc)
-			return true
-		}
-		return false
-	})
-}
-func WithWrapRefreshSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RefreshOption {
-	return trcache.RefreshOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case WrapRefreshRefreshOptions[K, V]:
-			opt.OptSetOptions(options...)
 			return true
 		}
 		return false
@@ -61,31 +21,7 @@ type WrapRootOptionBuilder[K comparable, V any] struct {
 func RootOpt[K comparable, V any]() *WrapRootOptionBuilder[K, V] {
 	return &WrapRootOptionBuilder[K, V]{}
 }
-func (ob *WrapRootOptionBuilder[K, V]) WithWrapCallDefaultRefreshOptions(options ...trcache.RefreshOption) *WrapRootOptionBuilder[K, V] {
-	ob.AppendOptions(WithWrapCallDefaultRefreshOptions[K, V](options...))
-	return ob
-}
 func (ob *WrapRootOptionBuilder[K, V]) WithWrapDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) *WrapRootOptionBuilder[K, V] {
 	ob.AppendOptions(WithWrapDefaultRefreshFunc[K, V](refreshFunc))
-	return ob
-}
-
-type WrapRefreshOptionBuilder[K comparable, V any] struct {
-	trcache.RefreshOptionBuilderBase
-}
-
-func RefreshOpt[K comparable, V any]() *WrapRefreshOptionBuilder[K, V] {
-	return &WrapRefreshOptionBuilder[K, V]{}
-}
-func (ob *WrapRefreshOptionBuilder[K, V]) WithWrapRefreshData(data interface{}) *WrapRefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithWrapRefreshData[K, V](data))
-	return ob
-}
-func (ob *WrapRefreshOptionBuilder[K, V]) WithWrapRefreshRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) *WrapRefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithWrapRefreshRefreshFunc[K, V](refreshFunc))
-	return ob
-}
-func (ob *WrapRefreshOptionBuilder[K, V]) WithWrapRefreshSetOptions(options ...trcache.SetOption) *WrapRefreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithWrapRefreshSetOptions[K, V](options...))
 	return ob
 }

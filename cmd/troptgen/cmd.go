@@ -130,14 +130,17 @@ func runMain() error {
 				)
 			}
 
-			for i := 0; i < interfaceType.NumMethods(); i++ {
-				if !interfaceType.Method(i).Exported() {
+			for i := 0; i < interfaceType.NumExplicitMethods(); i++ {
+				method := interfaceType.ExplicitMethod(i)
+
+				if !method.Exported() {
 					continue
 				}
 
+				methodName := fmt.Sprintf("With%s%s%s", *prefix, UCDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
+
 				// generate a "With" function for each interface method
-				fsig := interfaceType.Method(i).Type().(*types.Signature)
-				methodName := fmt.Sprintf("With%s%s%s", *prefix, UCDirectiveCMDOptional, strings.TrimPrefix(interfaceType.Method(i).Name(), "Opt"))
+				fsig := method.Type().(*types.Signature)
 				f.Func().Id(methodName).
 					Add(FromTypeParams(namedType.TypeParams())).
 					Add(FromParams(fsig.Params(), fsig.Variadic())).
@@ -151,7 +154,7 @@ func runMain() error {
 									BlockFunc(func(g *jen.Group) {
 										g.Switch(jen.Id("opt").Op(":=").Id("o.(type)").Block(
 											jen.Case(QualFromType(namedType)).Block(
-												jen.Id("opt").Dot(interfaceType.Method(i).Name()).Add(CallFromParams(fsig.Params(), fsig.Variadic())),
+												jen.Id("opt").Dot(method.Name()).Add(CallFromParams(fsig.Params(), fsig.Variadic())),
 											),
 											jen.Return(jen.True()),
 										))
@@ -192,8 +195,10 @@ func runMain() error {
 			if !ok {
 				continue
 			}
-			for _, obi := range ob {
-				f.Add(obi)
+			if len(ob) > 2 {
+				for _, obi := range ob {
+					f.Add(obi)
+				}
 			}
 		}
 

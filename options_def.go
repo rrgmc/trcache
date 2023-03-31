@@ -122,7 +122,7 @@ func ParseGetOptions(obj IsGetOptions, options ...[]GetOption) error {
 	return parseOptions(obj, options...)
 }
 
-func AppendGetOptions[K comparable, V any](options ...[]GetOption) []GetOption {
+func AppendGetOptions(options ...[]GetOption) []GetOption {
 	return appendOptions(options...)
 }
 

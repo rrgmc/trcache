@@ -40,7 +40,7 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
 	var optns wrapRefreshRefreshOptions[K, V]
-	_ = trcache.ParseRefreshOptions[K, V](&optns, c.options.fnDefaultRefresh, options)
+	_ = trcache.ParseRefreshOptions(&optns, c.options.fnDefaultRefresh, options)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {

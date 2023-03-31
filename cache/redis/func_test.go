@@ -24,7 +24,7 @@ func TestFuncGet(t *testing.T) {
 	mockRedis.ExpectHGet("z", "f1").RedisNil()
 
 	c, err := New[string, string](redisClient,
-		Opt[string, string]().
+		RootOpt[string, string]().
 			WithValueCodec(codec.NewForwardCodec[string]()).
 			WithDefaultDuration(time.Minute),
 		trcache.RootOpt[string, string]().

@@ -59,16 +59,12 @@ func TestChainRefresh(t *testing.T) {
 	c := NewRefresh[string, string, int]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
-		trcache.RootRefreshOpt[string, string, int]().
-			WithDefaultRefreshFunc(func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
-				return fmt.Sprintf("abc%d", options.Data), nil
-			}),
-		trcache.WithCallDefaultRefreshOptions[string, string](trcache.RefreshOpt[string, string, int]().
-			WithRefreshData(123),
-		),
+		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+			return fmt.Sprintf("abc%d", options.Data), nil
+		}),
 	)
 
-	value, err := c.GetOrRefresh(ctx, "a")
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
 	require.NoError(t, err)
 	require.Equal(t, "abc123", value)
 }

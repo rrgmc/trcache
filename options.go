@@ -16,6 +16,11 @@ type MetricsOptions[K comparable, V any] interface {
 	OptMetrics(metrics Metrics, name string)
 }
 
+// +troptgen root name=refresh
+type DefaultRefreshOptions[K comparable, V any, RD any] interface {
+	OptDefaultRefreshFunc(refreshFunc CacheRefreshFunc[K, V, RD])
+}
+
 // +troptgen root
 type CallDefaultOptions[K comparable, V any] interface {
 	OptCallDefaultGetOptions(options ...GetOption)
@@ -54,15 +59,22 @@ type DeleteOptions[K comparable, V any] interface {
 // Refresh options
 //
 
-type RefreshFuncOptions struct {
-	Data any
+type RefreshFuncOptions[RD any] struct {
+	Data RD
 }
 
 // +troptgen refresh
-type RefreshOptions[K comparable, V any] interface {
-	OptData(data any)
+type RefreshOptions[K comparable, V any, RD any] interface {
+	OptData(data RD)
+	OptGetOptions(options ...GetOption)
 	OptSetOptions(options ...SetOption)
-	OptRefreshFunc(refreshFunc CacheRefreshFunc[K, V])
+	OptFunc(refreshFunc CacheRefreshFunc[K, V, RD])
 }
 
 //go:generate troptgen
+
+//go:generate go run github.com/vektra/mockery/v2@v2.23.1 --name Cache
+//go:generate go run github.com/vektra/mockery/v2@v2.23.1 --name RefreshCache
+//go:generate go run github.com/vektra/mockery/v2@v2.23.1 --name Validator
+//go:generate go run github.com/vektra/mockery/v2@v2.23.1 --name Codec
+//go:generate go run github.com/vektra/mockery/v2@v2.23.1 --name CacheRefreshFunc

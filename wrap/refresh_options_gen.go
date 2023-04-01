@@ -3,65 +3,46 @@ package wrap
 
 import trcache "github.com/RangelReale/trcache"
 
-func WithWrapDefaultRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case wrapRefreshOptions[K, V]:
-			opt.OptDefaultRefreshFunc(refreshFunc)
-			return true
-		}
-		return false
-	})
-}
-
-type wrapRootOptionBuilder[K comparable, V any] struct {
-	trcache.RootOptionBuilderBase
-}
-
-func RootOpt[K comparable, V any]() *wrapRootOptionBuilder[K, V] {
-	return &wrapRootOptionBuilder[K, V]{}
-}
-func (ob *wrapRootOptionBuilder[K, V]) WithWrapDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) *wrapRootOptionBuilder[K, V] {
-	ob.AppendOptions(WithWrapDefaultRefreshFunc[K, V](refreshFunc))
-	return ob
-}
-
-type wrapRefreshOptionsImpl[K comparable, V any] struct {
+type wrapRefreshOptionsImpl[K comparable, V any, RD any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultRefreshOptions []trcache.RefreshOption
-	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V]
+	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V, RD]
 	metricsMetrics            trcache.Metrics
 	metricsName               string
 }
 
-var _ wrapRefreshOptions[string, string] = &wrapRefreshOptionsImpl[string, string]{}
+var _ wrapRefreshOptions[string, string, string] = &wrapRefreshOptionsImpl[string, string, string]{}
 
-func (o *wrapRefreshOptionsImpl[K, V]) OptCallDefaultRefreshOptions(options ...trcache.RefreshOption) {
+func (o *wrapRefreshOptionsImpl[K, V, RD]) OptCallDefaultRefreshOptions(options ...trcache.RefreshOption) {
 	o.callDefaultRefreshOptions = options
 }
-func (o *wrapRefreshOptionsImpl[K, V]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
+func (o *wrapRefreshOptionsImpl[K, V, RD]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V, RD]) {
 	o.defaultRefreshFunc = refreshFunc
 }
-func (o *wrapRefreshOptionsImpl[K, V]) OptMetrics(metrics trcache.Metrics, name string) {
+func (o *wrapRefreshOptionsImpl[K, V, RD]) OptMetrics(metrics trcache.Metrics, name string) {
 	o.metricsMetrics = metrics
 	o.metricsName = name
 }
 
-type wrapRefreshRefreshOptionsImpl[K comparable, V any] struct {
+type wrapRefreshRefreshOptionsImpl[K comparable, V any, RD any] struct {
 	trcache.IsRefreshOptionsImpl
-	data        interface{}
-	refreshFunc trcache.CacheRefreshFunc[K, V]
-	setOptions  []trcache.SetOption
+	data       RD
+	funcx      trcache.CacheRefreshFunc[K, V, RD]
+	getOptions []trcache.GetOption
+	setOptions []trcache.SetOption
 }
 
-var _ wrapRefreshRefreshOptions[string, string] = &wrapRefreshRefreshOptionsImpl[string, string]{}
+var _ wrapRefreshRefreshOptions[string, string, string] = &wrapRefreshRefreshOptionsImpl[string, string, string]{}
 
-func (o *wrapRefreshRefreshOptionsImpl[K, V]) OptData(data interface{}) {
+func (o *wrapRefreshRefreshOptionsImpl[K, V, RD]) OptData(data RD) {
 	o.data = data
 }
-func (o *wrapRefreshRefreshOptionsImpl[K, V]) OptRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
-	o.refreshFunc = refreshFunc
+func (o *wrapRefreshRefreshOptionsImpl[K, V, RD]) OptFunc(refreshFunc trcache.CacheRefreshFunc[K, V, RD]) {
+	o.funcx = refreshFunc
 }
-func (o *wrapRefreshRefreshOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
+func (o *wrapRefreshRefreshOptionsImpl[K, V, RD]) OptGetOptions(options ...trcache.GetOption) {
+	o.getOptions = options
+}
+func (o *wrapRefreshRefreshOptionsImpl[K, V, RD]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options
 }

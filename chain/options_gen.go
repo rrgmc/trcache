@@ -6,26 +6,6 @@ import (
 	"time"
 )
 
-func WithRefreshFunc[K comparable, V any](refreshFunc trcache.CacheRefreshFunc[K, V]) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case options[K, V]:
-			opt.OptRefreshFunc(refreshFunc)
-			return true
-		}
-		return false
-	})
-}
-func WithSetPreviousOnGet[K comparable, V any](setPreviousOnGet bool) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case options[K, V]:
-			opt.OptSetPreviousOnGet(setPreviousOnGet)
-			return true
-		}
-		return false
-	})
-}
 func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -65,22 +45,6 @@ func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy
 		}
 		return false
 	})
-}
-
-type rootOptionBuilder[K comparable, V any] struct {
-	trcache.RootOptionBuilderBase
-}
-
-func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
-	return &rootOptionBuilder[K, V]{}
-}
-func (ob *rootOptionBuilder[K, V]) WithRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshFunc[K, V](refreshFunc))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithSetPreviousOnGet(setPreviousOnGet bool) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetPreviousOnGet[K, V](setPreviousOnGet))
-	return ob
 }
 
 type getOptionBuilder[K comparable, V any] struct {
@@ -129,8 +93,6 @@ type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultGetOptions    []trcache.GetOption
 	callDefaultSetOptions    []trcache.SetOption
 	name                     string
-	refreshFunc              trcache.CacheRefreshFunc[K, V]
-	setPreviousOnGet         bool
 }
 
 var _ options[string, string] = &rootOptionsImpl[string, string]{}
@@ -146,12 +108,6 @@ func (o *rootOptionsImpl[K, V]) OptCallDefaultSetOptions(options ...trcache.SetO
 }
 func (o *rootOptionsImpl[K, V]) OptName(name string) {
 	o.name = name
-}
-func (o *rootOptionsImpl[K, V]) OptRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
-	o.refreshFunc = refreshFunc
-}
-func (o *rootOptionsImpl[K, V]) OptSetPreviousOnGet(setPreviousOnGet bool) {
-	o.setPreviousOnGet = setPreviousOnGet
 }
 
 type getOptionsImpl[K comparable, V any] struct {

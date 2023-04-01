@@ -37,13 +37,13 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.RootOption
 	return ret, nil
 }
 
-func NewRefresh[K comparable, V any](redis *redis.Client,
-	options ...trcache.RootOption) (trcache.RefreshCache[K, V], error) {
+func NewRefresh[K comparable, V any, RD any](redis *redis.Client,
+	options ...trcache.RootOption) (trcache.RefreshCache[K, V, RD], error) {
 	cache, err := New[K, V](redis, options...)
 	if err != nil {
 		return nil, err
 	}
-	return wrap.NewWrapRefreshCache[K, V](cache, options...), nil
+	return wrap.NewWrapRefreshCache[K, V, RD](cache, options...), nil
 }
 
 func (c *Cache[K, V]) Handle() *redis.Client {

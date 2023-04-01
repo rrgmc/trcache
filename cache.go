@@ -11,9 +11,9 @@ type Cache[K comparable, V any] interface {
 	Delete(ctx context.Context, key K, options ...DeleteOption) error
 }
 
-type RefreshCache[K comparable, V any] interface {
+type RefreshCache[K comparable, V any, RD any] interface {
 	Cache[K, V]
 	GetOrRefresh(ctx context.Context, key K, options ...RefreshOption) (V, error)
 }
 
-type CacheRefreshFunc[K comparable, V any] func(ctx context.Context, key K, options RefreshFuncOptions) (V, error)
+type CacheRefreshFunc[K comparable, V any, RD any] func(ctx context.Context, key K, options RefreshFuncOptions[RD]) (V, error)

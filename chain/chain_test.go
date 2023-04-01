@@ -2,6 +2,7 @@ package chain
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/RangelReale/trcache"
@@ -55,14 +56,15 @@ func TestChainRefresh(t *testing.T) {
 	mockCache1.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
 	mockCache2.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
 
-	c := NewRefresh[string, string]([]trcache.Cache[string, string]{
+	c := NewRefresh[string, string, int]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
-		trcache.WithCallDefaultRefreshOptions[string, string](trcache.RefreshOpt[string, string]().
-			WithRefreshRefreshFunc(func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
-				return "abc" + options.Data.(string), nil
-			}).
-			WithRefreshData("123"),
+		trcache.RootRefreshOpt[string, string, int]().
+			WithDefaultRefreshFunc(func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+				return fmt.Sprintf("abc%d", options.Data), nil
+			}),
+		trcache.WithCallDefaultRefreshOptions[string, string](trcache.RefreshOpt[string, string, int]().
+			WithRefreshData(123),
 		),
 	)
 
@@ -70,4 +72,3 @@ func TestChainRefresh(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "abc123", value)
 }
-

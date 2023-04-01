@@ -83,31 +83,51 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 		return false
 	})
 }
-func WithRefreshData[K comparable, V any](data interface{}) RefreshOption {
+func WithRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V]:
+		case RefreshOptions[K, V, RD]:
 			opt.OptData(data)
 			return true
 		}
 		return false
 	})
 }
-func WithRefreshRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) RefreshOption {
+func WithRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K, V, RD]) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V]:
-			opt.OptRefreshFunc(refreshFunc)
+		case RefreshOptions[K, V, RD]:
+			opt.OptFunc(refreshFunc)
 			return true
 		}
 		return false
 	})
 }
-func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOption {
+func WithRefreshGetOptions[K comparable, V any, RD any](options ...GetOption) RefreshOption {
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V]:
+		case RefreshOptions[K, V, RD]:
+			opt.OptGetOptions(options...)
+			return true
+		}
+		return false
+	})
+}
+func WithRefreshSetOptions[K comparable, V any, RD any](options ...SetOption) RefreshOption {
+	return RefreshOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case RefreshOptions[K, V, RD]:
 			opt.OptSetOptions(options...)
+			return true
+		}
+		return false
+	})
+}
+func WithDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K, V, RD]) RootOption {
+	return RootOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case DefaultRefreshOptions[K, V, RD]:
+			opt.OptDefaultRefreshFunc(refreshFunc)
 			return true
 		}
 		return false
@@ -170,22 +190,38 @@ func (ob *setOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *setOp
 	return ob
 }
 
-type refreshOptionBuilder[K comparable, V any] struct {
+type refreshOptionBuilder[K comparable, V any, RD any] struct {
 	RefreshOptionBuilderBase
 }
 
-func RefreshOpt[K comparable, V any]() *refreshOptionBuilder[K, V] {
-	return &refreshOptionBuilder[K, V]{}
+func RefreshOpt[K comparable, V any, RD any]() *refreshOptionBuilder[K, V, RD] {
+	return &refreshOptionBuilder[K, V, RD]{}
 }
-func (ob *refreshOptionBuilder[K, V]) WithRefreshData(data interface{}) *refreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshData[K, V](data))
+func (ob *refreshOptionBuilder[K, V, RD]) WithRefreshData(data RD) *refreshOptionBuilder[K, V, RD] {
+	ob.AppendOptions(WithRefreshData[K, V, RD](data))
 	return ob
 }
-func (ob *refreshOptionBuilder[K, V]) WithRefreshRefreshFunc(refreshFunc CacheRefreshFunc[K, V]) *refreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshRefreshFunc[K, V](refreshFunc))
+func (ob *refreshOptionBuilder[K, V, RD]) WithRefreshFunc(refreshFunc CacheRefreshFunc[K, V, RD]) *refreshOptionBuilder[K, V, RD] {
+	ob.AppendOptions(WithRefreshFunc[K, V, RD](refreshFunc))
 	return ob
 }
-func (ob *refreshOptionBuilder[K, V]) WithRefreshSetOptions(options ...SetOption) *refreshOptionBuilder[K, V] {
-	ob.AppendOptions(WithRefreshSetOptions[K, V](options...))
+func (ob *refreshOptionBuilder[K, V, RD]) WithRefreshGetOptions(options ...GetOption) *refreshOptionBuilder[K, V, RD] {
+	ob.AppendOptions(WithRefreshGetOptions[K, V, RD](options...))
+	return ob
+}
+func (ob *refreshOptionBuilder[K, V, RD]) WithRefreshSetOptions(options ...SetOption) *refreshOptionBuilder[K, V, RD] {
+	ob.AppendOptions(WithRefreshSetOptions[K, V, RD](options...))
+	return ob
+}
+
+type rootRefreshOptionBuilder[K comparable, V any, RD any] struct {
+	RootOptionBuilderBase
+}
+
+func RootRefreshOpt[K comparable, V any, RD any]() *rootRefreshOptionBuilder[K, V, RD] {
+	return &rootRefreshOptionBuilder[K, V, RD]{}
+}
+func (ob *rootRefreshOptionBuilder[K, V, RD]) WithDefaultRefreshFunc(refreshFunc CacheRefreshFunc[K, V, RD]) *rootRefreshOptionBuilder[K, V, RD] {
+	ob.AppendOptions(WithDefaultRefreshFunc[K, V, RD](refreshFunc))
 	return ob
 }

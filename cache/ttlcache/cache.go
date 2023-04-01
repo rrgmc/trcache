@@ -27,17 +27,17 @@ func New[K comparable, V any](cache *ttlcache.Cache[K, V],
 	return ret
 }
 
-func NewRefresh[K comparable, V any](cache *ttlcache.Cache[K, V],
-	options ...trcache.RootOption) trcache.RefreshCache[K, V] {
-	return wrap.NewWrapRefreshCache[K, V](New(cache, options...), options...)
+func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
+	options ...trcache.RootOption) trcache.RefreshCache[K, V, RD] {
+	return wrap.NewWrapRefreshCache[K, V, RD](New(cache, options...), options...)
 }
 
 func NewDefault[K comparable, V any](options ...trcache.RootOption) *Cache[K, V] {
 	return New(ttlcache.New[K, V](), options...)
 }
 
-func NewDefaultRefresh[K comparable, V any](options ...trcache.RootOption) trcache.RefreshCache[K, V] {
-	return wrap.NewWrapRefreshCache[K, V](NewDefault[K, V](options...), options...)
+func NewDefaultRefresh[K comparable, V any, RD any](options ...trcache.RootOption) trcache.RefreshCache[K, V, RD] {
+	return wrap.NewWrapRefreshCache[K, V, RD](NewDefault[K, V](options...), options...)
 }
 
 func (c *Cache[K, V]) Handle() *ttlcache.Cache[K, V] {

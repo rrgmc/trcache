@@ -22,13 +22,13 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 	return ret
 }
 
-func NewRefresh[K comparable, V any](cache []trcache.Cache[K, V],
-	options ...trcache.RootOption) trcache.RefreshCache[K, V] {
+func NewRefresh[K comparable, V any, RD any](cache []trcache.Cache[K, V],
+	options ...trcache.RootOption) trcache.RefreshCache[K, V, RD] {
 	// var wopt []wrap.WrapRefreshOption
 	// if ret.refreshFunc != nil {
 	// 	wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](ret.refreshFunc))
 	// }
-	return wrap.NewWrapRefreshCache[K, V](New(cache, options...), options...)
+	return wrap.NewWrapRefreshCache[K, V, RD](New(cache, options...), options...)
 }
 
 func (c *Chain[K, V]) Name() string {

@@ -29,13 +29,13 @@ func New[K comparable, V any](cache *ristretto.Cache,
 	return ret, nil
 }
 
-func NewRefresh[K comparable, V any](cache *ristretto.Cache,
-	options ...trcache.RootOption) (trcache.RefreshCache[K, V], error) {
+func NewRefresh[K comparable, V any, RD any](cache *ristretto.Cache,
+	options ...trcache.RootOption) (trcache.RefreshCache[K, V, RD], error) {
 	c, err := New[K, V](cache, options...)
 	if err != nil {
 		return nil, err
 	}
-	return wrap.NewWrapRefreshCache[K, V](c, options...), nil
+	return wrap.NewWrapRefreshCache[K, V, RD](c, options...), nil
 }
 
 // func NewDefault[K comparable, V any](options ...trcache.RootOption) *Cache[K, V] {

@@ -7,42 +7,42 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
-type wrapRefreshCache[K comparable, V any] struct {
-	options wrapRefreshOptionsImpl[K, V]
+type wrapRefreshCache[K comparable, V any, RD any] struct {
+	options wrapRefreshOptionsImpl[K, V, RD]
 	cache   trcache.Cache[K, V]
 }
 
-func NewWrapRefreshCache[K comparable, V any](cache trcache.Cache[K, V],
-	options ...trcache.RootOption) trcache.RefreshCache[K, V] {
-	ret := &wrapRefreshCache[K, V]{cache: cache}
+func NewWrapRefreshCache[K comparable, V any, RD any](cache trcache.Cache[K, V],
+	options ...trcache.RootOption) trcache.RefreshCache[K, V, RD] {
+	ret := &wrapRefreshCache[K, V, RD]{cache: cache}
 	_ = trcache.ParseRootOptions(&ret.options, options)
 	return ret
 }
 
-func (c *wrapRefreshCache[K, V]) Name() string {
+func (c *wrapRefreshCache[K, V, RD]) Name() string {
 	return c.cache.Name()
 }
 
-func (c *wrapRefreshCache[K, V]) Get(ctx context.Context, key K,
+func (c *wrapRefreshCache[K, V, RD]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption) (V, error) {
 	return c.cache.Get(ctx, key, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) Set(ctx context.Context, key K, value V,
+func (c *wrapRefreshCache[K, V, RD]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption) error {
 	return c.cache.Set(ctx, key, value, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
+func (c *wrapRefreshCache[K, V, RD]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption) error {
 	return c.cache.Delete(ctx, key, options...)
 }
 
-func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
-	var optns wrapRefreshRefreshOptionsImpl[K, V]
+func (c *wrapRefreshCache[K, V, RD]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
+	var optns wrapRefreshRefreshOptionsImpl[K, V, RD]
 	_ = trcache.ParseRefreshOptions(&optns, c.options.callDefaultRefreshOptions, options)
 
-	ret, err := c.Get(ctx, key)
+	ret, err := c.Get(ctx, key, optns.getOptions...)
 	if err == nil {
 		if c.options.metricsMetrics != nil {
 			c.options.metricsMetrics.Hit(ctx, c.options.metricsName)
@@ -67,8 +67,8 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 
 	// call refresh
 	refreshFn := c.options.defaultRefreshFunc
-	if optns.refreshFunc != nil {
-		refreshFn = optns.refreshFunc
+	if optns.funcx != nil {
+		refreshFn = optns.funcx
 	}
 
 	if refreshFn == nil {
@@ -76,7 +76,7 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 		return empty, errors.New("refresh function not set")
 	}
 
-	ret, err = refreshFn(ctx, key, trcache.RefreshFuncOptions{
+	ret, err = refreshFn(ctx, key, trcache.RefreshFuncOptions[RD]{
 		Data: optns.data,
 	})
 	if err != nil {

@@ -7,19 +7,19 @@ import (
 // Option
 
 // +troptgen root
-type wrapRefreshOptions[K comparable, V any] interface {
+type wrapRefreshOptions[K comparable, V any, RD any] interface {
 	trcache.IsRootOptions
 	trcache.MetricsOptions[K, V]
+	trcache.DefaultRefreshOptions[K, V, RD]
 	trcache.CallDefaultRefreshOptions[K, V]
-	OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V])
 }
 
 // Cache refresh options
 
 // +troptgen refresh
-type wrapRefreshRefreshOptions[K comparable, V any] interface {
+type wrapRefreshRefreshOptions[K comparable, V any, RD any] interface {
 	trcache.IsRefreshOptions
-	trcache.RefreshOptions[K, V]
+	trcache.RefreshOptions[K, V, RD]
 }
 
 //go:generate troptgen -prefix wrap

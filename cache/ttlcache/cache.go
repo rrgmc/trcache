@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/RangelReale/trcache"
+	"github.com/RangelReale/trcache/wrap"
 	"github.com/jellydator/ttlcache/v3"
 )
 
@@ -26,8 +27,17 @@ func New[K comparable, V any](cache *ttlcache.Cache[K, V],
 	return ret
 }
 
+func NewRefresh[K comparable, V any](cache *ttlcache.Cache[K, V],
+	options ...trcache.RootOption) trcache.RefreshCache[K, V] {
+	return wrap.NewWrapRefreshCache[K, V](New(cache, options...), options...)
+}
+
 func NewDefault[K comparable, V any](options ...trcache.RootOption) *Cache[K, V] {
 	return New(ttlcache.New[K, V](), options...)
+}
+
+func NewDefaultRefresh[K comparable, V any](options ...trcache.RootOption) trcache.RefreshCache[K, V] {
+	return wrap.NewWrapRefreshCache[K, V](NewDefault[K, V](options...), options...)
 }
 
 func (c *Cache[K, V]) Handle() *ttlcache.Cache[K, V] {

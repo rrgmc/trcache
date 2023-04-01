@@ -8,6 +8,7 @@ import (
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
+	"github.com/RangelReale/trcache/wrap"
 	"github.com/jellydator/ttlcache/v3"
 	"github.com/patrickmn/go-cache"
 )
@@ -35,6 +36,15 @@ func New[K comparable, V any](cache *cache.Cache,
 		ret.options.keyCodec = codec.NewStringKeyCodec[K]()
 	}
 	return ret, nil
+}
+
+func NewRefresh[K comparable, V any](cache *cache.Cache,
+	options ...trcache.RootOption) (trcache.RefreshCache[K, V], error) {
+	c, err := New[K, V](cache, options...)
+	if err != nil {
+		return nil, err
+	}
+	return wrap.NewWrapRefreshCache[K, V](c, options...), nil
 }
 
 // func NewDefault[K comparable, V any](options ...trcache.RootOption) *Cache[K, V] {

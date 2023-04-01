@@ -8,6 +8,7 @@ import (
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
+	"github.com/RangelReale/trcache/wrap"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -34,6 +35,15 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.RootOption
 		ret.options.keyCodec = codec.NewStringKeyCodec[K]()
 	}
 	return ret, nil
+}
+
+func NewRefresh[K comparable, V any](redis *redis.Client,
+	options ...trcache.RootOption) (trcache.RefreshCache[K, V], error) {
+	cache, err := New[K, V](redis, options...)
+	if err != nil {
+		return nil, err
+	}
+	return wrap.NewWrapRefreshCache[K, V](cache, options...), nil
 }
 
 func (c *Cache[K, V]) Handle() *redis.Client {

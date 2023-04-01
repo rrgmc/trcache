@@ -1,4 +1,4 @@
-package trredis
+package trrueidis
 
 import (
 	"context"
@@ -11,22 +11,32 @@ import (
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
 	"github.com/RangelReale/trcache/mocks"
-	"github.com/go-redis/redismock/v9"
-	"github.com/stretchr/testify/mock"
+	"github.com/golang/mock/gomock"
+	"github.com/rueian/rueidis/mock"
+	mock2 "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCache(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
 
-	mockRedis.ExpectSet("a", "12", time.Minute).SetVal("12")
-	mockRedis.ExpectGet("a").SetVal("12")
-	mockRedis.ExpectGet("a").RedisNil() // simulate expiration
-	mockRedis.ExpectGet("z").RedisNil()
+	mockRedis.EXPECT().
+		Do(gomock.Any(), mock.Match("SET", "a", "12", "EX", "60")).
+		Return(mock.Result(mock.RedisString("")))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisString("12")))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisNil()))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "z"), gomock.Any()).
+		Return(mock.Result(mock.RedisNil()))
 
-	c, err := New[string, string](redis,
+	c, err := New[string, string](mockRedis,
 		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 	)
@@ -44,27 +54,29 @@ func TestCache(t *testing.T) {
 
 	v, err = c.Get(ctx, "z")
 	require.ErrorIs(t, err, trcache.ErrNotFound)
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestCacheValidator(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
 	mockValidator := mocks.NewValidator[string](t)
 
-	mockRedis.ExpectSet("a", "12", time.Minute).SetVal("12")
-	mockRedis.ExpectGet("a").SetVal("12")
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
+
+	mockRedis.EXPECT().
+		Do(gomock.Any(), mock.Match("SET", "a", "12", "EX", "60")).
+		Return(mock.Result(mock.RedisString("")))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisString("12")))
 
 	mockValidator.EXPECT().
-		ValidateGet(mock.Anything, "12").
+		ValidateGet(mock2.Anything, "12").
 		Return(trcache.ErrNotFound).
 		Once()
 
-	c, err := New[string, string](redis,
+	c, err := New[string, string](mockRedis,
 		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithValidator[string, string](mockValidator),
 		WithDefaultDuration[string, string](time.Minute),
@@ -76,25 +88,25 @@ func TestCacheValidator(t *testing.T) {
 
 	_, err = c.Get(ctx, "a")
 	require.ErrorIs(t, err, trcache.ErrNotFound)
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestCacheCodecError(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
 	mockCodec := mocks.NewCodec[string](t)
 
-	mockRedis.ExpectGet("a").RedisNil()
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
+
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisNil()))
 
 	mockCodec.EXPECT().
-		Marshal(mock.Anything, "12").
+		Marshal(mock2.Anything, "12").
 		Return(nil, errors.New("my error"))
 
-	c, err := New[string, string](redis,
+	c, err := New[string, string](mockRedis,
 		WithValueCodec[string, string](mockCodec),
 		WithDefaultDuration[string, string](time.Minute),
 	)
@@ -105,21 +117,22 @@ func TestCacheCodecError(t *testing.T) {
 
 	_, err = c.Get(ctx, "a")
 	require.ErrorIs(t, err, trcache.ErrNotFound)
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestCacheJSONCodec(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
 
-	mockRedis.ExpectSet("a", `"12"`, time.Minute).SetVal(`"12"`)
-	mockRedis.ExpectGet("a").SetVal(`"12"`)
+	mockRedis.EXPECT().
+		Do(gomock.Any(), mock.Match("SET", "a", `"12"`, "EX", "60")).
+		Return(mock.Result(mock.RedisString("")))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisString(`"12"`)))
 
-	c, err := New[string, string](redis,
+	c, err := New[string, string](mockRedis,
 		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 	)
@@ -131,21 +144,22 @@ func TestCacheJSONCodec(t *testing.T) {
 	v, err := c.Get(ctx, "a")
 	require.NoError(t, err)
 	require.Equal(t, "12", v)
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestCacheJSONCodecInt(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
 
-	mockRedis.ExpectSet("a", "12", time.Minute).SetVal("12")
-	mockRedis.ExpectGet("a").SetVal("12")
+	mockRedis.EXPECT().
+		Do(gomock.Any(), mock.Match("SET", "a", "12", "EX", "60")).
+		Return(mock.Result(mock.RedisString("")))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisString("12")))
 
-	c, err := New[string, int](redis,
+	c, err := New[string, int](mockRedis,
 		WithValueCodec[string, int](codec.NewJSONCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
 	)
@@ -157,21 +171,22 @@ func TestCacheJSONCodecInt(t *testing.T) {
 	v, err := c.Get(ctx, "a")
 	require.NoError(t, err)
 	require.Equal(t, 12, v)
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestCacheFuncCodecInt(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
 
-	mockRedis.ExpectSet("a", "12", time.Minute).SetVal("12")
-	mockRedis.ExpectGet("a").SetVal("12")
+	mockRedis.EXPECT().
+		Do(gomock.Any(), mock.Match("SET", "a", "12", "EX", "60")).
+		Return(mock.Result(mock.RedisString("")))
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisString("12")))
 
-	c, err := New[string, int](redis,
+	c, err := New[string, int](mockRedis,
 		WithValueCodec[string, int](codec.NewFuncCodec[int](
 			func(ctx context.Context, data int) (any, error) {
 				return fmt.Sprint(data), nil
@@ -188,33 +203,20 @@ func TestCacheFuncCodecInt(t *testing.T) {
 	v, err := c.Get(ctx, "a")
 	require.NoError(t, err)
 	require.Equal(t, 12, v)
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }
 
 func TestCacheCodecInvalidInt(t *testing.T) {
 	ctx := context.Background()
 
-	redis, mockRedis := redismock.NewClientMock()
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
 
-	mockRedis.ExpectSet("a", 12, time.Minute).SetVal("12")
-	mockRedis.ExpectGet("a").SetVal("12")
-
-	c, err := New[string, int](redis,
+	c, err := New[string, int](mockRedis,
 		WithValueCodec[string, int](codec.NewForwardCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
 	)
 	require.NoError(t, err)
 
 	err = c.Set(ctx, "a", 12)
-	require.NoError(t, err)
-
-	_, err = c.Get(ctx, "a")
 	require.ErrorAs(t, err, new(*trcache.ErrInvalidValueType))
-
-	if err := mockRedis.ExpectationsWereMet(); err != nil {
-		t.Error(err)
-	}
 }

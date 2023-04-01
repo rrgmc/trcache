@@ -119,7 +119,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 		return &trcache.ErrInvalidValueType{fmt.Sprintf("invalid type '%s' for freechache value", getType(keyValue))}
 	}
 
-	return c.cache.Set(keyValue, setValue, int(optns.duration.Seconds()))
+	return c.cache.Set(keyValue, setValue, int(optns.duration.Milliseconds()/1000))
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K,

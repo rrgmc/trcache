@@ -133,7 +133,7 @@ func runMain() error {
 			_, optbok := optionsbuilder[directiveCmd]
 			if !optbok {
 				// create options builder struct
-				optionsBuilderName := fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD)
+				optionsBuilderName := MakeFirstLowerCase(fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD))
 
 				optionsbuilder[directiveCmd] = &jen.Statement{}
 				optionsbuilder[directiveCmd].Add(
@@ -263,7 +263,7 @@ func runMain() error {
 				)
 
 				// generate an "OptionsBuilder" method for each interface method
-				optionsBuilderName := fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD)
+				optionsBuilderName := MakeFirstLowerCase(fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD))
 
 				optionsbuilder[directiveCmd].Add(
 					jen.Func().
@@ -353,7 +353,7 @@ func implStructName(interfaceName string) string {
 	if ret == "options" {
 		ret = "rootOptions"
 	}
-	return ret
+	return fmt.Sprintf("%sImpl", ret)
 }
 
 // getTaggedComments walks the AST and returns types which have directive comment

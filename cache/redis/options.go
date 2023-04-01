@@ -9,7 +9,7 @@ import (
 // Option
 
 // +troptgen root
-type Options[K comparable, V any] interface {
+type options[K comparable, V any] interface {
 	trcache.IsRootOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(name string)
@@ -25,7 +25,7 @@ type Options[K comparable, V any] interface {
 // Cache get options
 
 // +troptgen get
-type GetOptions[K comparable, V any] interface {
+type getOptions[K comparable, V any] interface {
 	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
 	OptCustomParams(customParams any)
@@ -34,7 +34,7 @@ type GetOptions[K comparable, V any] interface {
 
 // helpers
 
-func (ob *GetOptionBuilder[K, V]) WithGetRedisGetFuncFunc(fn RedisGetFuncFunc[K, V]) *GetOptionBuilder[K, V] {
+func (ob *getOptionBuilder[K, V]) WithGetRedisGetFuncFunc(fn RedisGetFuncFunc[K, V]) *getOptionBuilder[K, V] {
 	ob.AppendOptions(WithGetRedisGetFunc[K, V](fn))
 	return ob
 }
@@ -42,7 +42,7 @@ func (ob *GetOptionBuilder[K, V]) WithGetRedisGetFuncFunc(fn RedisGetFuncFunc[K,
 // Cache set options
 
 // +troptgen set
-type SetOptions[K comparable, V any] interface {
+type setOptions[K comparable, V any] interface {
 	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
 	OptCustomParams(customParams any)
@@ -51,7 +51,7 @@ type SetOptions[K comparable, V any] interface {
 
 // helpers
 
-func (ob *SetOptionBuilder[K, V]) WithSetRedisSetFuncFunc(fn RedisSetFuncFunc[K, V]) *SetOptionBuilder[K, V] {
+func (ob *setOptionBuilder[K, V]) WithSetRedisSetFuncFunc(fn RedisSetFuncFunc[K, V]) *setOptionBuilder[K, V] {
 	ob.AppendOptions(WithSetRedisSetFunc[K, V](fn))
 	return ob
 }
@@ -59,7 +59,7 @@ func (ob *SetOptionBuilder[K, V]) WithSetRedisSetFuncFunc(fn RedisSetFuncFunc[K,
 // Cache delete options
 
 // +troptgen delete
-type DeleteOptions[K comparable, V any] interface {
+type deleteOptions[K comparable, V any] interface {
 	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]
 	OptCustomParams(customParams any)
@@ -68,7 +68,7 @@ type DeleteOptions[K comparable, V any] interface {
 
 // helpers
 
-func (ob *DeleteOptionBuilder[K, V]) WithDeleteRedisDelFuncFunc(fn RedisDelFuncFunc[K, V]) *DeleteOptionBuilder[K, V] {
+func (ob *deleteOptionBuilder[K, V]) WithDeleteRedisDelFuncFunc(fn RedisDelFuncFunc[K, V]) *deleteOptionBuilder[K, V] {
 	ob.AppendOptions(WithDeleteRedisDelFunc[K, V](fn))
 	return ob
 }

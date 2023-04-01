@@ -94,70 +94,70 @@ func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOpt
 	})
 }
 
-type RootOptionBuilder[K comparable, V any] struct {
+type rootOptionBuilder[K comparable, V any] struct {
 	RootOptionBuilderBase
 }
 
-func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
-	return &RootOptionBuilder[K, V]{}
+func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
+	return &rootOptionBuilder[K, V]{}
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOption) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOption) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultGetOptions(options ...GetOption) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithCallDefaultGetOptions(options ...GetOption) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithCallDefaultGetOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultSetOptions(options ...SetOption) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithCallDefaultSetOptions(options ...SetOption) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithCallDefaultSetOptions[K, V](options...))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithCallDefaultRefreshOptions(options ...RefreshOption) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithCallDefaultRefreshOptions(options ...RefreshOption) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithCallDefaultRefreshOptions[K, V](options...))
 	return ob
 }
 
-type GetOptionBuilder[K comparable, V any] struct {
+type getOptionBuilder[K comparable, V any] struct {
 	GetOptionBuilderBase
 }
 
-func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
-	return &GetOptionBuilder[K, V]{}
+func GetOpt[K comparable, V any]() *getOptionBuilder[K, V] {
+	return &getOptionBuilder[K, V]{}
 }
-func (ob *GetOptionBuilder[K, V]) WithGetCustomOptions(customOptions []interface{}) *GetOptionBuilder[K, V] {
+func (ob *getOptionBuilder[K, V]) WithGetCustomOptions(customOptions []interface{}) *getOptionBuilder[K, V] {
 	ob.AppendOptions(WithGetCustomOptions[K, V](customOptions))
 	return ob
 }
 
-type SetOptionBuilder[K comparable, V any] struct {
+type setOptionBuilder[K comparable, V any] struct {
 	SetOptionBuilderBase
 }
 
-func SetOpt[K comparable, V any]() *SetOptionBuilder[K, V] {
-	return &SetOptionBuilder[K, V]{}
+func SetOpt[K comparable, V any]() *setOptionBuilder[K, V] {
+	return &setOptionBuilder[K, V]{}
 }
-func (ob *SetOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *SetOptionBuilder[K, V] {
+func (ob *setOptionBuilder[K, V]) WithSetDuration(duration time.Duration) *setOptionBuilder[K, V] {
 	ob.AppendOptions(WithSetDuration[K, V](duration))
 	return ob
 }
 
-type RefreshOptionBuilder[K comparable, V any] struct {
+type refreshOptionBuilder[K comparable, V any] struct {
 	RefreshOptionBuilderBase
 }
 
-func RefreshOpt[K comparable, V any]() *RefreshOptionBuilder[K, V] {
-	return &RefreshOptionBuilder[K, V]{}
+func RefreshOpt[K comparable, V any]() *refreshOptionBuilder[K, V] {
+	return &refreshOptionBuilder[K, V]{}
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshData(data interface{}) *RefreshOptionBuilder[K, V] {
+func (ob *refreshOptionBuilder[K, V]) WithRefreshData(data interface{}) *refreshOptionBuilder[K, V] {
 	ob.AppendOptions(WithRefreshData[K, V](data))
 	return ob
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshRefreshFunc(refreshFunc CacheRefreshFunc[K, V]) *RefreshOptionBuilder[K, V] {
+func (ob *refreshOptionBuilder[K, V]) WithRefreshRefreshFunc(refreshFunc CacheRefreshFunc[K, V]) *refreshOptionBuilder[K, V] {
 	ob.AppendOptions(WithRefreshRefreshFunc[K, V](refreshFunc))
 	return ob
 }
-func (ob *RefreshOptionBuilder[K, V]) WithRefreshSetOptions(options ...SetOption) *RefreshOptionBuilder[K, V] {
+func (ob *refreshOptionBuilder[K, V]) WithRefreshSetOptions(options ...SetOption) *refreshOptionBuilder[K, V] {
 	ob.AppendOptions(WithRefreshSetOptions[K, V](options...))
 	return ob
 }

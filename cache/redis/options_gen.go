@@ -234,3 +234,107 @@ func (ob *DeleteOptionBuilder[K, V]) WithDeleteRedisDelFunc(redisDelFunc RedisDe
 	ob.AppendOptions(WithDeleteRedisDelFunc[K, V](redisDelFunc))
 	return ob
 }
+
+type rootOptions[K comparable, V any] struct {
+	trcache.IsRootOptionsImpl
+	callDefaultDeleteOptions []trcache.DeleteOption
+	callDefaultGetOptions    []trcache.GetOption
+	callDefaultSetOptions    []trcache.SetOption
+	defaultDuration          time.Duration
+	keyCodec                 trcache.KeyCodec[K]
+	name                     string
+	redisDelFunc             RedisDelFunc[K, V]
+	redisGetFunc             RedisGetFunc[K, V]
+	redisSetFunc             RedisSetFunc[K, V]
+	validator                trcache.Validator[V]
+	valueCodec               trcache.Codec[V]
+}
+
+var _ Options[string, string] = &rootOptions[string, string]{}
+
+func (o *rootOptions[K, V]) OptCallDefaultDeleteOptions(options ...trcache.DeleteOption) {
+	o.callDefaultDeleteOptions = options
+}
+func (o *rootOptions[K, V]) OptCallDefaultGetOptions(options ...trcache.GetOption) {
+	o.callDefaultGetOptions = options
+}
+func (o *rootOptions[K, V]) OptCallDefaultSetOptions(options ...trcache.SetOption) {
+	o.callDefaultSetOptions = options
+}
+func (o *rootOptions[K, V]) OptDefaultDuration(duration time.Duration) {
+	o.defaultDuration = duration
+}
+func (o *rootOptions[K, V]) OptKeyCodec(keyCodec trcache.KeyCodec[K]) {
+	o.keyCodec = keyCodec
+}
+func (o *rootOptions[K, V]) OptName(name string) {
+	o.name = name
+}
+func (o *rootOptions[K, V]) OptRedisDelFunc(redisDelFunc RedisDelFunc[K, V]) {
+	o.redisDelFunc = redisDelFunc
+}
+func (o *rootOptions[K, V]) OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V]) {
+	o.redisGetFunc = redisGetFunc
+}
+func (o *rootOptions[K, V]) OptRedisSetFunc(redisSetFunc RedisSetFunc[K, V]) {
+	o.redisSetFunc = redisSetFunc
+}
+func (o *rootOptions[K, V]) OptValidator(validator trcache.Validator[V]) {
+	o.validator = validator
+}
+func (o *rootOptions[K, V]) OptValueCodec(valueCodec trcache.Codec[V]) {
+	o.valueCodec = valueCodec
+}
+
+type getOptions[K comparable, V any] struct {
+	trcache.IsGetOptionsImpl
+	customOptions []interface{}
+	customParams  interface{}
+	redisGetFunc  RedisGetFunc[K, V]
+}
+
+var _ GetOptions[string, string] = &getOptions[string, string]{}
+
+func (o *getOptions[K, V]) OptCustomOptions(customOptions []interface{}) {
+	o.customOptions = customOptions
+}
+func (o *getOptions[K, V]) OptCustomParams(customParams interface{}) {
+	o.customParams = customParams
+}
+func (o *getOptions[K, V]) OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V]) {
+	o.redisGetFunc = redisGetFunc
+}
+
+type setOptions[K comparable, V any] struct {
+	trcache.IsSetOptionsImpl
+	customParams interface{}
+	duration     time.Duration
+	redisSetFunc RedisSetFunc[K, V]
+}
+
+var _ SetOptions[string, string] = &setOptions[string, string]{}
+
+func (o *setOptions[K, V]) OptCustomParams(customParams interface{}) {
+	o.customParams = customParams
+}
+func (o *setOptions[K, V]) OptDuration(duration time.Duration) {
+	o.duration = duration
+}
+func (o *setOptions[K, V]) OptRedisSetFunc(redisSetFunc RedisSetFunc[K, V]) {
+	o.redisSetFunc = redisSetFunc
+}
+
+type deleteOptions[K comparable, V any] struct {
+	trcache.IsDeleteOptionsImpl
+	customParams interface{}
+	redisDelFunc RedisDelFunc[K, V]
+}
+
+var _ DeleteOptions[string, string] = &deleteOptions[string, string]{}
+
+func (o *deleteOptions[K, V]) OptCustomParams(customParams interface{}) {
+	o.customParams = customParams
+}
+func (o *deleteOptions[K, V]) OptRedisDelFunc(redisDelFunc RedisDelFunc[K, V]) {
+	o.redisDelFunc = redisDelFunc
+}

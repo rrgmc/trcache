@@ -114,6 +114,7 @@ func runMain() error {
 				return fmt.Errorf("only interface types are supported: %s", obj.String())
 			}
 
+			// initialize implementation statements
 			_, optiok := optionsimpl[directiveCmd]
 			if !optiok {
 				optionsimpl[directiveCmd] = &jen.Statement{}
@@ -131,6 +132,7 @@ func runMain() error {
 
 			_, optbok := optionsbuilder[directiveCmd]
 			if !optbok {
+				// create options builder struct
 				optionsBuilderName := fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD)
 
 				optionsbuilder[directiveCmd] = &jen.Statement{}
@@ -154,10 +156,11 @@ func runMain() error {
 				)
 			}
 
+			// check if the interface implements trcache.IsXXXOptions. If so, a struct will be created
+			// implementing it.
 			isImpl := false
 			for i := 0; i < interfaceType.NumEmbeddeds(); i++ {
 				et := interfaceType.EmbeddedType(i)
-				fmt.Println(et.String())
 				if etNamedType, ok := et.(*types.Named); ok {
 					if etNamedType.Obj().Pkg().Path() == rootPackage &&
 						etNamedType.Obj().Name() == fmt.Sprintf("Is%sOptions", UCDirectiveCMD) {
@@ -168,20 +171,36 @@ func runMain() error {
 			}
 
 			if isImpl {
+				// create the implementation struct definition
 				if _, itok := optionsimpltype[directiveCmd]; !itok {
 					optionsimpltype[directiveCmd] = jen.
 						Type().
-						Id(MakeFirstLowerCase(namedType.Obj().Name())).
+						Id(implStructName(namedType.Obj().Name())).
 						Add(FromTypeParams(namedType.TypeParams()))
 				}
 
+				// embed trcache.IsXXXOptionImpl in the struct
 				optionsimpl[directiveCmd].Add(
 					jen.Qual(rootPackage, fmt.Sprintf("Is%sOptionsImpl", UCDirectiveCMD)),
 				)
+
+				// add var to ensure struct implements the interface
+				optionsimplfuncs[directiveCmd].Add(
+					jen.Var().
+						Id("_").Id(namedType.Obj().Name()).Add(CallFromTypeParamsFixed(namedType.TypeParams(), "string")).
+						Op("=").
+						Id(fmt.Sprintf("&%s", implStructName(namedType.Obj().Name()))).Add(CallFromTypeParamsFixed(namedType.TypeParams(), "string")).
+						Values(jen.Dict{}),
+				)
 			}
 
+			explicitMethods := map[*types.Func]bool{}
 			for i := 0; i < interfaceType.NumExplicitMethods(); i++ {
-				method := interfaceType.ExplicitMethod(i)
+				explicitMethods[interfaceType.ExplicitMethod(i)] = true
+			}
+
+			for i := 0; i < interfaceType.NumMethods(); i++ {
+				method := interfaceType.Method(i)
 
 				if !method.Exported() {
 					continue
@@ -190,12 +209,31 @@ func runMain() error {
 				methodName := fmt.Sprintf("With%s%s%s", *prefix, UCDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
 				fsig := method.Type().(*types.Signature)
 
-				// add implementation field to struct
 				if isImpl && fsig.Params().Len() > 0 {
+					// add implementation field to struct
 					implFieldName := MakeFirstLowerCase(strings.TrimPrefix(method.Name(), "Opt"))
+
 					optionsimpl[directiveCmd].Add(
 						jen.Id(implFieldName).Add(QualFromType(fsig.Params().At(0).Type())),
 					)
+
+					// add implementation method to struct
+					optionsimplfuncs[directiveCmd].Add(
+						jen.Func().
+							Params(jen.Id("o").Id(fmt.Sprintf("*%s", implStructName(namedType.Obj().Name()))).Add(CallFromTypeParams(namedType.TypeParams()))).
+							Id(method.Name()).
+							Add(FromParams(fsig.Params(), fsig.Variadic())).
+							Block(
+								jen.Id("o").Dot(implFieldName).Op("=").Id(ParamName(fsig.Params().At(0), 0)),
+							),
+					)
+				}
+
+				_, isExplicitMethod := explicitMethods[method]
+
+				// "With" and "OptionsBuilder" are added only for explicit methods
+				if !isExplicitMethod {
+					continue
 				}
 
 				// generate a "With" function for each interface method
@@ -249,27 +287,6 @@ func runMain() error {
 
 		cmds := []string{"root", "get", "set", "delete", "refresh"}
 
-		// generate an impl struct for each interface method
-		for _, d := range cmds {
-			ob, ok := optionsimpl[d]
-			if !ok {
-				continue
-			}
-
-			if len(*ob) > 0 {
-				// f.Add(optionsimpltype[d].Struct(ob))
-				f.Add(optionsimpltype[d].StructFunc(func(g *jen.Group) {
-					for _, obi := range *ob {
-						g.Add(obi)
-					}
-				}))
-			}
-
-			// for _, obi := range *ob {
-			// 	f.Add(obi)
-			// }
-		}
-
 		// generate an options func for each interface method
 		for _, d := range cmds {
 			ob, ok := optionsfuncs[d]
@@ -297,6 +314,31 @@ func runMain() error {
 			}
 		}
 
+		// generate an impl struct for each interface method
+		for _, d := range cmds {
+			ob, ok := optionsimpl[d]
+			if !ok {
+				continue
+			}
+
+			if len(*ob) > 0 {
+				f.Add(optionsimpltype[d].StructFunc(func(g *jen.Group) {
+					for _, obi := range *ob {
+						g.Add(obi)
+					}
+				}))
+			}
+
+			of, ok := optionsimplfuncs[d]
+			if !ok {
+				continue
+			}
+
+			for _, ofi := range *of {
+				f.Add(ofi)
+			}
+		}
+
 		err = f.Save(newfile)
 		if err != nil {
 			return err
@@ -304,6 +346,14 @@ func runMain() error {
 	}
 
 	return nil
+}
+
+func implStructName(interfaceName string) string {
+	ret := MakeFirstLowerCase(interfaceName)
+	if ret == "options" {
+		ret = "rootOptions"
+	}
+	return ret
 }
 
 // getTaggedComments walks the AST and returns types which have directive comment

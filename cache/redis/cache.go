@@ -12,14 +12,14 @@ import (
 )
 
 type Cache[K comparable, V any] struct {
-	options cacheOptions[K, V]
+	options rootOptions[K, V]
 	redis   *redis.Client
 }
 
 func New[K comparable, V any](redis *redis.Client, options ...trcache.RootOption) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
 		redis: redis,
-		options: cacheOptions[K, V]{
+		options: rootOptions[K, V]{
 			defaultDuration: 0, // 0 means default for go-redis
 			redisGetFunc:    DefaultRedisGetFunc[K, V]{},
 			redisSetFunc:    DefaultRedisSetFunc[K, V]{},
@@ -46,7 +46,7 @@ func (c *Cache[K, V]) Name() string {
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption) (V, error) {
 	var optns getOptions[K, V]
-	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
+	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
@@ -79,7 +79,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOpti
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption) error {
 	var optns setOptions[K, V]
-	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
+	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)
 	if err != nil {
@@ -97,7 +97,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption) error {
 	var optns deleteOptions[K, V]
-	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
+	_ = trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {

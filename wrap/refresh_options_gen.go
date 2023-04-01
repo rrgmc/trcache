@@ -3,6 +3,28 @@ package wrap
 
 import trcache "github.com/RangelReale/trcache"
 
+func WithWrapCallDefaultRefreshOptions[K comparable, V any, RD any](options ...trcache.RefreshOption) trcache.RootOption {
+	return trcache.WithCallDefaultRefreshOptions[K, V](options...)
+}
+func WithWrapDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) trcache.RootOption {
+	return trcache.WithDefaultRefreshFunc[K, V, RD](refreshFunc)
+}
+func WithWrapMetrics[K comparable, V any, RD any](metrics trcache.Metrics, name string) trcache.RootOption {
+	return trcache.WithMetrics[K, V](metrics, name)
+}
+func WithWrapRefreshData[K comparable, V any, RD any](data RD) trcache.RefreshOption {
+	return trcache.WithRefreshData[K, V, RD](data)
+}
+func WithWrapRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) trcache.RefreshOption {
+	return trcache.WithRefreshFunc[K, V, RD](refreshFunc)
+}
+func WithWrapRefreshGetOptions[K comparable, V any, RD any](options ...trcache.GetOption) trcache.RefreshOption {
+	return trcache.WithRefreshGetOptions[K, V, RD](options...)
+}
+func WithWrapRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOption) trcache.RefreshOption {
+	return trcache.WithRefreshSetOptions[K, V, RD](options...)
+}
+
 type wrapRefreshOptionsImpl[K comparable, V any, RD any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultRefreshOptions []trcache.RefreshOption

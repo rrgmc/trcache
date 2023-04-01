@@ -6,6 +6,21 @@ import (
 	"time"
 )
 
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
+	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
+}
+func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
+	return trcache.WithCallDefaultGetOptions[K, V](options...)
+}
+func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
+	return trcache.WithCallDefaultSetOptions[K, V](options...)
+}
+func WithName[K comparable, V any](name string) trcache.RootOption {
+	return trcache.WithName[K, V](name)
+}
+func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
+	return trcache.WithGetCustomOptions[K, V](customOptions)
+}
 func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -25,6 +40,9 @@ func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcach
 		}
 		return false
 	})
+}
+func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
+	return trcache.WithSetDuration[K, V](duration)
 }
 func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache.SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {

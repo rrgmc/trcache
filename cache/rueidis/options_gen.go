@@ -6,6 +6,15 @@ import (
 	"time"
 )
 
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
+	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
+}
+func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
+	return trcache.WithCallDefaultGetOptions[K, V](options...)
+}
+func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
+	return trcache.WithCallDefaultSetOptions[K, V](options...)
+}
 func WithDefaultClientSideDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -35,6 +44,9 @@ func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.Roo
 		}
 		return false
 	})
+}
+func WithName[K comparable, V any](name string) trcache.RootOption {
+	return trcache.WithName[K, V](name)
 }
 func WithRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -96,6 +108,9 @@ func WithGetClientSideDuration[K comparable, V any](duration time.Duration) trca
 		return false
 	})
 }
+func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
+	return trcache.WithGetCustomOptions[K, V](customOptions)
+}
 func WithGetCustomParams[K comparable, V any](customParams interface{}) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -125,6 +140,9 @@ func WithSetCustomParams[K comparable, V any](customParams interface{}) trcache.
 		}
 		return false
 	})
+}
+func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
+	return trcache.WithSetDuration[K, V](duration)
 }
 func WithSetRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) trcache.SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {

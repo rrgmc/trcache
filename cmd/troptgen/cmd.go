@@ -231,6 +231,7 @@ func runMain() error {
 				}
 
 				methodName := fmt.Sprintf("With%s%s%s", makeFirstUpperCase(*prefix), UCDefaultDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
+				defaultMethodName := fmt.Sprintf("With%s%s", UCDefaultDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
 				fsig := method.Type().(*types.Signature)
 
 				if isImpl && fsig.Params().Len() > 0 {
@@ -268,9 +269,9 @@ func runMain() error {
 				_, isExplicitMethod := explicitMethods[method]
 
 				// "With" and "OptionsBuilder" are added only for explicit methods
-				if !isExplicitMethod {
-					continue
-				}
+				// if !isExplicitMethod {
+				// 	continue
+				// }
 
 				// generate a "With" function for each interface method
 				optionsfuncs[directiveCmd].Add(
@@ -278,24 +279,35 @@ func runMain() error {
 						Add(FromTypeParams(namedType.TypeParams())).
 						Add(FromParams(fsig.Params(), fsig.Variadic())).
 						Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
-						Block(
-							jen.Return(
-								jen.Qual(rootPackage, fmt.Sprintf("%sOptionFunc", UCDefaultDirectiveCMD)).Call(
-									jen.Func().
-										Params(jen.Id("o").Id("any")).
-										Bool().
-										BlockFunc(func(g *jen.Group) {
-											g.Switch(jen.Id("opt").Op(":=").Id("o.(type)").Block(
-												jen.Case(QualFromType(namedType)).Block(
-													jen.Id("opt").Dot(method.Name()).Add(CallFromParams(fsig.Params(), fsig.Variadic())),
-												),
-												jen.Return(jen.True()),
-											))
+						BlockFunc(func(g *jen.Group) {
+							if isExplicitMethod {
+								g.Return(
+									jen.Qual(rootPackage, fmt.Sprintf("%sOptionFunc", UCDefaultDirectiveCMD)).Call(
+										jen.Func().
+											Params(jen.Id("o").Id("any")).
+											Bool().
+											BlockFunc(func(g *jen.Group) {
+												g.Switch(jen.Id("opt").Op(":=").Id("o.(type)").Block(
+													jen.Case(QualFromType(namedType)).Block(
+														jen.Id("opt").Dot(method.Name()).Add(CallFromParams(fsig.Params(), fsig.Variadic())),
+													),
+													jen.Return(jen.True()),
+												))
 
-											g.Return(jen.False())
-										})),
-							),
-						),
+												g.Return(jen.False())
+											})),
+								)
+							} else {
+								parentNamedType, ok := fsig.Recv().Type().(*types.Named)
+								if ok {
+									g.Return(
+										jen.Qual(rootPackage, defaultMethodName).
+											Add(CallFromTypeParams(parentNamedType.TypeParams())).
+											Add(CallFromParams(fsig.Params(), fsig.Variadic())),
+									)
+								}
+							}
+						}),
 				)
 
 				// // generate an "OptionsBuilder" method for each interface method

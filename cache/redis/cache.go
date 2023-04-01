@@ -88,7 +88,9 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOpti
 }
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption) error {
-	var optns setOptionsImpl[K, V]
+	optns := setOptionsImpl[K, V]{
+		duration: c.options.defaultDuration,
+	}
 	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)

@@ -8,7 +8,7 @@ import (
 )
 
 type Cache[K comparable, V any] struct {
-	options rootOptions[K, V]
+	options rootOptionsImpl[K, V]
 	cache   *ttlcache.Cache[K, V]
 }
 
@@ -18,7 +18,7 @@ func New[K comparable, V any](cache *ttlcache.Cache[K, V],
 	options ...trcache.RootOption) *Cache[K, V] {
 	ret := &Cache[K, V]{
 		cache: cache,
-		options: rootOptions[K, V]{
+		options: rootOptionsImpl[K, V]{
 			defaultDuration: ttlcache.DefaultTTL,
 		},
 	}
@@ -40,7 +40,7 @@ func (c *Cache[K, V]) Name() string {
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption) (V, error) {
-	var optns getOptions[K, V]
+	var optns getOptionsImpl[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
 
 	var ttlopt []ttlcache.Option[K, V]
@@ -66,7 +66,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption) error {
-	var optns setOptions[K, V]
+	var optns setOptionsImpl[K, V]
 	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 
 	_ = c.cache.Set(key, value, c.options.defaultDuration)

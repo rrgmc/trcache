@@ -9,7 +9,7 @@ import (
 )
 
 type Chain[K comparable, V any] struct {
-	options rootOptions[K, V]
+	options rootOptionsImpl[K, V]
 	caches  []trcache.Cache[K, V]
 }
 
@@ -37,7 +37,7 @@ func (c *Chain[K, V]) Name() string {
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption) (V, error) {
-	var optns getOptions[K, V]
+	var optns getOptionsImpl[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
 
 	if optns.getStrategy == nil {
@@ -106,7 +106,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption) error {
-	var optns setOptions[K, V]
+	var optns setOptionsImpl[K, V]
 	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 
 	if optns.setStrategy == nil {
@@ -154,7 +154,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption) error {
-	var optns deleteOptions[K, V]
+	var optns deleteOptionsImpl[K, V]
 	_ = trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
 
 	if optns.deleteStrategy == nil {

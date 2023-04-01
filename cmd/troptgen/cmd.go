@@ -93,8 +93,8 @@ func runMain() error {
 
 			// root, get, set, delete, refresh
 			directiveCmd := strings.TrimSpace(strings.TrimPrefix(stype.comment.Text, directiveLine))
-			UCDirectiveCMD := cases.Title(language.Und).String(directiveCmd)
-			UCDirectiveCMDOptional := cases.Title(language.Und).String(directiveCmd)
+			UCDirectiveCMD := MakeFirstUpperCase(directiveCmd)
+			UCDirectiveCMDOptional := MakeFirstUpperCase(directiveCmd)
 			if directiveCmd == "root" {
 				UCDirectiveCMDOptional = ""
 			}
@@ -206,7 +206,7 @@ func runMain() error {
 					continue
 				}
 
-				methodName := fmt.Sprintf("With%s%s%s", *prefix, UCDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
+				methodName := fmt.Sprintf("With%s%s%s", MakeFirstUpperCase(*prefix), UCDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
 				fsig := method.Type().(*types.Signature)
 
 				if isImpl && fsig.Params().Len() > 0 {
@@ -422,6 +422,10 @@ func findAnnotation(doc *ast.CommentGroup, directive string) *ast.Comment {
 	}
 
 	return nil
+}
+
+func MakeFirstUpperCase(s string) string {
+	return cases.Title(language.Und).String(s)
 }
 
 func MakeFirstLowerCase(s string) string {

@@ -9,7 +9,7 @@ import (
 func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case Options[K, V]:
+		case options[K, V]:
 			opt.OptDefaultDuration(duration)
 			return true
 		}
@@ -19,7 +19,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.Ro
 func WithName[K comparable, V any](name string) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case Options[K, V]:
+		case options[K, V]:
 			opt.OptName(name)
 			return true
 		}
@@ -29,7 +29,7 @@ func WithName[K comparable, V any](name string) trcache.RootOption {
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case Options[K, V]:
+		case options[K, V]:
 			opt.OptValidator(validator)
 			return true
 		}
@@ -39,7 +39,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case GetOptions[K, V]:
+		case getOptions[K, V]:
 			opt.OptTouch(touch)
 			return true
 		}
@@ -47,39 +47,39 @@ func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
 	})
 }
 
-type RootOptionBuilder[K comparable, V any] struct {
+type rootOptionBuilder[K comparable, V any] struct {
 	trcache.RootOptionBuilderBase
 }
 
-func RootOpt[K comparable, V any]() *RootOptionBuilder[K, V] {
-	return &RootOptionBuilder[K, V]{}
+func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
+	return &rootOptionBuilder[K, V]{}
 }
-func (ob *RootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithDefaultDuration[K, V](duration))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithName(name string) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithName(name string) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithName[K, V](name))
 	return ob
 }
-func (ob *RootOptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *RootOptionBuilder[K, V] {
+func (ob *rootOptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithValidator[K, V](validator))
 	return ob
 }
 
-type GetOptionBuilder[K comparable, V any] struct {
+type getOptionBuilder[K comparable, V any] struct {
 	trcache.GetOptionBuilderBase
 }
 
-func GetOpt[K comparable, V any]() *GetOptionBuilder[K, V] {
-	return &GetOptionBuilder[K, V]{}
+func GetOpt[K comparable, V any]() *getOptionBuilder[K, V] {
+	return &getOptionBuilder[K, V]{}
 }
-func (ob *GetOptionBuilder[K, V]) WithGetTouch(touch bool) *GetOptionBuilder[K, V] {
+func (ob *getOptionBuilder[K, V]) WithGetTouch(touch bool) *getOptionBuilder[K, V] {
 	ob.AppendOptions(WithGetTouch[K, V](touch))
 	return ob
 }
 
-type rootOptions[K comparable, V any] struct {
+type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption
@@ -89,55 +89,55 @@ type rootOptions[K comparable, V any] struct {
 	validator                trcache.Validator[V]
 }
 
-var _ Options[string, string] = &rootOptions[string, string]{}
+var _ options[string, string] = &rootOptionsImpl[string, string]{}
 
-func (o *rootOptions[K, V]) OptCallDefaultDeleteOptions(options ...trcache.DeleteOption) {
+func (o *rootOptionsImpl[K, V]) OptCallDefaultDeleteOptions(options ...trcache.DeleteOption) {
 	o.callDefaultDeleteOptions = options
 }
-func (o *rootOptions[K, V]) OptCallDefaultGetOptions(options ...trcache.GetOption) {
+func (o *rootOptionsImpl[K, V]) OptCallDefaultGetOptions(options ...trcache.GetOption) {
 	o.callDefaultGetOptions = options
 }
-func (o *rootOptions[K, V]) OptCallDefaultSetOptions(options ...trcache.SetOption) {
+func (o *rootOptionsImpl[K, V]) OptCallDefaultSetOptions(options ...trcache.SetOption) {
 	o.callDefaultSetOptions = options
 }
-func (o *rootOptions[K, V]) OptDefaultDuration(duration time.Duration) {
+func (o *rootOptionsImpl[K, V]) OptDefaultDuration(duration time.Duration) {
 	o.defaultDuration = duration
 }
-func (o *rootOptions[K, V]) OptName(name string) {
+func (o *rootOptionsImpl[K, V]) OptName(name string) {
 	o.name = name
 }
-func (o *rootOptions[K, V]) OptValidator(validator trcache.Validator[V]) {
+func (o *rootOptionsImpl[K, V]) OptValidator(validator trcache.Validator[V]) {
 	o.validator = validator
 }
 
-type getOptions[K comparable, V any] struct {
+type getOptionsImpl[K comparable, V any] struct {
 	trcache.IsGetOptionsImpl
 	customOptions []interface{}
 	touch         bool
 }
 
-var _ GetOptions[string, string] = &getOptions[string, string]{}
+var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
-func (o *getOptions[K, V]) OptCustomOptions(customOptions []interface{}) {
+func (o *getOptionsImpl[K, V]) OptCustomOptions(customOptions []interface{}) {
 	o.customOptions = customOptions
 }
-func (o *getOptions[K, V]) OptTouch(touch bool) {
+func (o *getOptionsImpl[K, V]) OptTouch(touch bool) {
 	o.touch = touch
 }
 
-type setOptions[K comparable, V any] struct {
+type setOptionsImpl[K comparable, V any] struct {
 	trcache.IsSetOptionsImpl
 	duration time.Duration
 }
 
-var _ SetOptions[string, string] = &setOptions[string, string]{}
+var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
 
-func (o *setOptions[K, V]) OptDuration(duration time.Duration) {
+func (o *setOptionsImpl[K, V]) OptDuration(duration time.Duration) {
 	o.duration = duration
 }
 
-type deleteOptions[K comparable, V any] struct {
+type deleteOptionsImpl[K comparable, V any] struct {
 	trcache.IsDeleteOptionsImpl
 }
 
-var _ DeleteOptions[string, string] = &deleteOptions[string, string]{}
+var _ deleteOptions[string, string] = &deleteOptionsImpl[string, string]{}

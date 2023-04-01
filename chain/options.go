@@ -7,7 +7,7 @@ import (
 // Option
 
 // +troptgen root
-type Options[K comparable, V any] interface {
+type options[K comparable, V any] interface {
 	trcache.IsRootOptions
 	trcache.CallDefaultOptions[K, V]
 	OptName(name string)
@@ -18,7 +18,7 @@ type Options[K comparable, V any] interface {
 // Cache get options
 
 // +troptgen get
-type GetOptions[K comparable, V any] interface {
+type getOptions[K comparable, V any] interface {
 	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
 	OptSetOptions(options ...trcache.SetOption)
@@ -28,7 +28,7 @@ type GetOptions[K comparable, V any] interface {
 // Cache set options
 
 // +troptgen set
-type SetOptions[K comparable, V any] interface {
+type setOptions[K comparable, V any] interface {
 	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
 	OptSetStrategy(setStrategy SetStrategy[K, V])
@@ -37,7 +37,7 @@ type SetOptions[K comparable, V any] interface {
 // Cache delete options
 
 // +troptgen delete
-type DeleteOptions[K comparable, V any] interface {
+type deleteOptions[K comparable, V any] interface {
 	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]
 	OptDeleteStrategy(deleteStrategy DeleteStrategy[K, V])

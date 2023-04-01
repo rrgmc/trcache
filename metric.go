@@ -13,7 +13,7 @@ type MetricsErrorType int
 const (
 	MetricsErrorTypeError MetricsErrorType = iota
 	MetricsErrorTypeGet
-	MetricsErrorTypePut
+	MetricsErrorTypeSet
 	MetricsErrorTypeDecode
 	MetricsErrorTypeEncode
 	MetricsErrorTypeRefresh

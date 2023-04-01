@@ -44,12 +44,28 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {
+		if c.options.metricsMetrics != nil {
+			c.options.metricsMetrics.Hit(ctx, c.options.metricsName)
+		}
 		return ret, nil
 	} else if err != nil && !errors.Is(err, trcache.ErrNotFound) {
+		if c.options.metricsMetrics != nil {
+			var cerr *trcache.CodecError
+			if errors.As(err, &cerr) {
+				c.options.metricsMetrics.Error(ctx, c.options.metricsName, trcache.MetricsErrorTypeDecode)
+			} else {
+				c.options.metricsMetrics.Error(ctx, c.options.metricsName, trcache.MetricsErrorTypeGet)
+			}
+		}
 		var empty V
 		return empty, err
 	}
 
+	if c.options.metricsMetrics != nil {
+		c.options.metricsMetrics.Miss(ctx, c.options.metricsName)
+	}
+
+	// call refresh
 	refreshFn := c.options.defaultRefreshFunc
 	if optns.refreshFunc != nil {
 		refreshFn = optns.refreshFunc
@@ -64,12 +80,23 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 		Data: optns.data,
 	})
 	if err != nil {
+		if c.options.metricsMetrics != nil {
+			c.options.metricsMetrics.Error(ctx, c.options.metricsName, trcache.MetricsErrorTypeRefresh)
+		}
 		var empty V
 		return empty, err
 	}
 
 	err = c.Set(ctx, key, ret, optns.setOptions...)
 	if err != nil {
+		if c.options.metricsMetrics != nil {
+			var cerr *trcache.CodecError
+			if errors.As(err, &cerr) {
+				c.options.metricsMetrics.Error(ctx, c.options.metricsName, trcache.MetricsErrorTypeEncode)
+			} else {
+				c.options.metricsMetrics.Error(ctx, c.options.metricsName, trcache.MetricsErrorTypeSet)
+			}
+		}
 		var empty V
 		return empty, err
 	}

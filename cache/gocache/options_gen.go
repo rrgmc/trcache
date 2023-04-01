@@ -26,16 +26,6 @@ func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.Roo
 		return false
 	})
 }
-func WithName[K comparable, V any](name string) trcache.RootOption {
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case options[K, V]:
-			opt.OptName(name)
-			return true
-		}
-		return false
-	})
-}
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -70,10 +60,6 @@ func (ob *rootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *
 }
 func (ob *rootOptionBuilder[K, V]) WithKeyCodec(keyCodec trcache.KeyCodec[K]) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithKeyCodec[K, V](keyCodec))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithName(name string) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithName[K, V](name))
 	return ob
 }
 func (ob *rootOptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *rootOptionBuilder[K, V] {

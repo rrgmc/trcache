@@ -6,7 +6,10 @@ import "time"
 // Root options
 //
 
-// Root Call Default options
+// +troptgen root
+type Options[K comparable, V any] interface {
+	OptName(name string)
+}
 
 // +troptgen root
 type MetricsOptions[K comparable, V any] interface {

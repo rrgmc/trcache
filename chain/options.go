@@ -9,8 +9,8 @@ import (
 // +troptgen root
 type options[K comparable, V any] interface {
 	trcache.IsRootOptions
+	trcache.Options[K, V]
 	trcache.CallDefaultOptions[K, V]
-	OptName(name string)
 	OptRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V])
 	OptSetPreviousOnGet(setPreviousOnGet bool)
 }

@@ -11,8 +11,8 @@ import (
 // +troptgen root
 type options[K comparable, V any] interface {
 	trcache.IsRootOptions
+	trcache.Options[K, V]
 	trcache.CallDefaultOptions[K, V]
-	OptName(name string)
 	OptValidator(validator trcache.Validator[V])
 	OptDefaultDuration(duration time.Duration)
 }

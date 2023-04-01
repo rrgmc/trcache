@@ -9,7 +9,7 @@ import "time"
 // Root Call Default options
 
 // +troptgen root
-type Options[K comparable, V any] interface {
+type MetricsOptions[K comparable, V any] interface {
 	OptMetrics(metrics Metrics, name string)
 }
 

@@ -9,6 +9,7 @@ import (
 // +troptgen root
 type wrapRefreshOptions[K comparable, V any] interface {
 	trcache.IsRootOptions
+	trcache.MetricsOptions[K, V]
 	trcache.CallDefaultRefreshOptions[K, V]
 	OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V])
 }

@@ -30,6 +30,8 @@ type wrapRefreshOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultRefreshOptions []trcache.RefreshOption
 	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V]
+	metricsMetrics            trcache.Metrics
+	metricsName               string
 }
 
 var _ wrapRefreshOptions[string, string] = &wrapRefreshOptionsImpl[string, string]{}
@@ -39,6 +41,10 @@ func (o *wrapRefreshOptionsImpl[K, V]) OptCallDefaultRefreshOptions(options ...t
 }
 func (o *wrapRefreshOptionsImpl[K, V]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
 	o.defaultRefreshFunc = refreshFunc
+}
+func (o *wrapRefreshOptionsImpl[K, V]) OptMetrics(metrics trcache.Metrics, name string) {
+	o.metricsMetrics = metrics
+	o.metricsName = name
 }
 
 type wrapRefreshRefreshOptionsImpl[K comparable, V any] struct {

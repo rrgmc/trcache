@@ -6,7 +6,7 @@ import "time"
 func WithMetrics[K comparable, V any](metrics Metrics, name string) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case Options[K, V]:
+		case MetricsOptions[K, V]:
 			opt.OptMetrics(metrics, name)
 			return true
 		}

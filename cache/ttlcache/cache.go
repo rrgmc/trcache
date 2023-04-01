@@ -66,10 +66,12 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption) error {
-	var optns setOptionsImpl[K, V]
+	optns := setOptionsImpl[K, V]{
+		duration: c.options.defaultDuration,
+	}
 	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 
-	_ = c.cache.Set(key, value, c.options.defaultDuration)
+	_ = c.cache.Set(key, value, optns.duration)
 	return nil
 }
 

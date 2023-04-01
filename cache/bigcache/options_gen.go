@@ -47,30 +47,6 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.Ro
 	})
 }
 
-type rootOptionBuilder[K comparable, V any] struct {
-	trcache.RootOptionBuilderBase
-}
-
-func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
-	return &rootOptionBuilder[K, V]{}
-}
-func (ob *rootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithDefaultDuration[K, V](duration))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithKeyCodec(keyCodec trcache.KeyCodec[K]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithKeyCodec[K, V](keyCodec))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithValidator[K, V](validator))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithValueCodec(valueCodec trcache.Codec[V]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithValueCodec[K, V](valueCodec))
-	return ob
-}
-
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption

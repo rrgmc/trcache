@@ -53,12 +53,12 @@ var _ RootOption = RootOptionFunc(func(a any) bool {
 	return true
 })
 
-// Root options: builder base
-
-type RootOptionBuilderBase struct {
-	IsRootOption
-	optionBuilder[RootOption]
-}
+// // Root options: builder base
+//
+// type RootOptionBuilderBase struct {
+// 	IsRootOption
+// 	optionBuilder[RootOption]
+// }
 
 // Root options: functions
 
@@ -109,12 +109,12 @@ var _ GetOption = GetOptionFunc(func(a any) bool {
 	return true
 })
 
-// Get options: builder base
-
-type GetOptionBuilderBase struct {
-	IsGetOption
-	optionBuilder[GetOption]
-}
+// // Get options: builder base
+//
+// type GetOptionBuilderBase struct {
+// 	IsGetOption
+// 	optionBuilder[GetOption]
+// }
 
 // Get options: functions
 
@@ -165,12 +165,12 @@ var _ SetOption = SetOptionFunc(func(a any) bool {
 	return true
 })
 
-// Set options: builder base
-
-type SetOptionBuilderBase struct {
-	IsSetOption
-	optionBuilder[SetOption]
-}
+// // Set options: builder base
+//
+// type SetOptionBuilderBase struct {
+// 	IsSetOption
+// 	optionBuilder[SetOption]
+// }
 
 // Set options: functions
 
@@ -221,12 +221,12 @@ var _ DeleteOption = DeleteOptionFunc(func(a any) bool {
 	return true
 })
 
-// Delete options: builder base
-
-type DeleteOptionBuilderBase struct {
-	IsDeleteOption
-	optionBuilder[DeleteOption]
-}
+// // Delete options: builder base
+//
+// type DeleteOptionBuilderBase struct {
+// 	IsDeleteOption
+// 	optionBuilder[DeleteOption]
+// }
 
 // Cache delete options: functions
 
@@ -277,12 +277,12 @@ var _ RefreshOption = RefreshOptionFunc(func(a any) bool {
 	return true
 })
 
-// Refresh options: builder base
-
-type RefreshOptionBuilderBase struct {
-	IsRefreshOption
-	optionBuilder[RefreshOption]
-}
+// // Refresh options: builder base
+//
+// type RefreshOptionBuilderBase struct {
+// 	IsRefreshOption
+// 	optionBuilder[RefreshOption]
+// }
 
 // Refresh options: functions
 

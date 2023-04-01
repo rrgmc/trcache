@@ -37,34 +37,6 @@ func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
 	})
 }
 
-type rootOptionBuilder[K comparable, V any] struct {
-	trcache.RootOptionBuilderBase
-}
-
-func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
-	return &rootOptionBuilder[K, V]{}
-}
-func (ob *rootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithDefaultDuration[K, V](duration))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithValidator[K, V](validator))
-	return ob
-}
-
-type getOptionBuilder[K comparable, V any] struct {
-	trcache.GetOptionBuilderBase
-}
-
-func GetOpt[K comparable, V any]() *getOptionBuilder[K, V] {
-	return &getOptionBuilder[K, V]{}
-}
-func (ob *getOptionBuilder[K, V]) WithGetTouch(touch bool) *getOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetTouch[K, V](touch))
-	return ob
-}
-
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption

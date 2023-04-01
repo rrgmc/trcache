@@ -47,46 +47,6 @@ func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy
 	})
 }
 
-type getOptionBuilder[K comparable, V any] struct {
-	trcache.GetOptionBuilderBase
-}
-
-func GetOpt[K comparable, V any]() *getOptionBuilder[K, V] {
-	return &getOptionBuilder[K, V]{}
-}
-func (ob *getOptionBuilder[K, V]) WithGetGetStrategy(getStrategy GetStrategy[K, V]) *getOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetGetStrategy[K, V](getStrategy))
-	return ob
-}
-func (ob *getOptionBuilder[K, V]) WithGetSetOptions(options ...trcache.SetOption) *getOptionBuilder[K, V] {
-	ob.AppendOptions(WithGetSetOptions[K, V](options...))
-	return ob
-}
-
-type setOptionBuilder[K comparable, V any] struct {
-	trcache.SetOptionBuilderBase
-}
-
-func SetOpt[K comparable, V any]() *setOptionBuilder[K, V] {
-	return &setOptionBuilder[K, V]{}
-}
-func (ob *setOptionBuilder[K, V]) WithSetSetStrategy(setStrategy SetStrategy[K, V]) *setOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetSetStrategy[K, V](setStrategy))
-	return ob
-}
-
-type deleteOptionBuilder[K comparable, V any] struct {
-	trcache.DeleteOptionBuilderBase
-}
-
-func DeleteOpt[K comparable, V any]() *deleteOptionBuilder[K, V] {
-	return &deleteOptionBuilder[K, V]{}
-}
-func (ob *deleteOptionBuilder[K, V]) WithDeleteDeleteStrategy(deleteStrategy DeleteStrategy[K, V]) *deleteOptionBuilder[K, V] {
-	ob.AppendOptions(WithDeleteDeleteStrategy[K, V](deleteStrategy))
-	return ob
-}
-
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption

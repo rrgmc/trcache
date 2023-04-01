@@ -57,42 +57,6 @@ func WithSetCost[K comparable, V any](cost int64) trcache.SetOption {
 	})
 }
 
-type rootOptionBuilder[K comparable, V any] struct {
-	trcache.RootOptionBuilderBase
-}
-
-func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
-	return &rootOptionBuilder[K, V]{}
-}
-func (ob *rootOptionBuilder[K, V]) WithDefaultDuration(duration time.Duration) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithDefaultDuration[K, V](duration))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithEventualConsistency(eventualConsistency bool) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithEventualConsistency[K, V](eventualConsistency))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithValidator(validator trcache.Validator[V]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithValidator[K, V](validator))
-	return ob
-}
-func (ob *rootOptionBuilder[K, V]) WithValueCodec(valueCodec trcache.Codec[V]) *rootOptionBuilder[K, V] {
-	ob.AppendOptions(WithValueCodec[K, V](valueCodec))
-	return ob
-}
-
-type setOptionBuilder[K comparable, V any] struct {
-	trcache.SetOptionBuilderBase
-}
-
-func SetOpt[K comparable, V any]() *setOptionBuilder[K, V] {
-	return &setOptionBuilder[K, V]{}
-}
-func (ob *setOptionBuilder[K, V]) WithSetCost(cost int64) *setOptionBuilder[K, V] {
-	ob.AppendOptions(WithSetCost[K, V](cost))
-	return ob
-}
-
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption

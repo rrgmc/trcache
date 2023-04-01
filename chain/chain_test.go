@@ -29,10 +29,9 @@ func TestChain(t *testing.T) {
 	c := New[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2, mockCache3,
 	},
-		trcache.RootOpt[string, string]().
-			WithCallDefaultGetOptions(
-				WithGetGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
-			),
+		trcache.WithCallDefaultGetOptions[string, string](
+			WithGetGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
+		),
 	)
 
 	value, err := c.Get(ctx, "a")

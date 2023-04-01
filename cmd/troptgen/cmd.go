@@ -213,9 +213,15 @@ func runMain() error {
 					// add implementation field to struct
 					implFieldName := MakeFirstLowerCase(strings.TrimPrefix(method.Name(), "Opt"))
 
-					optionsimpl[directiveCmd].Add(
-						jen.Id(implFieldName).Add(QualFromType(fsig.Params().At(0).Type())),
-					)
+					for p := 0; p < fsig.Params().Len(); p++ {
+						iname := implFieldName
+						if fsig.Params().Len() > 1 {
+							iname = fmt.Sprintf("%s%s", implFieldName, MakeFirstUpperCase(fsig.Params().At(p).Name()))
+						}
+						optionsimpl[directiveCmd].Add(
+							jen.Id(iname).Add(QualFromType(fsig.Params().At(p).Type())),
+						)
+					}
 
 					// add implementation method to struct
 					optionsimplfuncs[directiveCmd].Add(
@@ -223,9 +229,15 @@ func runMain() error {
 							Params(jen.Id("o").Id(fmt.Sprintf("*%s", implStructName(namedType.Obj().Name()))).Add(CallFromTypeParams(namedType.TypeParams()))).
 							Id(method.Name()).
 							Add(FromParams(fsig.Params(), fsig.Variadic())).
-							Block(
-								jen.Id("o").Dot(implFieldName).Op("=").Id(ParamName(fsig.Params().At(0), 0)),
-							),
+							BlockFunc(func(g *jen.Group) {
+								for p := 0; p < fsig.Params().Len(); p++ {
+									iname := implFieldName
+									if fsig.Params().Len() > 1 {
+										iname = fmt.Sprintf("%s%s", implFieldName, MakeFirstUpperCase(fsig.Params().At(p).Name()))
+									}
+									g.Id("o").Dot(iname).Op("=").Id(ParamName(fsig.Params().At(p), 0))
+								}
+							}),
 					)
 				}
 

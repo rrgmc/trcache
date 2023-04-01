@@ -3,6 +3,16 @@ package trcache
 
 import "time"
 
+func WithMetrics[K comparable, V any](metrics Metrics, name string) RootOption {
+	return RootOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case Options[K, V]:
+			opt.OptMetrics(metrics, name)
+			return true
+		}
+		return false
+	})
+}
 func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -100,6 +110,10 @@ type rootOptionBuilder[K comparable, V any] struct {
 
 func RootOpt[K comparable, V any]() *rootOptionBuilder[K, V] {
 	return &rootOptionBuilder[K, V]{}
+}
+func (ob *rootOptionBuilder[K, V]) WithMetrics(metrics Metrics, name string) *rootOptionBuilder[K, V] {
+	ob.AppendOptions(WithMetrics[K, V](metrics, name))
+	return ob
 }
 func (ob *rootOptionBuilder[K, V]) WithCallDefaultDeleteOptions(options ...DeleteOption) *rootOptionBuilder[K, V] {
 	ob.AppendOptions(WithCallDefaultDeleteOptions[K, V](options...))

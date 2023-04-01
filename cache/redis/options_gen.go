@@ -242,6 +242,8 @@ type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultSetOptions    []trcache.SetOption
 	defaultDuration          time.Duration
 	keyCodec                 trcache.KeyCodec[K]
+	metricsMetrics           trcache.Metrics
+	metricsName              string
 	name                     string
 	redisDelFunc             RedisDelFunc[K, V]
 	redisGetFunc             RedisGetFunc[K, V]
@@ -266,6 +268,10 @@ func (o *rootOptionsImpl[K, V]) OptDefaultDuration(duration time.Duration) {
 }
 func (o *rootOptionsImpl[K, V]) OptKeyCodec(keyCodec trcache.KeyCodec[K]) {
 	o.keyCodec = keyCodec
+}
+func (o *rootOptionsImpl[K, V]) OptMetrics(metrics trcache.Metrics, name string) {
+	o.metricsMetrics = metrics
+	o.metricsName = name
 }
 func (o *rootOptionsImpl[K, V]) OptName(name string) {
 	o.name = name

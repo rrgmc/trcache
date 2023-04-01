@@ -2,18 +2,19 @@ package trcache
 
 import "context"
 
-type Metric interface {
+type Metrics interface {
 	Hit(ctx context.Context, name string)
 	Miss(ctx context.Context, name string)
-	Error(ctx context.Context, name string, errorType MetricErrorType)
+	Error(ctx context.Context, name string, errorType MetricsErrorType)
 }
 
-type MetricErrorType int
+type MetricsErrorType int
 
 const (
-	MetricErrorTypeGet MetricErrorType = iota
-	MetricErrorTypePut
-	MetricErrorTypeDecode
-	MetricErrorTypeEncode
-	MetricErrorTypeRefresh
+	MetricsErrorTypeError MetricsErrorType = iota
+	MetricsErrorTypeGet
+	MetricsErrorTypePut
+	MetricsErrorTypeDecode
+	MetricsErrorTypeEncode
+	MetricsErrorTypeRefresh
 )

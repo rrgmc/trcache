@@ -78,3 +78,66 @@ func (ob *GetOptionBuilder[K, V]) WithGetTouch(touch bool) *GetOptionBuilder[K, 
 	ob.AppendOptions(WithGetTouch[K, V](touch))
 	return ob
 }
+
+type rootOptions[K comparable, V any] struct {
+	trcache.IsRootOptionsImpl
+	callDefaultDeleteOptions []trcache.DeleteOption
+	callDefaultGetOptions    []trcache.GetOption
+	callDefaultSetOptions    []trcache.SetOption
+	defaultDuration          time.Duration
+	name                     string
+	validator                trcache.Validator[V]
+}
+
+var _ Options[string, string] = &rootOptions[string, string]{}
+
+func (o *rootOptions[K, V]) OptCallDefaultDeleteOptions(options ...trcache.DeleteOption) {
+	o.callDefaultDeleteOptions = options
+}
+func (o *rootOptions[K, V]) OptCallDefaultGetOptions(options ...trcache.GetOption) {
+	o.callDefaultGetOptions = options
+}
+func (o *rootOptions[K, V]) OptCallDefaultSetOptions(options ...trcache.SetOption) {
+	o.callDefaultSetOptions = options
+}
+func (o *rootOptions[K, V]) OptDefaultDuration(duration time.Duration) {
+	o.defaultDuration = duration
+}
+func (o *rootOptions[K, V]) OptName(name string) {
+	o.name = name
+}
+func (o *rootOptions[K, V]) OptValidator(validator trcache.Validator[V]) {
+	o.validator = validator
+}
+
+type getOptions[K comparable, V any] struct {
+	trcache.IsGetOptionsImpl
+	customOptions []interface{}
+	touch         bool
+}
+
+var _ GetOptions[string, string] = &getOptions[string, string]{}
+
+func (o *getOptions[K, V]) OptCustomOptions(customOptions []interface{}) {
+	o.customOptions = customOptions
+}
+func (o *getOptions[K, V]) OptTouch(touch bool) {
+	o.touch = touch
+}
+
+type setOptions[K comparable, V any] struct {
+	trcache.IsSetOptionsImpl
+	duration time.Duration
+}
+
+var _ SetOptions[string, string] = &setOptions[string, string]{}
+
+func (o *setOptions[K, V]) OptDuration(duration time.Duration) {
+	o.duration = duration
+}
+
+type deleteOptions[K comparable, V any] struct {
+	trcache.IsDeleteOptionsImpl
+}
+
+var _ DeleteOptions[string, string] = &deleteOptions[string, string]{}

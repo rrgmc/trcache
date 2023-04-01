@@ -40,7 +40,7 @@ func (c *wrapRefreshCache[K, V]) Delete(ctx context.Context, key K,
 
 func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
 	var optns wrapRefreshRefreshOptions[K, V]
-	_ = trcache.ParseRefreshOptions(&optns, c.options.fnDefaultRefresh, options)
+	_ = trcache.ParseRefreshOptions(&optns, c.options.callDefaultRefreshOptions, options)
 
 	ret, err := c.Get(ctx, key)
 	if err == nil {
@@ -50,9 +50,9 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 		return empty, err
 	}
 
-	refreshFn := c.options.refreshFunc
-	if optns.refreshFn != nil {
-		refreshFn = optns.refreshFn
+	refreshFn := c.options.defaultRefreshFunc
+	if optns.refreshFunc != nil {
+		refreshFn = optns.refreshFunc
 	}
 
 	if refreshFn == nil {
@@ -68,7 +68,7 @@ func (c *wrapRefreshCache[K, V]) GetOrRefresh(ctx context.Context, key K, option
 		return empty, err
 	}
 
-	err = c.Set(ctx, key, ret, optns.cacheSetOpt...)
+	err = c.Set(ctx, key, ret, optns.setOptions...)
 	if err != nil {
 		var empty V
 		return empty, err

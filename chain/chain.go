@@ -9,7 +9,7 @@ import (
 )
 
 type Chain[K comparable, V any] struct {
-	options cacheOptions[K, V]
+	options rootOptions[K, V]
 	caches  []trcache.Cache[K, V]
 }
 
@@ -38,7 +38,7 @@ func (c *Chain[K, V]) Name() string {
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption) (V, error) {
 	var optns getOptions[K, V]
-	_ = trcache.ParseGetOptions(&optns, c.options.fnDefaultGet, options)
+	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
 
 	if optns.getStrategy == nil {
 		optns.getStrategy = GetStrategyGetFirstSetPrevious[K, V]{}
@@ -49,7 +49,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	gotCacheIdx := -1
 	var ret V
 
-	callOpts := trcache.AppendGetOptions(c.options.fnDefaultGet, options)
+	callOpts := trcache.AppendGetOptions(c.options.callDefaultGetOptions, options)
 	for cacheIdx, cache := range c.caches {
 		switch optns.getStrategy.BeforeGet(ctx, cacheIdx, cache, key) {
 		case GetStrategyBeforeResultSkip:
@@ -82,7 +82,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 		return empty, trcache.ErrNotFound
 	}
 
-	callSetOpts := trcache.AppendSetOptions(c.options.fnDefaultSet, optns.setOptions)
+	callSetOpts := trcache.AppendSetOptions(c.options.callDefaultSetOptions, optns.setOptions)
 	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
 		switch optns.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
 		case GetStrategyBeforeSetResultSkip:
@@ -107,7 +107,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption) error {
 	var optns setOptions[K, V]
-	_ = trcache.ParseSetOptions(&optns, c.options.fnDefaultSet, options)
+	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 
 	if optns.setStrategy == nil {
 		optns.setStrategy = &SetStrategySetAll[K, V]{}
@@ -116,7 +116,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	var reterr error
 
 	success := false
-	callOpts := trcache.AppendSetOptions(c.options.fnDefaultSet, options)
+	callOpts := trcache.AppendSetOptions(c.options.callDefaultSetOptions, options)
 	for cacheIdx, cache := range c.caches {
 		switch optns.setStrategy.BeforeSet(ctx, cacheIdx, cache, key, value) {
 		case SetStrategyBeforeResultSkip:
@@ -155,7 +155,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption) error {
 	var optns deleteOptions[K, V]
-	_ = trcache.ParseDeleteOptions(&optns, c.options.fnDefaultDelete, options)
+	_ = trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
 
 	if optns.deleteStrategy == nil {
 		optns.deleteStrategy = &DeleteStrategyDeleteAll[K, V]{}
@@ -165,7 +165,7 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 
 	// delete from all
 	success := false
-	callOpts := trcache.AppendDeleteOptions(c.options.fnDefaultDelete, options)
+	callOpts := trcache.AppendDeleteOptions(c.options.callDefaultDeleteOptions, options)
 	for cacheIdx, cache := range c.caches {
 		switch optns.deleteStrategy.BeforeDelete(ctx, cacheIdx, cache, key) {
 		case DeleteStrategyBeforeResultSkip:

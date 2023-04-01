@@ -13,49 +13,12 @@ type WrapRefreshOptions[K comparable, V any] interface {
 	OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V])
 }
 
-type wrapRefreshOptions[K comparable, V any] struct {
-	trcache.IsRootOptionsImpl
-	refreshFunc      trcache.CacheRefreshFunc[K, V]
-	fnDefaultRefresh []trcache.RefreshOption
-}
-
-var _ WrapRefreshOptions[string, string] = &wrapRefreshOptions[string, string]{}
-
-func (w *wrapRefreshOptions[K, V]) OptCallDefaultRefreshOptions(i ...trcache.RefreshOption) {
-	w.fnDefaultRefresh = i
-}
-
-func (w *wrapRefreshOptions[K, V]) OptDefaultRefreshFunc(t trcache.CacheRefreshFunc[K, V]) {
-	w.refreshFunc = t
-}
-
 // Cache refresh options
 
 // +troptgen refresh
 type WrapRefreshRefreshOptions[K comparable, V any] interface {
 	trcache.IsRefreshOptions
 	trcache.RefreshOptions[K, V]
-}
-
-type wrapRefreshRefreshOptions[K comparable, V any] struct {
-	trcache.IsRefreshOptionsImpl
-	data        any
-	cacheSetOpt []trcache.SetOption
-	refreshFn   trcache.CacheRefreshFunc[K, V]
-}
-
-var _ WrapRefreshRefreshOptions[string, string] = &wrapRefreshRefreshOptions[string, string]{}
-
-func (w *wrapRefreshRefreshOptions[K, V]) OptData(a any) {
-	w.data = a
-}
-
-func (w *wrapRefreshRefreshOptions[K, V]) OptSetOptions(i ...trcache.SetOption) {
-	w.cacheSetOpt = w.cacheSetOpt
-}
-
-func (w *wrapRefreshRefreshOptions[K, V]) OptRefreshFunc(c trcache.CacheRefreshFunc[K, V]) {
-	w.refreshFn = c
 }
 
 //go:generate troptgen -prefix Wrap

@@ -59,7 +59,7 @@ func ParseRootOptions(obj IsRootOptions, options ...[]RootOption) error {
 	return parseOptions(obj, options...)
 }
 
-func AppendRootOptions[K comparable, V any](options ...[]RootOption) []RootOption {
+func AppendRootOptions(options ...[]RootOption) []RootOption {
 	return appendOptions(options...)
 }
 

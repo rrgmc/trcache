@@ -47,7 +47,7 @@ func (c JSONCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 		udata = []byte(dt)
 	default:
 		return ret, &trcache.InvalidValueTypeError{
-			fmt.Sprintf("unknown data type '%s' for JSON unmarshal", getType(data)),
+			fmt.Sprintf("unknown data type '%T' for JSON unmarshal", data),
 		}
 	}
 

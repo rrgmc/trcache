@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"reflect"
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
@@ -22,10 +21,12 @@ var _ trcache.Cache[string, string] = &Cache[string, string]{}
 func New[K comparable, V any](cache *bigcache.BigCache,
 	options ...RootOption) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
-		cache:   cache,
-		options: rootOptionsImpl[K, V]{},
+		cache: cache,
 	}
-	_ = trcache.ParseRootOptions(&ret.options, options)
+	optErr := trcache.ParseRootOptions(&ret.options, options)
+	if optErr != nil && !ret.options.ignoreOptionNotSupported {
+		return nil, optErr
+	}
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
@@ -41,7 +42,7 @@ func NewRefresh[K comparable, V any, RD any](cache *bigcache.BigCache,
 	if err != nil {
 		return nil, err
 	}
-	return wrap.NewWrapRefreshCache[K, V, RD](c, options...), nil
+	return wrap.NewWrapRefreshCache[K, V, RD](c, options...)
 }
 
 // func NewDefault[K comparable, V any](options ...RootOption) *Cache[K, V] {
@@ -116,7 +117,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 	case string:
 		setValue = []byte(s)
 	default:
-		return &trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for bigcache value", getType(keyValue))}
+		return &trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%T' for bigcache value", keyValue)}
 	}
 
 	return c.cache.Set(keyValue, setValue)
@@ -145,15 +146,7 @@ func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
 		return string(kv), nil
 	default:
 		return "", trcache.CodecError{
-			&trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
+			&trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%T' for redis key", keyValue)},
 		}
-	}
-}
-
-func getType(myvar interface{}) string {
-	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
-		return "*" + t.Elem().Name()
-	} else {
-		return t.Name()
 	}
 }

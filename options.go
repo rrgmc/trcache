@@ -8,6 +8,11 @@ import "time"
 
 //troptgen:root
 type Options[K comparable, V any] interface {
+	OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool)
+}
+
+//troptgen:root
+type NameOptions[K comparable, V any] interface {
 	OptName(name string)
 }
 
@@ -39,7 +44,7 @@ type CallDefaultRefreshOptions[K comparable, V any] interface {
 
 //troptgen:get
 type GetOptions[K comparable, V any] interface {
-	OptCustomOptions(customOptions []any)
+	OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool)
 }
 
 //
@@ -48,11 +53,17 @@ type GetOptions[K comparable, V any] interface {
 
 //troptgen:set
 type SetOptions[K comparable, V any] interface {
+	OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool)
 	OptDuration(duration time.Duration)
 }
 
+//
+// Delete options
+//
+
 //troptgen:delete
 type DeleteOptions[K comparable, V any] interface {
+	OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool)
 }
 
 //
@@ -65,6 +76,7 @@ type RefreshFuncOptions[RD any] struct {
 
 //troptgen:refresh
 type RefreshOptions[K comparable, V any, RD any] interface {
+	OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool)
 	OptData(data RD)
 	OptGetOptions(options ...GetOption)
 	OptSetOptions(options ...SetOption)

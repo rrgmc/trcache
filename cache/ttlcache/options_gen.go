@@ -28,6 +28,9 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 		return false
 	})
 }
+func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
+	return trcache.WithIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 func WithName[K comparable, V any](name string) RootOption {
 	return trcache.WithName[K, V](name)
 }
@@ -44,8 +47,8 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 
 type GetOption = trcache.GetOption
 
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
-	return trcache.WithGetCustomOptions[K, V](customOptions)
+func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
+	return trcache.WithGetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithGetTouch[K comparable, V any](touch bool) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
@@ -63,14 +66,23 @@ type SetOption = trcache.SetOption
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return trcache.WithSetDuration[K, V](duration)
 }
+func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) SetOption {
+	return trcache.WithSetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 
 type DeleteOption = trcache.DeleteOption
+
+func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
+	return trcache.WithDeleteIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
+
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption
 	callDefaultSetOptions    []trcache.SetOption
 	defaultDuration          time.Duration
+	ignoreOptionNotSupported bool
 	name                     string
 	validator                trcache.Validator[V]
 }
@@ -89,6 +101,9 @@ func (o *rootOptionsImpl[K, V]) OptCallDefaultSetOptions(options ...trcache.SetO
 func (o *rootOptionsImpl[K, V]) OptDefaultDuration(duration time.Duration) {
 	o.defaultDuration = duration
 }
+func (o *rootOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}
 func (o *rootOptionsImpl[K, V]) OptName(name string) {
 	o.name = name
 }
@@ -98,14 +113,14 @@ func (o *rootOptionsImpl[K, V]) OptValidator(validator trcache.Validator[V]) {
 
 type getOptionsImpl[K comparable, V any] struct {
 	trcache.IsGetOptionsImpl
-	customOptions []interface{}
-	touch         bool
+	ignoreOptionNotSupported bool
+	touch                    bool
 }
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
-func (o *getOptionsImpl[K, V]) OptCustomOptions(customOptions []interface{}) {
-	o.customOptions = customOptions
+func (o *getOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
 }
 func (o *getOptionsImpl[K, V]) OptTouch(touch bool) {
 	o.touch = touch
@@ -113,7 +128,8 @@ func (o *getOptionsImpl[K, V]) OptTouch(touch bool) {
 
 type setOptionsImpl[K comparable, V any] struct {
 	trcache.IsSetOptionsImpl
-	duration time.Duration
+	duration                 time.Duration
+	ignoreOptionNotSupported bool
 }
 
 var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
@@ -121,9 +137,17 @@ var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
 func (o *setOptionsImpl[K, V]) OptDuration(duration time.Duration) {
 	o.duration = duration
 }
+func (o *setOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}
 
 type deleteOptionsImpl[K comparable, V any] struct {
 	trcache.IsDeleteOptionsImpl
+	ignoreOptionNotSupported bool
 }
 
 var _ deleteOptions[string, string] = &deleteOptionsImpl[string, string]{}
+
+func (o *deleteOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}

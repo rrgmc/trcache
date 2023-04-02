@@ -2,6 +2,7 @@ package trcache
 
 import (
 	"errors"
+	"fmt"
 )
 
 var (
@@ -46,13 +47,17 @@ func (e *InvalidValueTypeError) Error() string {
 
 // OptionNotSupportedError represents that an options is not supported by the implementation.
 type OptionNotSupportedError struct {
-	Option Option
+	Message string
+	Option  Option
 }
 
 func NewOptionNotSupportedError(option Option) OptionNotSupportedError {
-	return OptionNotSupportedError{option}
+	return OptionNotSupportedError{
+		Message: fmt.Sprintf("option not supported: %s (%T)", getName(option), option),
+		Option:  option,
+	}
 }
 
 func (e OptionNotSupportedError) Error() string {
-	return "option not supported"
+	return e.Message
 }

@@ -14,21 +14,25 @@ type Chain[K comparable, V any] struct {
 }
 
 func New[K comparable, V any](cache []trcache.Cache[K, V],
-	options ...RootOption) *Chain[K, V] {
+	options ...RootOption) (*Chain[K, V], error) {
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	_ = trcache.ParseRootOptions(&ret.options, options)
-	return ret
+	optErr := trcache.ParseRootOptions(&ret.options, options)
+	if optErr != nil && !ret.options.ignoreOptionNotSupported {
+		return nil, optErr
+	}
+	return ret, nil
 }
 
 func NewRefresh[K comparable, V any, RD any](cache []trcache.Cache[K, V],
-	options ...RootOption) trcache.RefreshCache[K, V, RD] {
-	// var wopt []wrap.WrapRefreshOption
-	// if ret.refreshFunc != nil {
-	// 	wopt = append(wopt, wrap.WithWrapRefreshFunc[K, V](ret.refreshFunc))
-	// }
-	return wrap.NewWrapRefreshCache[K, V, RD](New(cache, options...), options...)
+	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
+	c, err := New[K, V](cache, trcache.AppendRootOptions(options,
+		[]RootOption{WithIgnoreOptionNotSupported[K, V](true)})...)
+	if err != nil {
+		return nil, err
+	}
+	return wrap.NewWrapRefreshCache[K, V, RD](c, options...)
 }
 
 func (c *Chain[K, V]) Name() string {

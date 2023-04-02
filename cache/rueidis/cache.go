@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"reflect"
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
@@ -27,7 +26,10 @@ func New[K comparable, V any](redis rueidis.Client, options ...RootOption) (*Cac
 			redisDelFunc:    DefaultRedisDelFunc[K, V]{},
 		},
 	}
-	_ = trcache.ParseRootOptions(&ret.options, options)
+	optErr := trcache.ParseRootOptions(&ret.options, options)
+	if optErr != nil && !ret.options.ignoreOptionNotSupported {
+		return nil, optErr
+	}
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
@@ -43,7 +45,7 @@ func NewRefresh[K comparable, V any, RD any](redis rueidis.Client,
 	if err != nil {
 		return nil, err
 	}
-	return wrap.NewWrapRefreshCache[K, V, RD](cache, options...), nil
+	return wrap.NewWrapRefreshCache[K, V, RD](cache, options...)
 }
 
 func (c *Cache[K, V]) Handle() rueidis.Client {
@@ -113,7 +115,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...SetOpt
 	case []byte:
 		strvalue = string(tv)
 	default:
-		return &trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for redis value", getType(enc))}
+		return &trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%T' for redis value", enc)}
 	}
 
 	return optns.redisSetFunc.Set(ctx, c, keyValue, strvalue, c.options.defaultDuration, optns.customParams)
@@ -146,15 +148,7 @@ func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
 		return string(kv), nil
 	default:
 		return "", trcache.CodecError{
-			&trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
+			&trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%T' for redis key", keyValue)},
 		}
-	}
-}
-
-func getType(myvar interface{}) string {
-	if t := reflect.TypeOf(myvar); t.Kind() == reflect.Ptr {
-		return "*" + t.Elem().Name()
-	} else {
-		return t.Name()
 	}
 }

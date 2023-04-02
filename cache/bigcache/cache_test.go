@@ -78,11 +78,7 @@ func TestCacheOptions(t *testing.T) {
 	c, err := New[string, string](cache,
 		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
-		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCallDefaultGetOptions[string, string](),
-		trcache.WithCallDefaultRefreshOptions[string, string](
-			trcache.WithRefreshData[string, string]("abc"),
-		),
 	)
 	require.NoError(t, err)
 

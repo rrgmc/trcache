@@ -18,15 +18,15 @@ func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption
 func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) RootOption {
 	return trcache.WithCallDefaultSetOptions[K, V](options...)
 }
+func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
+	return trcache.WithIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 func WithName[K comparable, V any](name string) RootOption {
 	return trcache.WithName[K, V](name)
 }
 
 type GetOption = trcache.GetOption
 
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
-	return trcache.WithGetCustomOptions[K, V](customOptions)
-}
 func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -36,6 +36,9 @@ func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetO
 		}
 		return false
 	})
+}
+func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
+	return trcache.WithGetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
@@ -52,6 +55,9 @@ type SetOption = trcache.SetOption
 
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return trcache.WithSetDuration[K, V](duration)
+}
+func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) SetOption {
+	return trcache.WithSetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
@@ -76,12 +82,16 @@ func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy
 		return false
 	})
 }
+func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
+	return trcache.WithDeleteIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption
 	callDefaultSetOptions    []trcache.SetOption
+	ignoreOptionNotSupported bool
 	name                     string
 }
 
@@ -96,24 +106,27 @@ func (o *rootOptionsImpl[K, V]) OptCallDefaultGetOptions(options ...trcache.GetO
 func (o *rootOptionsImpl[K, V]) OptCallDefaultSetOptions(options ...trcache.SetOption) {
 	o.callDefaultSetOptions = options
 }
+func (o *rootOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}
 func (o *rootOptionsImpl[K, V]) OptName(name string) {
 	o.name = name
 }
 
 type getOptionsImpl[K comparable, V any] struct {
 	trcache.IsGetOptionsImpl
-	customOptions []interface{}
-	getStrategy   GetStrategy[K, V]
-	setOptions    []trcache.SetOption
+	getStrategy              GetStrategy[K, V]
+	ignoreOptionNotSupported bool
+	setOptions               []trcache.SetOption
 }
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
-func (o *getOptionsImpl[K, V]) OptCustomOptions(customOptions []interface{}) {
-	o.customOptions = customOptions
-}
 func (o *getOptionsImpl[K, V]) OptGetStrategy(getStrategy GetStrategy[K, V]) {
 	o.getStrategy = getStrategy
+}
+func (o *getOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
 }
 func (o *getOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options
@@ -121,8 +134,9 @@ func (o *getOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
 
 type setOptionsImpl[K comparable, V any] struct {
 	trcache.IsSetOptionsImpl
-	duration    time.Duration
-	setStrategy SetStrategy[K, V]
+	duration                 time.Duration
+	ignoreOptionNotSupported bool
+	setStrategy              SetStrategy[K, V]
 }
 
 var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
@@ -130,17 +144,24 @@ var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
 func (o *setOptionsImpl[K, V]) OptDuration(duration time.Duration) {
 	o.duration = duration
 }
+func (o *setOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}
 func (o *setOptionsImpl[K, V]) OptSetStrategy(setStrategy SetStrategy[K, V]) {
 	o.setStrategy = setStrategy
 }
 
 type deleteOptionsImpl[K comparable, V any] struct {
 	trcache.IsDeleteOptionsImpl
-	deleteStrategy DeleteStrategy[K, V]
+	deleteStrategy           DeleteStrategy[K, V]
+	ignoreOptionNotSupported bool
 }
 
 var _ deleteOptions[string, string] = &deleteOptionsImpl[string, string]{}
 
 func (o *deleteOptionsImpl[K, V]) OptDeleteStrategy(deleteStrategy DeleteStrategy[K, V]) {
 	o.deleteStrategy = deleteStrategy
+}
+func (o *deleteOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
 }

@@ -4,10 +4,20 @@ package trcache
 
 import "time"
 
-func WithName[K comparable, V any](name string) RootOption {
+func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
+			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
+			return true
+		}
+		return false
+	})
+}
+func WithName[K comparable, V any](name string) RootOption {
+	return RootOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case NameOptions[K, V]:
 			opt.OptName(name)
 			return true
 		}
@@ -64,11 +74,11 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
+func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
 	return GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
-			opt.OptCustomOptions(customOptions)
+			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
 			return true
 		}
 		return false
@@ -79,6 +89,26 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
 			opt.OptDuration(duration)
+			return true
+		}
+		return false
+	})
+}
+func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) SetOption {
+	return SetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case SetOptions[K, V]:
+			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
+			return true
+		}
+		return false
+	})
+}
+func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
+	return DeleteOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case DeleteOptions[K, V]:
+			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
 			return true
 		}
 		return false
@@ -109,6 +139,16 @@ func WithRefreshGetOptions[K comparable, V any, RD any](options ...GetOption) Re
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
 			opt.OptGetOptions(options...)
+			return true
+		}
+		return false
+	})
+}
+func WithRefreshIgnoreOptionNotSupported[K comparable, V any, RD any](ignoreOptionNotSupported bool) RefreshOption {
+	return RefreshOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case RefreshOptions[K, V, RD]:
+			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
 			return true
 		}
 		return false

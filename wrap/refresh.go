@@ -13,10 +13,15 @@ type wrapRefreshCache[K comparable, V any, RD any] struct {
 }
 
 func NewWrapRefreshCache[K comparable, V any, RD any](cache trcache.Cache[K, V],
-	options ...trcache.RootOption) trcache.RefreshCache[K, V, RD] {
-	ret := &wrapRefreshCache[K, V, RD]{cache: cache}
-	_ = trcache.ParseRootOptions(&ret.options, options)
-	return ret
+	options ...trcache.RootOption) (trcache.RefreshCache[K, V, RD], error) {
+	ret := &wrapRefreshCache[K, V, RD]{
+		cache: cache,
+	}
+	optErr := trcache.ParseRootOptions(&ret.options, options)
+	if optErr != nil && !ret.options.ignoreOptionNotSupported {
+		return nil, optErr
+	}
+	return ret, nil
 }
 
 func (c *wrapRefreshCache[K, V, RD]) Name() string {

@@ -22,7 +22,10 @@ func New[K comparable, V any](cache *ristretto.Cache,
 		cache:   cache,
 		options: rootOptionsImpl[K, V]{},
 	}
-	_ = trcache.ParseRootOptions(&ret.options, options)
+	optErr := trcache.ParseRootOptions(&ret.options, options)
+	if optErr != nil && !ret.options.ignoreOptionNotSupported {
+		return nil, optErr
+	}
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
 	}
@@ -35,7 +38,7 @@ func NewRefresh[K comparable, V any, RD any](cache *ristretto.Cache,
 	if err != nil {
 		return nil, err
 	}
-	return wrap.NewWrapRefreshCache[K, V, RD](c, options...), nil
+	return wrap.NewWrapRefreshCache[K, V, RD](c, options...)
 }
 
 // func NewDefault[K comparable, V any](options ...RootOption) *Cache[K, V] {

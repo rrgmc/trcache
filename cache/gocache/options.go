@@ -12,6 +12,7 @@ import (
 type options[K comparable, V any] interface {
 	trcache.IsRootOptions
 	trcache.Options[K, V]
+	trcache.NameOptions[K, V]
 	trcache.CallDefaultOptions[K, V]
 	OptKeyCodec(keyCodec trcache.KeyCodec[K])
 	OptValueCodec(valueCodec trcache.Codec[V])

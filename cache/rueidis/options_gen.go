@@ -38,6 +38,9 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 		return false
 	})
 }
+func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
+	return trcache.WithIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -114,9 +117,6 @@ func WithGetClientSideDuration[K comparable, V any](duration time.Duration) GetO
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
-	return trcache.WithGetCustomOptions[K, V](customOptions)
-}
 func WithGetCustomParams[K comparable, V any](customParams interface{}) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -126,6 +126,9 @@ func WithGetCustomParams[K comparable, V any](customParams interface{}) GetOptio
 		}
 		return false
 	})
+}
+func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
+	return trcache.WithGetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithGetRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
@@ -153,6 +156,9 @@ func WithSetCustomParams[K comparable, V any](customParams interface{}) SetOptio
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return trcache.WithSetDuration[K, V](duration)
 }
+func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) SetOption {
+	return trcache.WithSetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 func WithSetRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -176,6 +182,9 @@ func WithDeleteCustomParams[K comparable, V any](customParams interface{}) Delet
 		return false
 	})
 }
+func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
+	return trcache.WithDeleteIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
+}
 func WithDeleteRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) DeleteOption {
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -194,6 +203,7 @@ type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultSetOptions     []trcache.SetOption
 	defaultClientSideDuration time.Duration
 	defaultDuration           time.Duration
+	ignoreOptionNotSupported  bool
 	keyCodec                  trcache.KeyCodec[K]
 	name                      string
 	redisDelFunc              RedisDelFunc[K, V]
@@ -220,6 +230,9 @@ func (o *rootOptionsImpl[K, V]) OptDefaultClientSideDuration(duration time.Durat
 func (o *rootOptionsImpl[K, V]) OptDefaultDuration(duration time.Duration) {
 	o.defaultDuration = duration
 }
+func (o *rootOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}
 func (o *rootOptionsImpl[K, V]) OptKeyCodec(keyCodec trcache.KeyCodec[K]) {
 	o.keyCodec = keyCodec
 }
@@ -244,10 +257,10 @@ func (o *rootOptionsImpl[K, V]) OptValueCodec(valueCodec trcache.Codec[V]) {
 
 type getOptionsImpl[K comparable, V any] struct {
 	trcache.IsGetOptionsImpl
-	clientSideDuration time.Duration
-	customOptions      []interface{}
-	customParams       interface{}
-	redisGetFunc       RedisGetFunc[K, V]
+	clientSideDuration       time.Duration
+	customParams             interface{}
+	ignoreOptionNotSupported bool
+	redisGetFunc             RedisGetFunc[K, V]
 }
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
@@ -255,11 +268,11 @@ var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 func (o *getOptionsImpl[K, V]) OptClientSideDuration(duration time.Duration) {
 	o.clientSideDuration = duration
 }
-func (o *getOptionsImpl[K, V]) OptCustomOptions(customOptions []interface{}) {
-	o.customOptions = customOptions
-}
 func (o *getOptionsImpl[K, V]) OptCustomParams(customParams interface{}) {
 	o.customParams = customParams
+}
+func (o *getOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
 }
 func (o *getOptionsImpl[K, V]) OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V]) {
 	o.redisGetFunc = redisGetFunc
@@ -267,9 +280,10 @@ func (o *getOptionsImpl[K, V]) OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V]) 
 
 type setOptionsImpl[K comparable, V any] struct {
 	trcache.IsSetOptionsImpl
-	customParams interface{}
-	duration     time.Duration
-	redisSetFunc RedisSetFunc[K, V]
+	customParams             interface{}
+	duration                 time.Duration
+	ignoreOptionNotSupported bool
+	redisSetFunc             RedisSetFunc[K, V]
 }
 
 var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
@@ -280,20 +294,27 @@ func (o *setOptionsImpl[K, V]) OptCustomParams(customParams interface{}) {
 func (o *setOptionsImpl[K, V]) OptDuration(duration time.Duration) {
 	o.duration = duration
 }
+func (o *setOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
+}
 func (o *setOptionsImpl[K, V]) OptRedisSetFunc(redisSetFunc RedisSetFunc[K, V]) {
 	o.redisSetFunc = redisSetFunc
 }
 
 type deleteOptionsImpl[K comparable, V any] struct {
 	trcache.IsDeleteOptionsImpl
-	customParams interface{}
-	redisDelFunc RedisDelFunc[K, V]
+	customParams             interface{}
+	ignoreOptionNotSupported bool
+	redisDelFunc             RedisDelFunc[K, V]
 }
 
 var _ deleteOptions[string, string] = &deleteOptionsImpl[string, string]{}
 
 func (o *deleteOptionsImpl[K, V]) OptCustomParams(customParams interface{}) {
 	o.customParams = customParams
+}
+func (o *deleteOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
+	o.ignoreOptionNotSupported = ignoreOptionNotSupported
 }
 func (o *deleteOptionsImpl[K, V]) OptRedisDelFunc(redisDelFunc RedisDelFunc[K, V]) {
 	o.redisDelFunc = redisDelFunc

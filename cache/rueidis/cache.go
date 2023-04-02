@@ -61,7 +61,11 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...GetOption) (V, 
 		clientSideDuration: c.options.defaultClientSideDuration,
 		redisGetFunc:       c.options.redisGetFunc,
 	}
-	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
+	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
+	if optErr != nil && !optns.ignoreOptionNotSupported {
+		var empty V
+		return empty, optErr
+	}
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {
@@ -96,7 +100,10 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...SetOpt
 		redisSetFunc: c.options.redisSetFunc,
 		duration:     c.options.defaultDuration,
 	}
-	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
+	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
+	if optErr != nil && !optns.ignoreOptionNotSupported {
+		return optErr
+	}
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)
 	if err != nil {
@@ -125,7 +132,10 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...DeleteOption
 	optns := deleteOptionsImpl[K, V]{
 		redisDelFunc: c.options.redisDelFunc,
 	}
-	_ = trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
+	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
+	if optErr != nil && !optns.ignoreOptionNotSupported {
+		return optErr
+	}
 
 	keyValue, err := c.parseKey(ctx, key)
 	if err != nil {

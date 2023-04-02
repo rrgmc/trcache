@@ -42,7 +42,12 @@ func (c *Chain[K, V]) Name() string {
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	options ...GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
-	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
+	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options,
+		[]GetOption{WithGetIgnoreOptionNotSupported[K, V](true)})
+	if optErr != nil && !optns.ignoreOptionNotSupported {
+		var empty V
+		return empty, optErr
+	}
 
 	if optns.getStrategy == nil {
 		optns.getStrategy = GetStrategyGetFirstSetPrevious[K, V]{}
@@ -111,7 +116,11 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...SetOption) error {
 	var optns setOptionsImpl[K, V]
-	_ = trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
+	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options,
+		[]SetOption{WithSetIgnoreOptionNotSupported[K, V](true)})
+	if optErr != nil && !optns.ignoreOptionNotSupported {
+		return optErr
+	}
 
 	if optns.setStrategy == nil {
 		optns.setStrategy = &SetStrategySetAll[K, V]{}
@@ -159,7 +168,11 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...DeleteOption) error {
 	var optns deleteOptionsImpl[K, V]
-	_ = trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
+	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options,
+		[]DeleteOption{WithDeleteIgnoreOptionNotSupported[K, V](true)})
+	if optErr != nil && !optns.ignoreOptionNotSupported {
+		return optErr
+	}
 
 	if optns.deleteStrategy == nil {
 		optns.deleteStrategy = &DeleteStrategyDeleteAll[K, V]{}

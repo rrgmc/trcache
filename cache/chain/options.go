@@ -13,14 +13,6 @@ type options[K comparable, V any] interface {
 	trcache.CallDefaultOptions[K, V]
 }
 
-// //troptgen:root name=refresh
-// type rootRefreshOptions[K comparable, V any, RD any] interface {
-// 	trcache.IsRootOptions
-// 	trcache.Options[K, V]
-// 	trcache.CallDefaultOptions[K, V]
-// 	OptRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V, RD])
-// }
-
 // Cache get options
 
 //troptgen:get

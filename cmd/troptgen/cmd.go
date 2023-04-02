@@ -105,6 +105,7 @@ func runMain() error {
 				}
 			}
 
+			isDefaultDirective := true
 			UCDefaultDirectiveCMD := makeFirstUpperCase(directiveCmd)
 			UCDefaultDirectiveCMDOptional := makeFirstUpperCase(directiveCmd)
 			if directiveCmd == "root" {
@@ -112,6 +113,7 @@ func runMain() error {
 			}
 
 			if dname, ok := directiveParams["name"]; ok {
+				isDefaultDirective = false
 				directiveCmd = fmt.Sprintf("%s%s", directiveCmd, makeFirstUpperCase(dname))
 				cmds = append(cmds, directiveCmd)
 			}
@@ -151,6 +153,14 @@ func runMain() error {
 			_, optfok := optionsfuncs[directiveCmd]
 			if !optfok {
 				optionsfuncs[directiveCmd] = &jen.Statement{}
+				if isDefaultDirective {
+					optionsfuncs[directiveCmd].Add(
+						jen.Type().
+							Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+							Op("=").
+							Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)),
+					)
+				}
 			}
 
 			// _, optbok := optionsbuilder[directiveCmd]
@@ -277,7 +287,8 @@ func runMain() error {
 					jen.Func().Id(methodName).
 						Add(FromTypeParams(namedType.TypeParams())).
 						Add(FromParams(fsig.Params(), fsig.Variadic())).
-						Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+						// Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+						Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
 						BlockFunc(func(g *jen.Group) {
 							if isExplicitMethod {
 								g.Return(

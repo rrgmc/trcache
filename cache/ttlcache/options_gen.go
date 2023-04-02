@@ -6,16 +6,18 @@ import (
 	"time"
 )
 
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
+type RootOption = trcache.RootOption
+
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) RootOption {
 	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
 }
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
+func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) RootOption {
 	return trcache.WithCallDefaultGetOptions[K, V](options...)
 }
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
+func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) RootOption {
 	return trcache.WithCallDefaultSetOptions[K, V](options...)
 }
-func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
+func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -25,10 +27,10 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.Ro
 		return false
 	})
 }
-func WithName[K comparable, V any](name string) trcache.RootOption {
+func WithName[K comparable, V any](name string) RootOption {
 	return trcache.WithName[K, V](name)
 }
-func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -38,10 +40,13 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
+
+type GetOption = trcache.GetOption
+
+func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
 	return trcache.WithGetCustomOptions[K, V](customOptions)
 }
-func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
+func WithGetTouch[K comparable, V any](touch bool) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case getOptions[K, V]:
@@ -51,10 +56,14 @@ func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
 		return false
 	})
 }
-func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
+
+type SetOption = trcache.SetOption
+
+func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return trcache.WithSetDuration[K, V](duration)
 }
 
+type DeleteOption = trcache.DeleteOption
 type rootOptionsImpl[K comparable, V any] struct {
 	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption

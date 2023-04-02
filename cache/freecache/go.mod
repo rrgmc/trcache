@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/freecache
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.3.4
-	github.com/RangelReale/trcache/mocks v0.3.4
+	github.com/RangelReale/trcache v0.3.5
+	github.com/RangelReale/trcache/mocks v0.3.5
 	github.com/coocood/freecache v1.2.3
 	github.com/stretchr/testify v1.8.2
 )

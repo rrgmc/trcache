@@ -13,6 +13,11 @@ test: tools
 	go test ./...
 	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go test ./...'
 
+.PHONY: update-dep-version
+update-dep-version:
+	test -n "$(TAG)"  # $$TAG
+	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go get github.com/RangelReale/trcache@$(TAG); go get github.com/RangelReale/trcache/mocks@$(TAG); go mod tidy'
+
 .PHONY: gittag
 gittag:
 	test -n "$(TAG)"  # $$TAG

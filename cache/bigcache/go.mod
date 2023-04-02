@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/bigcache
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.1.1
-	github.com/RangelReale/trcache/mocks v0.1.1
+	github.com/RangelReale/trcache v0.3.0
+	github.com/RangelReale/trcache/mocks v0.3.0
 	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/stretchr/testify v1.8.2
 )

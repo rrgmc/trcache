@@ -6,16 +6,18 @@ import (
 	"time"
 )
 
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) trcache.RootOption {
+type RootOption = trcache.RootOption
+
+func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) RootOption {
 	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
 }
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) trcache.RootOption {
+func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) RootOption {
 	return trcache.WithCallDefaultGetOptions[K, V](options...)
 }
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.RootOption {
+func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) RootOption {
 	return trcache.WithCallDefaultSetOptions[K, V](options...)
 }
-func WithDefaultClientSideDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
+func WithDefaultClientSideDuration[K comparable, V any](duration time.Duration) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -25,7 +27,7 @@ func WithDefaultClientSideDuration[K comparable, V any](duration time.Duration) 
 		return false
 	})
 }
-func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
+func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -35,7 +37,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.Ro
 		return false
 	})
 }
-func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.RootOption {
+func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -45,10 +47,10 @@ func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.Roo
 		return false
 	})
 }
-func WithName[K comparable, V any](name string) trcache.RootOption {
+func WithName[K comparable, V any](name string) RootOption {
 	return trcache.WithName[K, V](name)
 }
-func WithRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) trcache.RootOption {
+func WithRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -58,7 +60,7 @@ func WithRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) trca
 		return false
 	})
 }
-func WithRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) trcache.RootOption {
+func WithRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -68,7 +70,7 @@ func WithRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) trca
 		return false
 	})
 }
-func WithRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) trcache.RootOption {
+func WithRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -78,7 +80,7 @@ func WithRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) trca
 		return false
 	})
 }
-func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -88,7 +90,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 		return false
 	})
 }
-func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.RootOption {
+func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) RootOption {
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -98,7 +100,10 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.Ro
 		return false
 	})
 }
-func WithGetClientSideDuration[K comparable, V any](duration time.Duration) trcache.GetOption {
+
+type GetOption = trcache.GetOption
+
+func WithGetClientSideDuration[K comparable, V any](duration time.Duration) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case getOptions[K, V]:
@@ -108,10 +113,10 @@ func WithGetClientSideDuration[K comparable, V any](duration time.Duration) trca
 		return false
 	})
 }
-func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) trcache.GetOption {
+func WithGetCustomOptions[K comparable, V any](customOptions []interface{}) GetOption {
 	return trcache.WithGetCustomOptions[K, V](customOptions)
 }
-func WithGetCustomParams[K comparable, V any](customParams interface{}) trcache.GetOption {
+func WithGetCustomParams[K comparable, V any](customParams interface{}) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case getOptions[K, V]:
@@ -121,7 +126,7 @@ func WithGetCustomParams[K comparable, V any](customParams interface{}) trcache.
 		return false
 	})
 }
-func WithGetRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) trcache.GetOption {
+func WithGetRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case getOptions[K, V]:
@@ -131,7 +136,10 @@ func WithGetRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) t
 		return false
 	})
 }
-func WithSetCustomParams[K comparable, V any](customParams interface{}) trcache.SetOption {
+
+type SetOption = trcache.SetOption
+
+func WithSetCustomParams[K comparable, V any](customParams interface{}) SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case setOptions[K, V]:
@@ -141,10 +149,10 @@ func WithSetCustomParams[K comparable, V any](customParams interface{}) trcache.
 		return false
 	})
 }
-func WithSetDuration[K comparable, V any](duration time.Duration) trcache.SetOption {
+func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return trcache.WithSetDuration[K, V](duration)
 }
-func WithSetRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) trcache.SetOption {
+func WithSetRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) SetOption {
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case setOptions[K, V]:
@@ -154,7 +162,10 @@ func WithSetRedisSetFunc[K comparable, V any](redisSetFunc RedisSetFunc[K, V]) t
 		return false
 	})
 }
-func WithDeleteCustomParams[K comparable, V any](customParams interface{}) trcache.DeleteOption {
+
+type DeleteOption = trcache.DeleteOption
+
+func WithDeleteCustomParams[K comparable, V any](customParams interface{}) DeleteOption {
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case deleteOptions[K, V]:
@@ -164,7 +175,7 @@ func WithDeleteCustomParams[K comparable, V any](customParams interface{}) trcac
 		return false
 	})
 }
-func WithDeleteRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) trcache.DeleteOption {
+func WithDeleteRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]) DeleteOption {
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case deleteOptions[K, V]:

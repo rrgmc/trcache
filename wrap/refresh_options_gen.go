@@ -3,25 +3,30 @@ package wrap
 
 import trcache "github.com/RangelReale/trcache"
 
-func WithWrapCallDefaultRefreshOptions[K comparable, V any, RD any](options ...trcache.RefreshOption) trcache.RootOption {
+type RootOption = trcache.RootOption
+
+func WithWrapCallDefaultRefreshOptions[K comparable, V any, RD any](options ...trcache.RefreshOption) RootOption {
 	return trcache.WithCallDefaultRefreshOptions[K, V](options...)
 }
-func WithWrapDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) trcache.RootOption {
+func WithWrapDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) RootOption {
 	return trcache.WithDefaultRefreshFunc[K, V, RD](refreshFunc)
 }
-func WithWrapMetrics[K comparable, V any, RD any](metrics trcache.Metrics, name string) trcache.RootOption {
+func WithWrapMetrics[K comparable, V any, RD any](metrics trcache.Metrics, name string) RootOption {
 	return trcache.WithMetrics[K, V](metrics, name)
 }
-func WithWrapRefreshData[K comparable, V any, RD any](data RD) trcache.RefreshOption {
+
+type RefreshOption = trcache.RefreshOption
+
+func WithWrapRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
 	return trcache.WithRefreshData[K, V, RD](data)
 }
-func WithWrapRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) trcache.RefreshOption {
+func WithWrapRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) RefreshOption {
 	return trcache.WithRefreshFunc[K, V, RD](refreshFunc)
 }
-func WithWrapRefreshGetOptions[K comparable, V any, RD any](options ...trcache.GetOption) trcache.RefreshOption {
+func WithWrapRefreshGetOptions[K comparable, V any, RD any](options ...trcache.GetOption) RefreshOption {
 	return trcache.WithRefreshGetOptions[K, V, RD](options...)
 }
-func WithWrapRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOption) trcache.RefreshOption {
+func WithWrapRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOption) RefreshOption {
 	return trcache.WithRefreshSetOptions[K, V, RD](options...)
 }
 

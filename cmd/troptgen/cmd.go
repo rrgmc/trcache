@@ -153,7 +153,7 @@ func runMain() error {
 			_, optfok := optionsfuncs[directiveCmd]
 			if !optfok {
 				optionsfuncs[directiveCmd] = &jen.Statement{}
-				if isDefaultDirective {
+				if isDefaultDirective && pkg.PkgPath != rootPackage {
 					optionsfuncs[directiveCmd].Add(
 						jen.Type().
 							Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).

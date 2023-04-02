@@ -2,6 +2,10 @@
 tools:
 	$(MAKE) -C cmd/troptgen install
 
+.PHONY: godoc
+godoc:
+	godoc -http=:6060
+
 .PHONY: gen
 gen: tools
 	rm options_gen.go

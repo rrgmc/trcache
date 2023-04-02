@@ -156,5 +156,5 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 	require.NoError(t, err)
 
 	err = c.Set(ctx, "a", 12)
-	require.ErrorAs(t, err, new(*trcache.ErrInvalidValueType))
+	require.ErrorAs(t, err, new(*trcache.InvalidValueTypeError))
 }

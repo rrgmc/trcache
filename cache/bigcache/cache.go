@@ -116,7 +116,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 	case string:
 		setValue = []byte(s)
 	default:
-		return &trcache.ErrInvalidValueType{fmt.Sprintf("invalid type '%s' for bigcache value", getType(keyValue))}
+		return &trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for bigcache value", getType(keyValue))}
 	}
 
 	return c.cache.Set(keyValue, setValue)
@@ -145,7 +145,7 @@ func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
 		return string(kv), nil
 	default:
 		return "", trcache.CodecError{
-			&trcache.ErrInvalidValueType{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
+			&trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
 		}
 	}
 }

@@ -113,7 +113,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...SetOpt
 	case []byte:
 		strvalue = string(tv)
 	default:
-		return &trcache.ErrInvalidValueType{fmt.Sprintf("invalid type '%s' for redis value", getType(enc))}
+		return &trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for redis value", getType(enc))}
 	}
 
 	return optns.redisSetFunc.Set(ctx, c, keyValue, strvalue, c.options.defaultDuration, optns.customParams)
@@ -146,7 +146,7 @@ func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {
 		return string(kv), nil
 	default:
 		return "", trcache.CodecError{
-			&trcache.ErrInvalidValueType{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
+			&trcache.InvalidValueTypeError{fmt.Sprintf("invalid type '%s' for redis key", getType(keyValue))},
 		}
 	}
 }

@@ -212,7 +212,7 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = c.Get(ctx, "a")
-	require.ErrorAs(t, err, new(*trcache.ErrInvalidValueType))
+	require.ErrorAs(t, err, new(*trcache.InvalidValueTypeError))
 
 	if err := mockRedis.ExpectationsWereMet(); err != nil {
 		t.Error(err)

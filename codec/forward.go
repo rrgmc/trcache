@@ -25,6 +25,6 @@ func (c ForwardCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
 		return dt, nil
 	}
 	var empty V
-	return empty, &trcache.ErrInvalidValueType{fmt.Sprintf("cannot unmarshall value of type '%s' to type '%s'",
+	return empty, &trcache.InvalidValueTypeError{fmt.Sprintf("cannot unmarshall value of type '%s' to type '%s'",
 		getType(data), getType(empty))}
 }

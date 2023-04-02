@@ -16,7 +16,7 @@ test: tools
 .PHONY: update-dep-version
 update-dep-version:
 	test -n "$(TAG)"  # $$TAG
-	sh -c 'cd mocks; go get github.com/RangelReale/trcache@$(TAG); go get github.com/RangelReale/trcache/mocks@$(TAG); go mod tidy'
+	sh -c 'cd mocks; go get github.com/RangelReale/trcache@$(TAG); go mod tidy'
 	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go get github.com/RangelReale/trcache@$(TAG); go get github.com/RangelReale/trcache/mocks@$(TAG); go mod tidy'
 
 git-status:

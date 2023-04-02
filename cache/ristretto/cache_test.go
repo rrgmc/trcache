@@ -91,9 +91,6 @@ func TestCacheOptions(t *testing.T) {
 		WithDefaultDuration[string, string](time.Minute),
 		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCallDefaultGetOptions[string, string](),
-		trcache.WithCallDefaultRefreshOptions[string, string](
-			trcache.WithRefreshData[string, string]("abc"),
-		),
 	)
 	require.NoError(t, err)
 

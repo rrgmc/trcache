@@ -17,11 +17,12 @@ func TestCache(t *testing.T) {
 
 	cache := ttlcache.New[string, string]()
 
-	c := New[string, string](cache,
+	c, err := New[string, string](cache,
 		WithDefaultDuration[string, string](time.Minute),
 	)
+	require.NoError(t, err)
 
-	err := c.Set(ctx, "a", "12")
+	err = c.Set(ctx, "a", "12")
 	require.NoError(t, err)
 
 	v, err := c.Get(ctx, "a")
@@ -47,12 +48,13 @@ func TestCacheValidator(t *testing.T) {
 		Return(trcache.ErrNotFound).
 		Once()
 
-	c := New[string, string](ttlcache.New[string, string](),
+	c, err := New[string, string](ttlcache.New[string, string](),
 		WithDefaultDuration[string, string](time.Minute),
 		WithValidator[string, string](mockValidator),
 	)
+	require.NoError(t, err)
 
-	err := c.Set(ctx, "a", "12")
+	err = c.Set(ctx, "a", "12")
 	require.NoError(t, err)
 
 	_, err = c.Get(ctx, "a")
@@ -64,18 +66,16 @@ func TestCacheOptions(t *testing.T) {
 
 	cache := ttlcache.New[string, string]()
 
-	c := New[string, string](cache,
+	c, err := New[string, string](cache,
 		WithDefaultDuration[string, string](time.Minute),
 		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCallDefaultGetOptions[string, string](
 			WithGetTouch[string, string](true),
 		),
-		trcache.WithCallDefaultRefreshOptions[string, string](
-			trcache.WithRefreshData[string, string]("abc"),
-		),
 	)
+	require.NoError(t, err)
 
-	err := c.Set(ctx, "a", "12")
+	err = c.Set(ctx, "a", "12")
 	require.NoError(t, err)
 
 	v, err := c.Get(ctx, "a")

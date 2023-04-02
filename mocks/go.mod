@@ -3,7 +3,7 @@ module github.com/RangelReale/trcache/mocks
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.1.1
+	github.com/RangelReale/trcache v0.3.1
 	github.com/stretchr/testify v1.8.2
 )
 

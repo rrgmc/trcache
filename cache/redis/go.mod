@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/redis
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.3.0
-	github.com/RangelReale/trcache/mocks v0.3.0
+	github.com/RangelReale/trcache v0.3.1
+	github.com/RangelReale/trcache/mocks v0.3.1
 	github.com/go-redis/redismock/v9 v9.0.2
 	github.com/redis/go-redis/v9 v9.0.2
 	github.com/stretchr/testify v1.8.2

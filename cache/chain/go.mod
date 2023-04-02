@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/chain
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.3.6
-	github.com/RangelReale/trcache/mocks v0.3.6
+	github.com/RangelReale/trcache v0.3.7
+	github.com/RangelReale/trcache/mocks v0.3.7
 	github.com/stretchr/testify v1.8.2
 	go.uber.org/multierr v1.10.0
 )

@@ -32,5 +32,6 @@ gittag: git-status update-dep-version
 	test -n "$(TAG)"  # $$TAG
 	git commit -a -m "Release $(TAG)"
 	sh -c 'git tag mocks/$(TAG)'
+	sh -c 'git tag cmd/troptgen/$(TAG)'
 	find cache -maxdepth 1 ! -path cache -type d | xargs -I % sh -c 'git tag %/$(TAG)'
 	git tag $(TAG)

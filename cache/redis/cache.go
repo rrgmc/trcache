@@ -57,7 +57,9 @@ func (c *Cache[K, V]) Name() string {
 }
 
 func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...GetOption) (V, error) {
-	var optns getOptionsImpl[K, V]
+	optns := getOptionsImpl[K, V]{
+		redisGetFunc: c.options.redisGetFunc,
+	}
 	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
 	if optErr != nil && !optns.ignoreOptionNotSupported {
 		var empty V
@@ -70,8 +72,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...GetOption) (V, 
 		return empty, err
 	}
 
-	value, err := FirstRedisGetFunc(optns.redisGetFunc, c.options.redisGetFunc).
-		Get(ctx, c, keyValue, optns.customParams)
+	value, err := optns.redisGetFunc.Get(ctx, c, keyValue, optns.customParams)
 	if err != nil {
 		var empty V
 		return empty, err
@@ -95,7 +96,8 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...GetOption) (V, 
 
 func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...SetOption) error {
 	optns := setOptionsImpl[K, V]{
-		duration: c.options.defaultDuration,
+		duration:     c.options.defaultDuration,
+		redisSetFunc: c.options.redisSetFunc,
 	}
 	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
 	if optErr != nil && !optns.ignoreOptionNotSupported {
@@ -112,12 +114,13 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...SetOpt
 		return err
 	}
 
-	return FirstRedisSetFunc(optns.redisSetFunc, c.options.redisSetFunc).
-		Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
+	return optns.redisSetFunc.Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
 }
 
 func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...DeleteOption) error {
-	var optns deleteOptionsImpl[K, V]
+	optns := deleteOptionsImpl[K, V]{
+		redisDelFunc: c.options.redisDelFunc,
+	}
 	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
 	if optErr != nil && !optns.ignoreOptionNotSupported {
 		return optErr
@@ -128,8 +131,7 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...DeleteOption
 		return err
 	}
 
-	return FirstRedisDelFunc(optns.redisDelFunc, c.options.redisDelFunc).
-		Delete(ctx, c, keyValue, optns.customParams)
+	return optns.redisDelFunc.Delete(ctx, c, keyValue, optns.customParams)
 }
 
 func (c *Cache[K, V]) parseKey(ctx context.Context, key K) (string, error) {

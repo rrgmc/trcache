@@ -71,32 +71,3 @@ type DefaultRedisDelFunc[K comparable, V any] struct {
 func (f DefaultRedisDelFunc[K, V]) Delete(ctx context.Context, c *Cache[K, V], keyValue string, _ any) error {
 	return c.Handle().Del(ctx, keyValue).Err()
 }
-
-// Helpers
-
-func FirstRedisGetFunc[K comparable, V any](fns ...RedisGetFunc[K, V]) RedisGetFunc[K, V] {
-	for _, fn := range fns {
-		if fn != nil {
-			return fn
-		}
-	}
-	panic("no RedisGetFunc function to call")
-}
-
-func FirstRedisSetFunc[K comparable, V any](fns ...RedisSetFunc[K, V]) RedisSetFunc[K, V] {
-	for _, fn := range fns {
-		if fn != nil {
-			return fn
-		}
-	}
-	panic("no RedisSetFunc function to call")
-}
-
-func FirstRedisDelFunc[K comparable, V any](fns ...RedisDelFunc[K, V]) RedisDelFunc[K, V] {
-	for _, fn := range fns {
-		if fn != nil {
-			return fn
-		}
-	}
-	panic("no RedisDelFunc function to call")
-}

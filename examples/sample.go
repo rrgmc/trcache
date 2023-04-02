@@ -5,8 +5,7 @@ import (
 	"fmt"
 
 	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/cache/ttlcache"
-	"github.com/RangelReale/trcache/chain"
+	"github.com/RangelReale/trcache/cache/chain"
 )
 
 func main() {

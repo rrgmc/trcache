@@ -4,6 +4,7 @@ tools:
 
 .PHONY: gen
 gen: tools
+	rm options_gen.go
 	go generate ./...
 	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go generate ./...'
 

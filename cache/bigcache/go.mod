@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/RangelReale/trcache v0.1.1
+	github.com/RangelReale/trcache/mocks v0.1.1
 	github.com/allegro/bigcache/v3 v3.1.0
 	github.com/stretchr/testify v1.8.2
 )
@@ -17,3 +18,5 @@ require (
 )
 
 replace github.com/RangelReale/trcache => ../..
+
+replace github.com/RangelReale/trcache/mocks => ../../mocks

@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/dave/jennifer v1.6.0
-	golang.org/x/text v0.3.7
 	golang.org/x/tools v0.1.8
 )
 

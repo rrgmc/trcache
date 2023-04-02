@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/gocache
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.3.3
-	github.com/RangelReale/trcache/mocks v0.3.3
+	github.com/RangelReale/trcache v0.3.4
+	github.com/RangelReale/trcache/mocks v0.3.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.8.2
 )

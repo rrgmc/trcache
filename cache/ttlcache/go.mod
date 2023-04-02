@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/ttlcache
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.3.1
-	github.com/RangelReale/trcache/mocks v0.3.1
+	github.com/RangelReale/trcache v0.3.2
+	github.com/RangelReale/trcache/mocks v0.3.2
 	github.com/jellydator/ttlcache/v3 v3.0.1
 	github.com/stretchr/testify v1.8.2
 )

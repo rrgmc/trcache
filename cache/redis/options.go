@@ -34,11 +34,6 @@ type getOptions[K comparable, V any] interface {
 
 // helpers
 
-// func (ob *getOptionBuilder[K, V]) WithGetRedisGetFuncFunc(fn RedisGetFuncFunc[K, V]) *getOptionBuilder[K, V] {
-// 	ob.AppendOptions(WithGetRedisGetFunc[K, V](fn))
-// 	return ob
-// }
-
 func WithGetRedisGetFuncFunc[K comparable, V any](redisGetFunc RedisGetFuncFunc[K, V]) GetOption {
 	return WithGetRedisGetFunc[K, V](redisGetFunc)
 }
@@ -55,11 +50,6 @@ type setOptions[K comparable, V any] interface {
 
 // helpers
 
-// func (ob *setOptionBuilder[K, V]) WithSetRedisSetFuncFunc(fn RedisSetFuncFunc[K, V]) *setOptionBuilder[K, V] {
-// 	ob.AppendOptions(WithSetRedisSetFunc[K, V](fn))
-// 	return ob
-// }
-
 func WithSetRedisSetFuncFunc[K comparable, V any](redisSetFuncFunc RedisSetFuncFunc[K, V]) SetOption {
 	return WithSetRedisSetFunc[K, V](redisSetFuncFunc)
 }
@@ -75,11 +65,6 @@ type deleteOptions[K comparable, V any] interface {
 }
 
 // helpers
-
-// func (ob *deleteOptionBuilder[K, V]) WithDeleteRedisDelFuncFunc(fn RedisDelFuncFunc[K, V]) *deleteOptionBuilder[K, V] {
-// 	ob.AppendOptions(WithDeleteRedisDelFunc[K, V](fn))
-// 	return ob
-// }
 
 func WithDeleteRedisDelFuncFunc[K comparable, V any](redisDelFunc RedisDelFuncFunc[K, V]) DeleteOption {
 	return WithDeleteRedisDelFunc[K, V](redisDelFunc)

@@ -81,7 +81,6 @@ func runMain() error {
 		optionsimpl := map[string]*jen.Statement{}
 		optionsimplfuncs := map[string]*jen.Statement{}
 		optionsfuncs := map[string]*jen.Statement{}
-		// optionsbuilder := map[string]*jen.Statement{}
 
 		cmds := []string{"root", "get", "set", "delete", "refresh"}
 
@@ -162,32 +161,6 @@ func runMain() error {
 					)
 				}
 			}
-
-			// _, optbok := optionsbuilder[directiveCmd]
-			// if !optbok {
-			// 	// create options builder struct
-			// 	optionsBuilderName := makeFirstLowerCase(fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD))
-			//
-			// 	optionsbuilder[directiveCmd] = &jen.Statement{}
-			// 	optionsbuilder[directiveCmd].Add(
-			// 		jen.Type().Id(optionsBuilderName).
-			// 			Add(FromTypeParams(namedType.TypeParams())).
-			// 			Struct(
-			// 				jen.Qual(rootPackage, fmt.Sprintf("%sOptionBuilderBase", UCDefaultDirectiveCMD)),
-			// 			),
-			// 	)
-			// 	optionsbuilder[directiveCmd].Add(
-			// 		jen.Func().Id(fmt.Sprintf("%sOpt", UCDirectiveCMD)).
-			// 			Add(FromTypeParams(namedType.TypeParams())).
-			// 			Params().
-			// 			Id(fmt.Sprintf("*%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams())).
-			// 			Block(
-			// 				jen.Return(
-			// 					jen.Id(fmt.Sprintf("&%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams())).Values(jen.Dict{}),
-			// 				),
-			// 			),
-			// 	)
-			// }
 
 			// check if the interface implements trcache.IsXXXOptions. If so, a struct will be created
 			// implementing it.
@@ -277,7 +250,7 @@ func runMain() error {
 
 				_, isExplicitMethod := explicitMethods[method]
 
-				// "With" and "OptionsBuilder" are added only for explicit methods
+				// "With" are added only for explicit methods
 				// if !isExplicitMethod {
 				// 	continue
 				// }
@@ -319,27 +292,6 @@ func runMain() error {
 							}
 						}),
 				)
-
-				// // generate an "OptionsBuilder" method for each interface method
-				// optionsBuilderName := makeFirstLowerCase(fmt.Sprintf("%s%sOptionBuilder", *prefix, UCDirectiveCMD))
-				//
-				// optionsbuilder[directiveCmd].Add(
-				// 	jen.Func().
-				// 		Params(jen.Id("ob").Id(fmt.Sprintf("*%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams()))).
-				// 		Id(methodName).
-				// 		Add(FromParams(fsig.Params(), fsig.Variadic())).
-				// 		Id(fmt.Sprintf("*%s", optionsBuilderName)).Add(CallFromTypeParams(namedType.TypeParams())).
-				// 		Block(
-				// 			jen.Id("ob").Dot("AppendOptions").Call(
-				// 				jen.Id(methodName).Add(CallFromTypeParams(namedType.TypeParams()).
-				// 					Add(CallFromParams(fsig.Params(), fsig.Variadic())),
-				// 				),
-				// 			),
-				// 			jen.Return(
-				// 				jen.Id("ob"),
-				// 			),
-				// 		),
-				// )
 			}
 		}
 
@@ -354,21 +306,6 @@ func runMain() error {
 				f.Add(obi)
 			}
 		}
-
-		// // generate an options builder for each interface method
-		// for _, d := range cmds {
-		// 	ob, ok := optionsbuilder[d]
-		// 	if !ok {
-		// 		continue
-		// 	}
-		//
-		// 	// first 2 are initialization, if only 2 don't add the codes
-		// 	if len(*ob) > 2 {
-		// 		for _, obi := range *ob {
-		// 			f.Add(obi)
-		// 		}
-		// 	}
-		// }
 
 		// generate an impl struct for each interface method
 		for _, d := range cmds {

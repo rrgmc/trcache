@@ -6,29 +6,29 @@ import "time"
 // Root options
 //
 
-// +troptgen root
+//troptgen:root
 type Options[K comparable, V any] interface {
 	OptName(name string)
 }
 
-// +troptgen root
+//troptgen:root
 type MetricsOptions[K comparable, V any] interface {
 	OptMetrics(metrics Metrics, name string)
 }
 
-// +troptgen root name=refresh
+//troptgen:root name=refresh
 type DefaultRefreshOptions[K comparable, V any, RD any] interface {
 	OptDefaultRefreshFunc(refreshFunc CacheRefreshFunc[K, V, RD])
 }
 
-// +troptgen root
+//troptgen:root
 type CallDefaultOptions[K comparable, V any] interface {
 	OptCallDefaultGetOptions(options ...GetOption)
 	OptCallDefaultSetOptions(options ...SetOption)
 	OptCallDefaultDeleteOptions(options ...DeleteOption)
 }
 
-// +troptgen root
+//troptgen:root
 type CallDefaultRefreshOptions[K comparable, V any] interface {
 	OptCallDefaultRefreshOptions(options ...RefreshOption)
 }
@@ -37,7 +37,7 @@ type CallDefaultRefreshOptions[K comparable, V any] interface {
 // Get options
 //
 
-// +troptgen get
+//troptgen:get
 type GetOptions[K comparable, V any] interface {
 	OptCustomOptions(customOptions []any)
 }
@@ -46,12 +46,12 @@ type GetOptions[K comparable, V any] interface {
 // Set options
 //
 
-// +troptgen set
+//troptgen:set
 type SetOptions[K comparable, V any] interface {
 	OptDuration(duration time.Duration)
 }
 
-// +troptgen delete
+//troptgen:delete
 type DeleteOptions[K comparable, V any] interface {
 }
 
@@ -63,7 +63,7 @@ type RefreshFuncOptions[RD any] struct {
 	Data RD
 }
 
-// +troptgen refresh
+//troptgen:refresh
 type RefreshOptions[K comparable, V any, RD any] interface {
 	OptData(data RD)
 	OptGetOptions(options ...GetOption)

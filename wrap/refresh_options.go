@@ -6,7 +6,7 @@ import (
 
 // Option
 
-// +troptgen root
+//troptgen:root
 type wrapRefreshOptions[K comparable, V any, RD any] interface {
 	trcache.IsRootOptions
 	trcache.MetricsOptions[K, V]
@@ -16,7 +16,7 @@ type wrapRefreshOptions[K comparable, V any, RD any] interface {
 
 // Cache refresh options
 
-// +troptgen refresh
+//troptgen:refresh
 type wrapRefreshRefreshOptions[K comparable, V any, RD any] interface {
 	trcache.IsRefreshOptions
 	trcache.RefreshOptions[K, V, RD]

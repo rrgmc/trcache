@@ -8,7 +8,7 @@ import (
 
 // Option
 
-// +troptgen root
+//troptgen:root
 type options[K comparable, V any] interface {
 	trcache.IsRootOptions
 	trcache.Options[K, V]
@@ -25,7 +25,7 @@ type options[K comparable, V any] interface {
 
 // Cache get options
 
-// +troptgen get
+//troptgen:get
 type getOptions[K comparable, V any] interface {
 	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
@@ -47,7 +47,7 @@ func WithGetRedisGetFuncFunc[K comparable, V any](redisGetFunc RedisGetFuncFunc[
 
 // Cache set options
 
-// +troptgen set
+//troptgen:set
 type setOptions[K comparable, V any] interface {
 	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
@@ -68,7 +68,7 @@ func WithSetRedisSetFuncFunc[K comparable, V any](redisSetFuncFunc RedisSetFuncF
 
 // Cache delete options
 
-// +troptgen delete
+//troptgen:delete
 type deleteOptions[K comparable, V any] interface {
 	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]

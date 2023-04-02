@@ -31,8 +31,7 @@ type specValue struct {
 	comment *ast.Comment
 }
 
-const directive = "+troptgen"
-const directiveLine = "// +troptgen"
+const directive = "//troptgen:"
 const rootPackage = "github.com/RangelReale/trcache"
 
 func runMain() error {
@@ -58,7 +57,7 @@ func runMain() error {
 	specs := make(map[string][]specValue)
 
 	for _, syntax := range pkg.Syntax {
-		s := getTaggedComments(syntax, directive)
+		s := getTaggedComments(syntax)
 		for _, sp := range s {
 			filename := pkg.Fset.Position(syntax.Package).Filename
 			fn, ok := specs[filename]
@@ -93,7 +92,7 @@ func runMain() error {
 			}
 
 			// root, get, set, delete, refresh
-			directiveList := strings.Split(strings.TrimSpace(strings.TrimPrefix(stype.comment.Text, directiveLine)), " ")
+			directiveList := strings.Split(strings.TrimSpace(strings.TrimPrefix(stype.comment.Text, directive)), " ")
 			var directiveCmd string
 			directiveParams := map[string]string{}
 			for didx, dcms := range directiveList {
@@ -404,7 +403,7 @@ func implStructName(interfaceName string) string {
 
 // getTaggedComments walks the AST and returns types which have directive comment
 // returns a map of TypeSpec to directive
-func getTaggedComments(pkg ast.Node, directive string) []specValue {
+func getTaggedComments(pkg ast.Node) []specValue {
 	var specs []specValue
 
 	ast.Inspect(pkg, func(n ast.Node) bool {
@@ -425,7 +424,7 @@ func getTaggedComments(pkg ast.Node, directive string) []specValue {
 		for _, s := range g.Specs {
 			t := s.(*ast.TypeSpec)
 
-			if c := findAnnotation(t.Doc, directive); c != nil {
+			if c := findAnnotation(t.Doc); c != nil {
 				specs = append(specs, specValue{
 					typ:     t,
 					comment: c,
@@ -442,29 +441,16 @@ func getTaggedComments(pkg ast.Node, directive string) []specValue {
 
 // findDirective return the first line of a doc which contains a directive
 // the directive and '//' are removed
-func findAnnotation(doc *ast.CommentGroup, directive string) *ast.Comment {
+func findAnnotation(doc *ast.CommentGroup) *ast.Comment {
 	if doc == nil {
 		return nil
 	}
 
 	// check lines of doc for directive
 	for _, c := range doc.List {
-		l := c.Text
-		// does the line start with the directive?
-		t := strings.TrimLeft(l, "/ ")
-		if !strings.HasPrefix(t, directive) {
-			continue
+		if strings.HasPrefix(c.Text, directive) {
+			return c
 		}
-
-		// remove the directive from the line
-		t = strings.TrimPrefix(t, directive)
-
-		// must be eof or followed by a space
-		if len(t) > 0 && t[0] != ' ' {
-			continue
-		}
-
-		return c
 	}
 
 	return nil

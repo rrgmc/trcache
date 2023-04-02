@@ -17,7 +17,7 @@ type Cache[K comparable, V any] struct {
 	redis   *redis.Client
 }
 
-func New[K comparable, V any](redis *redis.Client, options ...trcache.RootOption) (*Cache[K, V], error) {
+func New[K comparable, V any](redis *redis.Client, options ...RootOption) (*Cache[K, V], error) {
 	ret := &Cache[K, V]{
 		redis: redis,
 		options: rootOptionsImpl[K, V]{
@@ -38,7 +38,7 @@ func New[K comparable, V any](redis *redis.Client, options ...trcache.RootOption
 }
 
 func NewRefresh[K comparable, V any, RD any](redis *redis.Client,
-	options ...trcache.RootOption) (trcache.RefreshCache[K, V, RD], error) {
+	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
 	cache, err := New[K, V](redis, options...)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (c *Cache[K, V]) Name() string {
 	return c.options.name
 }
 
-func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOption) (V, error) {
+func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
 	_ = trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
 
@@ -87,7 +87,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K, options ...trcache.GetOpti
 	return dec, nil
 }
 
-func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcache.SetOption) error {
+func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...SetOption) error {
 	optns := setOptionsImpl[K, V]{
 		duration: c.options.defaultDuration,
 	}
@@ -107,7 +107,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V, options ...trcach
 		Set(ctx, c, keyValue, enc, c.options.defaultDuration, optns.customParams)
 }
 
-func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...trcache.DeleteOption) error {
+func (c *Cache[K, V]) Delete(ctx context.Context, key K, options ...DeleteOption) error {
 	var optns deleteOptionsImpl[K, V]
 	_ = trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
 

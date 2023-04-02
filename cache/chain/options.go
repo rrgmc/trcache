@@ -27,7 +27,7 @@ type options[K comparable, V any] interface {
 type getOptions[K comparable, V any] interface {
 	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
-	OptSetOptions(options ...trcache.SetOption)
+	OptSetOptions(options ...SetOption)
 	OptGetStrategy(getStrategy GetStrategy[K, V])
 }
 

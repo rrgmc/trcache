@@ -10,8 +10,8 @@ gen: tools
 
 .PHONY: test
 test: tools
-	go test ./...
-	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go test ./...'
+	go test -count=1 ./...
+	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go test -count=1 ./...'
 
 .PHONY: update-dep-version
 update-dep-version:

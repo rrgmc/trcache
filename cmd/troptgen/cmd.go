@@ -272,12 +272,12 @@ func runMain() error {
 						Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
 						BlockFunc(func(g *jen.Group) {
 							if isExplicitMethod {
-								g.Const().Id("optionName").Op("=").Lit(optionMethodName)
+								g.Comment("// ").Const().Id("optionName").Op("=").Lit(optionMethodName)
 								hash, err := OptionHashGen(optionMethodName)
 								if err != nil {
 									panic(fmt.Errorf("cannot calculate option hash: %v", err))
 								}
-								g.Const().Id("hash").Op("=").Lit(hash)
+								g.Const().Id("optionHash").Op("=").Lit(hash)
 
 								g.Return(
 									jen.Qual(rootPackage, fmt.Sprintf("%sOptionFunc", UCDefaultDirectiveCMD)).Call(

@@ -1,6 +1,8 @@
 package trcache
 
-import "go.uber.org/multierr"
+import (
+	"go.uber.org/multierr"
+)
 
 // parse options
 

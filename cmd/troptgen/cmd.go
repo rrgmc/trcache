@@ -218,13 +218,15 @@ func runMain() error {
 					continue
 				}
 
-				methodName := fmt.Sprintf("With%s%s%s", makeFirstUpperCase(*prefix), UCDefaultDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
-				defaultMethodName := fmt.Sprintf("With%s%s", UCDefaultDirectiveCMDOptional, strings.TrimPrefix(method.Name(), "Opt"))
+				baseMethodName := strings.TrimPrefix(method.Name(), "Opt")
+				optionMethodName := fmt.Sprintf("%s/%s.%s", namedType.Obj().Pkg().Path(), namedType.Obj().Name(), baseMethodName)
+				methodName := fmt.Sprintf("With%s%s%s", makeFirstUpperCase(*prefix), UCDefaultDirectiveCMDOptional, baseMethodName)
+				defaultMethodName := fmt.Sprintf("With%s%s", UCDefaultDirectiveCMDOptional, baseMethodName)
 				fsig := method.Type().(*types.Signature)
 
 				if isImpl && fsig.Params().Len() > 0 {
 					// add implementation field to struct
-					implFieldName := makeFirstLowerCase(strings.TrimPrefix(method.Name(), "Opt"))
+					implFieldName := makeFirstLowerCase(baseMethodName)
 
 					for p := 0; p < fsig.Params().Len(); p++ {
 						iname := implFieldName
@@ -270,6 +272,13 @@ func runMain() error {
 						Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
 						BlockFunc(func(g *jen.Group) {
 							if isExplicitMethod {
+								g.Const().Id("optionName").Op("=").Lit(optionMethodName)
+								hash, err := OptionHashGen(optionMethodName)
+								if err != nil {
+									panic(fmt.Errorf("cannot calculate option hash: %v", err))
+								}
+								g.Const().Id("hash").Op("=").Lit(hash)
+
 								g.Return(
 									jen.Qual(rootPackage, fmt.Sprintf("%sOptionFunc", UCDefaultDirectiveCMD)).Call(
 										jen.Func().

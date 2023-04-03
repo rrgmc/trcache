@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go/types"
+	"hash/fnv"
 
 	"github.com/dave/jennifer/jen"
 )
@@ -214,4 +215,15 @@ func ParamName(prm *types.Var, paramIdx int) string {
 		fname = fmt.Sprintf("p%d", paramIdx)
 	}
 	return fname
+}
+
+// helpers
+
+func OptionHashGen(s string) (uint64, error) {
+	h := fnv.New64()
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		return 0, err
+	}
+	return h.Sum64(), nil
 }

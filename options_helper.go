@@ -25,8 +25,8 @@ func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
 	var retErr error
 	if len(checkers) == 0 {
 		retErr = err
-	} else if len(checkers) == 1 {
-		retErr = checkers[0].CheckCacheError()
+		// } else if len(checkers) == 1 {
+		// 	retErr = checkers[0].CheckCacheError()
 	}
 	return ParseOptionsResult{
 		err:     retErr,
@@ -107,7 +107,6 @@ func (o *optionCheckerImpl[O]) CheckCacheError() error {
 	for _, opt := range o.Check {
 		if _, ok := o.optns[opt.CacheOptHash()]; !ok {
 			err = multierr.Append(err, NewOptionNotSupportedError(opt))
-
 		}
 	}
 	return err

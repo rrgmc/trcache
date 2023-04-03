@@ -27,13 +27,21 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 
 func NewRefresh[K comparable, V any, RD any](cache []trcache.Cache[K, V],
 	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
+	checker := trcache.NewOptionChecker[RootOption](options)
 	c, err := New[K, V](cache,
-		trcache.AppendRootOptions(options /* trcache.NewParseRootOptionChecker(), // TODO */)...,
+		trcache.AppendRootOptions([]RootOption{checker}, options)...,
 	)
 	if err != nil {
 		return nil, err
 	}
-	return wrap.NewWrapRefreshCache[K, V, RD](c, options...)
+	ret, err := wrap.NewWrapRefreshCache[K, V, RD](c, trcache.AppendRootOptions([]RootOption{checker}, options)...)
+	if err != nil {
+		return nil, err
+	}
+	if err = checker.CheckCacheError(); err != nil {
+		return nil, err
+	}
+	return ret, nil
 }
 
 func (c *Chain[K, V]) Name() string {

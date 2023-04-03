@@ -59,6 +59,7 @@ func TestChainRefresh(t *testing.T) {
 	c, err := NewRefresh[string, string, int]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
+		// trcache.WithNoop[string, string](true),
 		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),

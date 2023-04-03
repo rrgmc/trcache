@@ -64,6 +64,18 @@ func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOp
 		return false
 	}, optionName, optionHash)
 }
+func WithNoop[K comparable, V any](x bool) RootOption {
+	const optionName = "github.com/RangelReale/trcache/NoopOptions.Noop"
+	const optionHash = uint64(0x36deab2340bb905e)
+	return RootOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case NoopOptions[K, V]:
+			opt.OptNoop(x)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
 func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption) RootOption {
 	const optionName = "github.com/RangelReale/trcache/CallDefaultRefreshOptions.CallDefaultRefreshOptions"
 	const optionHash = uint64(0x1ff4089053065e4c)

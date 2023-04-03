@@ -33,6 +33,11 @@ type CallDefaultOptions[K comparable, V any] interface {
 }
 
 //troptgen:root
+type NoopOptions[K comparable, V any] interface {
+	OptNoop(x bool)
+}
+
+//troptgen:root
 type CallDefaultRefreshOptions[K comparable, V any] interface {
 	OptCallDefaultRefreshOptions(options ...RefreshOption)
 }

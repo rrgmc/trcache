@@ -18,10 +18,6 @@ func (o OptionFunc) ApplyCacheOpt(c any) bool {
 // Root Options
 //
 
-type rootOptionMarker interface {
-	isCacheRootOption()
-}
-
 type IsRootOption struct {
 }
 
@@ -37,8 +33,8 @@ func (i IsRootOption) isCacheRootOption() {}
 // func (i IsRootOptionsImpl) isCacheRootOptions() {}
 
 type RootOption interface {
-	rootOptionMarker
 	Option
+	isCacheRootOption()
 }
 
 type RootOptionFunc func(any) bool
@@ -67,10 +63,6 @@ func AppendRootOptions(options ...[]RootOption) []RootOption {
 // Get options
 //
 
-type getOptionMarker interface {
-	isCacheGetOption()
-}
-
 type IsGetOption struct {
 }
 
@@ -86,8 +78,8 @@ func (i IsGetOption) isCacheGetOption() {}
 // func (i IsGetOptionsImpl) isCacheGetOptions() {}
 
 type GetOption interface {
-	getOptionMarker
 	Option
+	isCacheGetOption()
 }
 
 type GetOptionFunc func(any) bool
@@ -116,10 +108,6 @@ func AppendGetOptions(options ...[]GetOption) []GetOption {
 // Set options
 //
 
-type setOptionMarker interface {
-	isCacheSetOption()
-}
-
 type IsSetOption struct {
 }
 
@@ -135,8 +123,8 @@ func (i IsSetOption) isCacheSetOption() {}
 // func (i IsSetOptionsImpl) isCacheSetOptions() {}
 
 type SetOption interface {
-	setOptionMarker
 	Option
+	isCacheSetOption()
 }
 
 type SetOptionFunc func(any) bool
@@ -165,10 +153,6 @@ func AppendSetOptions(options ...[]SetOption) []SetOption {
 // Delete options
 //
 
-type deleteOptionMarker interface {
-	isCacheDeleteOption()
-}
-
 type IsDeleteOption struct {
 }
 
@@ -184,8 +168,8 @@ func (i IsDeleteOption) isCacheDeleteOption() {}
 // func (i IsDeleteOptionsImpl) isCacheDeleteOptions() {}
 
 type DeleteOption interface {
-	deleteOptionMarker
 	Option
+	isCacheDeleteOption()
 }
 
 type DeleteOptionFunc func(any) bool
@@ -214,10 +198,6 @@ func AppendDeleteOptions(options ...[]DeleteOption) []DeleteOption {
 // Refresh options
 //
 
-type refreshOptionMarker interface {
-	isCacheRefreshOption()
-}
-
 type IsRefreshOption struct {
 }
 
@@ -233,8 +213,8 @@ func (i IsRefreshOption) isCacheRefreshOption() {}
 // func (i IsRefreshOptionsImpl) isCacheRefreshOptions() {}
 
 type RefreshOption interface {
-	refreshOptionMarker
 	Option
+	isCacheRefreshOption()
 }
 
 type RefreshOptionFunc func(any) bool

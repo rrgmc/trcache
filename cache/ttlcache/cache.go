@@ -24,8 +24,8 @@ func New[K comparable, V any](cache *ttlcache.Cache[K, V],
 		},
 	}
 	optErr := trcache.ParseRootOptions(&ret.options, options)
-	if optErr != nil && !ret.options.ignoreOptionNotSupported {
-		return nil, optErr
+	if optErr.Err() != nil {
+		return nil, optErr.Err()
 	}
 	return ret, nil
 }
@@ -63,9 +63,9 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 	options ...GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
 	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
+	if optErr.Err() != nil {
 		var empty V
-		return empty, optErr
+		return empty, optErr.Err()
 	}
 
 	var ttlopt []ttlcache.Option[K, V]
@@ -95,8 +95,8 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 		duration: c.options.defaultDuration,
 	}
 	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
-		return optErr
+	if optErr.Err() != nil {
+		return optErr.Err()
 	}
 
 	_ = c.cache.Set(key, value, optns.duration)
@@ -107,8 +107,8 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K,
 	options ...DeleteOption) error {
 	optns := deleteOptionsImpl[K, V]{}
 	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
-		return optErr
+	if optErr.Err() != nil {
+		return optErr.Err()
 	}
 
 	c.cache.Delete(key)

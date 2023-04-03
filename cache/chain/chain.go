@@ -19,16 +19,17 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 		caches: cache,
 	}
 	optErr := trcache.ParseRootOptions(&ret.options, options)
-	if optErr != nil && !ret.options.ignoreOptionNotSupported {
-		return nil, optErr
+	if optErr.Err() != nil {
+		return nil, optErr.Err()
 	}
 	return ret, nil
 }
 
 func NewRefresh[K comparable, V any, RD any](cache []trcache.Cache[K, V],
 	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
-	c, err := New[K, V](cache, trcache.AppendRootOptions(options,
-		[]RootOption{WithIgnoreOptionNotSupported[K, V](true)})...)
+	c, err := New[K, V](cache,
+		trcache.AppendRootOptions(options /* trcache.NewParseRootOptionChecker(), // TODO */)...,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -42,11 +43,12 @@ func (c *Chain[K, V]) Name() string {
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	options ...GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
-	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options,
-		[]GetOption{WithGetIgnoreOptionNotSupported[K, V](true)})
-	if optErr != nil && !optns.ignoreOptionNotSupported {
+	optErr := trcache.ParseGetOptions(&optns,
+		// trcache.NewParseGetOptionChecker(), // TODO
+		c.options.callDefaultGetOptions, options)
+	if optErr.Err() != nil {
 		var empty V
-		return empty, optErr
+		return empty, optErr.Err()
 	}
 
 	if optns.getStrategy == nil {
@@ -116,10 +118,11 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...SetOption) error {
 	var optns setOptionsImpl[K, V]
-	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options,
-		[]SetOption{WithSetIgnoreOptionNotSupported[K, V](true)})
-	if optErr != nil && !optns.ignoreOptionNotSupported {
-		return optErr
+	optErr := trcache.ParseSetOptions(&optns,
+		// trcache.NewParseSetOptionChecker(), // TODO
+		c.options.callDefaultSetOptions, options)
+	if optErr.Err() != nil {
+		return optErr.Err()
 	}
 
 	if optns.setStrategy == nil {
@@ -168,10 +171,11 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...DeleteOption) error {
 	var optns deleteOptionsImpl[K, V]
-	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options,
-		[]DeleteOption{WithDeleteIgnoreOptionNotSupported[K, V](true)})
-	if optErr != nil && !optns.ignoreOptionNotSupported {
-		return optErr
+	optErr := trcache.ParseDeleteOptions(&optns,
+		// trcache.NewParseDeleteOptionChecker(), // TODO
+		c.options.callDefaultDeleteOptions, options)
+	if optErr.Err() != nil {
+		return optErr.Err()
 	}
 
 	if optns.deleteStrategy == nil {

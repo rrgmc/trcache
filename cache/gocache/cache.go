@@ -25,8 +25,8 @@ func New[K comparable, V any](cache *cache.Cache,
 		options: rootOptionsImpl[K, V]{},
 	}
 	optErr := trcache.ParseRootOptions(&ret.options, options)
-	if optErr != nil && !ret.options.ignoreOptionNotSupported {
-		return nil, optErr
+	if optErr.Err() != nil {
+		return nil, optErr.Err()
 	}
 	if ret.options.valueCodec == nil {
 		return nil, errors.New("value codec is required")
@@ -62,9 +62,9 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 	options ...GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
 	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
+	if optErr.Err() != nil {
 		var empty V
-		return empty, optErr
+		return empty, optErr.Err()
 	}
 
 	keyValue, err := c.parseKey(ctx, key)
@@ -101,8 +101,8 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 		duration: c.options.defaultDuration,
 	}
 	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
-		return optErr
+	if optErr.Err() != nil {
+		return optErr.Err()
 	}
 
 	enc, err := c.options.valueCodec.Marshal(ctx, value)
@@ -123,8 +123,8 @@ func (c *Cache[K, V]) Delete(ctx context.Context, key K,
 	options ...DeleteOption) error {
 	optns := deleteOptionsImpl[K, V]{}
 	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
-		return optErr
+	if optErr.Err() != nil {
+		return optErr.Err()
 	}
 
 	keyValue, err := c.parseKey(ctx, key)

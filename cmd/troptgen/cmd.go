@@ -138,30 +138,6 @@ func runMain() error {
 				return fmt.Errorf("only interface types are supported: %s", obj.String())
 			}
 
-			// initialize implementation statements
-			_, optiok := optionsimpl[directiveCmd]
-			if !optiok {
-				optionsimpl[directiveCmd] = &jen.Statement{}
-			}
-
-			_, optifok := optionsimplfuncs[directiveCmd]
-			if !optifok {
-				optionsimplfuncs[directiveCmd] = &jen.Statement{}
-			}
-
-			_, optfok := optionsfuncs[directiveCmd]
-			if !optfok {
-				optionsfuncs[directiveCmd] = &jen.Statement{}
-				if isDefaultDirective && pkg.PkgPath != rootPackage {
-					optionsfuncs[directiveCmd].Add(
-						jen.Type().
-							Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
-							Op("=").
-							Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)),
-					)
-				}
-			}
-
 			// don't create implementations on the main package
 			isImpl := false
 			if pkg.PkgPath != rootPackage {
@@ -182,7 +158,18 @@ func runMain() error {
 			// 	}
 			// }
 
+			// initialize implementation statements
 			if isImpl {
+				_, optiok := optionsimpl[directiveCmd]
+				if !optiok {
+					optionsimpl[directiveCmd] = &jen.Statement{}
+				}
+
+				_, optifok := optionsimplfuncs[directiveCmd]
+				if !optifok {
+					optionsimplfuncs[directiveCmd] = &jen.Statement{}
+				}
+
 				// create the implementation struct definition
 				if _, itok := optionsimpltype[directiveCmd]; !itok {
 					optionsimpltype[directiveCmd] = jen.
@@ -204,6 +191,19 @@ func runMain() error {
 						Id(fmt.Sprintf("&%s", implStructName(namedType.Obj().Name()))).Add(CallFromTypeParamsFixed(namedType.TypeParams(), "string")).
 						Values(jen.Dict{}),
 				)
+			}
+
+			_, optfok := optionsfuncs[directiveCmd]
+			if !optfok {
+				optionsfuncs[directiveCmd] = &jen.Statement{}
+				if isDefaultDirective && pkg.PkgPath != rootPackage {
+					optionsfuncs[directiveCmd].Add(
+						jen.Type().
+							Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+							Op("=").
+							Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)),
+					)
+				}
 			}
 
 			explicitMethods := map[*types.Func]bool{}
@@ -325,20 +325,20 @@ func runMain() error {
 			}
 		}
 
-		// generate an impl struct for each interface method
+		// generate an impl struct for each option interface and an impl method for each interface method
 		for _, d := range cmds {
 			ob, ok := optionsimpl[d]
 			if !ok {
 				continue
 			}
 
-			if len(*ob) > 0 {
-				f.Add(optionsimpltype[d].StructFunc(func(g *jen.Group) {
-					for _, obi := range *ob {
-						g.Add(obi)
-					}
-				}))
-			}
+			// if len(*ob) > 0 {
+			f.Add(optionsimpltype[d].StructFunc(func(g *jen.Group) {
+				for _, obi := range *ob {
+					g.Add(obi)
+				}
+			}))
+			// }
 
 			of, ok := optionsimplfuncs[d]
 			if !ok {

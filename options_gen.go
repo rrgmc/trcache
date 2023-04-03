@@ -4,18 +4,6 @@ package trcache
 
 import "time"
 
-func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
-	const optionName = "github.com/RangelReale/trcache/Options.IgnoreOptionNotSupported"
-	const optionHash = uint64(0x3a6dd3ba41110600)
-	return RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case Options[K, V]:
-			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
-			return true
-		}
-		return false
-	}, optionName, optionHash)
-}
 func WithName[K comparable, V any](name string) RootOption {
 	const optionName = "github.com/RangelReale/trcache/NameOptions.Name"
 	const optionHash = uint64(0x98d6a600b692b726)
@@ -88,18 +76,6 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 		return false
 	}, optionName, optionHash)
 }
-func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
-	const optionName = "github.com/RangelReale/trcache/GetOptions.IgnoreOptionNotSupported"
-	const optionHash = uint64(0x71a0a4381c1387bc)
-	return GetOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case GetOptions[K, V]:
-			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
-			return true
-		}
-		return false
-	}, optionName, optionHash)
-}
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	const optionName = "github.com/RangelReale/trcache/SetOptions.Duration"
 	const optionHash = uint64(0x4782e16ce757eefa)
@@ -107,30 +83,6 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
 			opt.OptDuration(duration)
-			return true
-		}
-		return false
-	}, optionName, optionHash)
-}
-func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) SetOption {
-	const optionName = "github.com/RangelReale/trcache/SetOptions.IgnoreOptionNotSupported"
-	const optionHash = uint64(0x25eaed3a7f6ffc08)
-	return SetOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case SetOptions[K, V]:
-			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
-			return true
-		}
-		return false
-	}, optionName, optionHash)
-}
-func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
-	const optionName = "github.com/RangelReale/trcache/DeleteOptions.IgnoreOptionNotSupported"
-	const optionHash = uint64(0xc215b91d706c9995)
-	return DeleteOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case DeleteOptions[K, V]:
-			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
 			return true
 		}
 		return false
@@ -167,18 +119,6 @@ func WithRefreshGetOptions[K comparable, V any, RD any](options ...GetOption) Re
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
 			opt.OptGetOptions(options...)
-			return true
-		}
-		return false
-	}, optionName, optionHash)
-}
-func WithRefreshIgnoreOptionNotSupported[K comparable, V any, RD any](ignoreOptionNotSupported bool) RefreshOption {
-	const optionName = "github.com/RangelReale/trcache/RefreshOptions.IgnoreOptionNotSupported"
-	const optionHash = uint64(0xa25a1d64dbaadd1)
-	return RefreshOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case RefreshOptions[K, V, RD]:
-			opt.OptIgnoreOptionNotSupported(ignoreOptionNotSupported)
 			return true
 		}
 		return false

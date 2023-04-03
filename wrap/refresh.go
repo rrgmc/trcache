@@ -18,8 +18,8 @@ func NewWrapRefreshCache[K comparable, V any, RD any](cache trcache.Cache[K, V],
 		cache: cache,
 	}
 	optErr := trcache.ParseRootOptions(&ret.options, options)
-	if optErr != nil && !ret.options.ignoreOptionNotSupported {
-		return nil, optErr
+	if optErr.Err() != nil {
+		return nil, optErr.Err()
 	}
 	return ret, nil
 }
@@ -48,9 +48,9 @@ func (c *wrapRefreshCache[K, V, RD]) GetOrRefresh(ctx context.Context, key K, op
 		funcx: c.options.defaultRefreshFunc,
 	}
 	optErr := trcache.ParseRefreshOptions(&optns, c.options.callDefaultRefreshOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
+	if optErr.Err() != nil {
 		var empty V
-		return empty, optErr
+		return empty, optErr.Err()
 	}
 
 	ret, err := c.Get(ctx, key, optns.getOptions...)

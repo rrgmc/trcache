@@ -15,19 +15,15 @@ func WithRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefre
 func WithRefreshGetOptions[K comparable, V any, RD any](options ...trcache.GetOption) RefreshOption {
 	return trcache.WithRefreshGetOptions[K, V, RD](options...)
 }
-func WithRefreshIgnoreOptionNotSupported[K comparable, V any, RD any](ignoreOptionNotSupported bool) RefreshOption {
-	return trcache.WithRefreshIgnoreOptionNotSupported[K, V, RD](ignoreOptionNotSupported)
-}
 func WithRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOption) RefreshOption {
 	return trcache.WithRefreshSetOptions[K, V, RD](options...)
 }
 
 type refreshOptionsImpl[K comparable, V any, RD any] struct {
-	data                     RD
-	funcx                    trcache.CacheRefreshFunc[K, V, RD]
-	getOptions               []trcache.GetOption
-	ignoreOptionNotSupported bool
-	setOptions               []trcache.SetOption
+	data       RD
+	funcx      trcache.CacheRefreshFunc[K, V, RD]
+	getOptions []trcache.GetOption
+	setOptions []trcache.SetOption
 }
 
 var _ refreshOptions[string, string, string] = &refreshOptionsImpl[string, string, string]{}
@@ -40,9 +36,6 @@ func (o *refreshOptionsImpl[K, V, RD]) OptFunc(refreshFunc trcache.CacheRefreshF
 }
 func (o *refreshOptionsImpl[K, V, RD]) OptGetOptions(options ...trcache.GetOption) {
 	o.getOptions = options
-}
-func (o *refreshOptionsImpl[K, V, RD]) OptIgnoreOptionNotSupported(ignoreOptionNotSupported bool) {
-	o.ignoreOptionNotSupported = ignoreOptionNotSupported
 }
 func (o *refreshOptionsImpl[K, V, RD]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options

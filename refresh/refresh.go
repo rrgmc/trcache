@@ -13,9 +13,9 @@ func GetOrRefresh[K comparable, V any, RD any](ctx context.Context, c trcache.Ca
 		funcx: defaultOptions.defaultRefreshFunc,
 	}
 	optErr := trcache.ParseRefreshOptions(&optns, defaultOptions.callDefaultRefreshOptions, options)
-	if optErr != nil && !optns.ignoreOptionNotSupported {
+	if optErr.Err() != nil {
 		var empty V
-		return empty, optErr
+		return empty, optErr.Err()
 	}
 
 	ret, err := c.Get(ctx, key, optns.getOptions...)

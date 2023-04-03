@@ -66,6 +66,10 @@ func ParseRootOptions(obj any, options ...[]RootOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
+func NewParseRootOptionChecker(options []RootOption) []RootOption {
+	return []RootOption{NewOptionChecker[RootOption](options)}
+}
+
 func AppendRootOptions(options ...[]RootOption) []RootOption {
 	return appendOptions(options...)
 }
@@ -104,6 +108,10 @@ func (f getOptionFunc) isCacheGetOption() {}
 
 func ParseGetOptions(obj any, options ...[]GetOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
+}
+
+func NewParseGetOptionChecker(options []GetOption) []GetOption {
+	return []GetOption{NewOptionChecker[GetOption](options)}
 }
 
 func AppendGetOptions(options ...[]GetOption) []GetOption {
@@ -146,6 +154,10 @@ func ParseSetOptions(obj any, options ...[]SetOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
+func NewParseSetOptionChecker(options []SetOption) []SetOption {
+	return []SetOption{NewOptionChecker[SetOption](options)}
+}
+
 func AppendSetOptions(options ...[]SetOption) []SetOption {
 	return appendOptions(options...)
 }
@@ -186,6 +198,10 @@ func ParseDeleteOptions(obj any, options ...[]DeleteOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
+func NewParseDeleteOptionChecker(options []DeleteOption) []DeleteOption {
+	return []DeleteOption{NewOptionChecker[DeleteOption](options)}
+}
+
 func AppendDeleteOptions(options ...[]DeleteOption) []DeleteOption {
 	return appendOptions(options...)
 }
@@ -224,6 +240,10 @@ func (f refreshOptionFunc) isCacheRefreshOption() {}
 
 func ParseRefreshOptions(obj any, options ...[]RefreshOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
+}
+
+func NewParseRefreshOptionChecker(options []RefreshOption) []RefreshOption {
+	return []RefreshOption{NewOptionChecker[RefreshOption](options)}
 }
 
 func AppendRefreshOptions(options ...[]RefreshOption) []RefreshOption {

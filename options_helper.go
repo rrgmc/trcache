@@ -7,14 +7,7 @@ import (
 // parse options
 
 func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
-	var checkers []optionChecker[O]
-	for _, optinstance := range options {
-		for _, opt := range optinstance {
-			if oc, ok := any(opt).(optionChecker[O]); ok {
-				checkers = append(checkers, oc)
-			}
-		}
-	}
+	checkers := parseOptionsCheckers(options...)
 
 	var err error
 	for _, optinstance := range options {
@@ -28,26 +21,29 @@ func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
 			}
 		}
 	}
+
+	var retErr error
+	if len(checkers) == 0 {
+		retErr = err
+	} else if len(checkers) == 1 {
+		retErr = checkers[0].CheckCacheError()
+	}
 	return ParseOptionsResult{
-		isCheck: len(checkers) > 0,
-		err:     err,
+		err:     retErr,
+		selfErr: err,
 	}
 }
 
 type ParseOptionsResult struct {
-	isCheck bool
-	err     error
+	err, selfErr error
 }
 
 func (r ParseOptionsResult) Err() error {
-	if !r.isCheck {
-		return r.err
-	}
-	return nil
+	return r.err
 }
 
-func (r ParseOptionsResult) CheckErr() error {
-	return r.err
+func (r ParseOptionsResult) SelfErr() error {
+	return r.selfErr
 }
 
 // append options
@@ -65,6 +61,7 @@ func appendOptions[O Option](options ...[]O) []O {
 type optionChecker[O Option] interface {
 	Option
 	CheckCacheOpt(opt Option)
+	CheckCacheError() error
 	isCacheRootOption()
 	isCacheGetOption()
 	isCacheSetOption()
@@ -72,24 +69,30 @@ type optionChecker[O Option] interface {
 	isCacheRefreshOption()
 }
 
-type OptionChecker[O Option] struct {
+func NewOptionChecker[O Option](options []O) optionChecker[O] {
+	return &optionCheckerImpl[O]{
+		Check: options,
+	}
+}
+
+type optionCheckerImpl[O Option] struct {
 	Check []O
 	optns map[uint64]Option
 }
 
-func (o *OptionChecker[O]) ApplyCacheOpt(a any) bool {
+func (o *optionCheckerImpl[O]) ApplyCacheOpt(a any) bool {
 	return true
 }
 
-func (o *OptionChecker[O]) CacheOptName() string {
+func (o *optionCheckerImpl[O]) CacheOptName() string {
 	return "checker"
 }
 
-func (o *OptionChecker[O]) CacheOptHash() uint64 {
+func (o *optionCheckerImpl[O]) CacheOptHash() uint64 {
 	return 1
 }
 
-func (o *OptionChecker[O]) CheckCacheOpt(opt Option) {
+func (o *optionCheckerImpl[O]) CheckCacheOpt(opt Option) {
 	if o.optns == nil {
 		o.optns = map[uint64]Option{}
 	}
@@ -99,7 +102,7 @@ func (o *OptionChecker[O]) CheckCacheOpt(opt Option) {
 	}
 }
 
-func (o *OptionChecker[O]) CheckError() error {
+func (o *optionCheckerImpl[O]) CheckCacheError() error {
 	var err error
 	for _, opt := range o.Check {
 		if _, ok := o.optns[opt.CacheOptHash()]; !ok {
@@ -110,10 +113,22 @@ func (o *OptionChecker[O]) CheckError() error {
 	return err
 }
 
-func (o *OptionChecker[O]) isCacheRootOption()    {}
-func (o *OptionChecker[O]) isCacheGetOption()     {}
-func (o *OptionChecker[O]) isCacheSetOption()     {}
-func (o *OptionChecker[O]) isCacheDeleteOption()  {}
-func (o *OptionChecker[O]) isCacheRefreshOption() {}
+func (o *optionCheckerImpl[O]) isCacheRootOption()    {}
+func (o *optionCheckerImpl[O]) isCacheGetOption()     {}
+func (o *optionCheckerImpl[O]) isCacheSetOption()     {}
+func (o *optionCheckerImpl[O]) isCacheDeleteOption()  {}
+func (o *optionCheckerImpl[O]) isCacheRefreshOption() {}
 
-var _ optionChecker[Option] = &OptionChecker[Option]{}
+// var _ optionCheckerImpl[Option] = &optionCheckerImpl[Option]{}
+
+func parseOptionsCheckers[O Option](options ...[]O) []optionChecker[O] {
+	var checkers []optionChecker[O]
+	for _, optinstance := range options {
+		for _, opt := range optinstance {
+			if oc, ok := any(opt).(optionChecker[O]); ok {
+				checkers = append(checkers, oc)
+			}
+		}
+	}
+	return checkers
+}

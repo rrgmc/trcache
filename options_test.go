@@ -11,7 +11,7 @@ import (
 // 	var opt Option
 // 	opt = NewOptionChecker()
 //
-// 	if oc, ok := opt.(optionChecker); ok {
+// 	if oc, ok := opt.(optionCheckerImpl); ok {
 //
 // 	}
 // }
@@ -27,17 +27,16 @@ func TestOptionsRecursive(t *testing.T) {
 		// WithGet1Test115[string, string]("aaa"),
 	}
 
-	// err := trcache.ParseRootOptions(&options, optionsParam)
-
-	chk := &trcache.OptionChecker[trcache.RootOption]{Check: optionsParam}
-	err := trcache.ParseRootOptions(&options, trcache.AppendRootOptions([]trcache.RootOption{chk}, optionsParam))
-
+	err := trcache.ParseRootOptions(&options,
+		trcache.NewParseRootOptionChecker(optionsParam),
+		trcache.NewParseRootOptionChecker(optionsParam),
+		optionsParam)
 	require.NoError(t, err.Err())
-	require.NoError(t, chk.CheckError())
 
-	// if optErr != nil && !options.ignoreOptionNotSupported {
-	// 	return nil, optErr
-	// }
+	err = trcache.ParseRootOptions(&options,
+		trcache.NewParseRootOptionChecker(optionsParam),
+		optionsParam)
+	require.Error(t, err.Err())
 }
 
 // Test Options 1

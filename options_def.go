@@ -18,24 +18,15 @@ func (o OptionFunc) ApplyCacheOpt(c any) bool {
 // Root Options
 //
 
-type IsRootOption struct {
-}
-
-func (i IsRootOption) isCacheRootOption() {}
-
-// type IsRootOptions interface {
-// 	isCacheRootOptions()
-// }
-//
-// type IsRootOptionsImpl struct {
-// }
-//
-// func (i IsRootOptionsImpl) isCacheRootOptions() {}
-
 type RootOption interface {
 	Option
 	isCacheRootOption()
 }
+
+type IsRootOption struct {
+}
+
+func (i IsRootOption) isCacheRootOption() {}
 
 type RootOptionFunc func(any) bool
 
@@ -63,24 +54,15 @@ func AppendRootOptions(options ...[]RootOption) []RootOption {
 // Get options
 //
 
-type IsGetOption struct {
-}
-
-func (i IsGetOption) isCacheGetOption() {}
-
-// type IsGetOptions interface {
-// 	isCacheGetOptions()
-// }
-//
-// type IsGetOptionsImpl struct {
-// }
-//
-// func (i IsGetOptionsImpl) isCacheGetOptions() {}
-
 type GetOption interface {
 	Option
 	isCacheGetOption()
 }
+
+type IsGetOption struct {
+}
+
+func (i IsGetOption) isCacheGetOption() {}
 
 type GetOptionFunc func(any) bool
 
@@ -108,24 +90,15 @@ func AppendGetOptions(options ...[]GetOption) []GetOption {
 // Set options
 //
 
-type IsSetOption struct {
-}
-
-func (i IsSetOption) isCacheSetOption() {}
-
-// type IsSetOptions interface {
-// 	isCacheSetOptions()
-// }
-//
-// type IsSetOptionsImpl struct {
-// }
-//
-// func (i IsSetOptionsImpl) isCacheSetOptions() {}
-
 type SetOption interface {
 	Option
 	isCacheSetOption()
 }
+
+type IsSetOption struct {
+}
+
+func (i IsSetOption) isCacheSetOption() {}
 
 type SetOptionFunc func(any) bool
 
@@ -153,24 +126,15 @@ func AppendSetOptions(options ...[]SetOption) []SetOption {
 // Delete options
 //
 
-type IsDeleteOption struct {
-}
-
-func (i IsDeleteOption) isCacheDeleteOption() {}
-
-// type IsDeleteOptions interface {
-// 	isCacheDeleteOptions()
-// }
-//
-// type IsDeleteOptionsImpl struct {
-// }
-//
-// func (i IsDeleteOptionsImpl) isCacheDeleteOptions() {}
-
 type DeleteOption interface {
 	Option
 	isCacheDeleteOption()
 }
+
+type IsDeleteOption struct {
+}
+
+func (i IsDeleteOption) isCacheDeleteOption() {}
 
 type DeleteOptionFunc func(any) bool
 
@@ -198,24 +162,15 @@ func AppendDeleteOptions(options ...[]DeleteOption) []DeleteOption {
 // Refresh options
 //
 
-type IsRefreshOption struct {
-}
-
-func (i IsRefreshOption) isCacheRefreshOption() {}
-
-// type IsRefreshOptions interface {
-// 	isCacheRefreshOptions()
-// }
-//
-// type IsRefreshOptionsImpl struct {
-// }
-//
-// func (i IsRefreshOptionsImpl) isCacheRefreshOptions() {}
-
 type RefreshOption interface {
 	Option
 	isCacheRefreshOption()
 }
+
+type IsRefreshOption struct {
+}
+
+func (i IsRefreshOption) isCacheRefreshOption() {}
 
 type RefreshOptionFunc func(any) bool
 

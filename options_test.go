@@ -42,7 +42,7 @@ func With1Test11[K comparable, V any](name string) trcache.RootOption {
 			return true
 		}
 		return false
-	})
+	}, 111)
 }
 
 func With1Test12[K comparable, V any](value int) trcache.RootOption {
@@ -53,7 +53,7 @@ func With1Test12[K comparable, V any](value int) trcache.RootOption {
 			return true
 		}
 		return false
-	})
+	}, 112)
 }
 
 type With1Test13 struct {
@@ -64,6 +64,10 @@ func (o With1Test13) ApplyCacheOpt(opt any) bool {
 	return true
 }
 
+func (o With1Test13) CacheOptHash() uint64 {
+	return 113
+}
+
 func WithGet1Test115[K comparable, V any](name string) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -72,7 +76,7 @@ func WithGet1Test115[K comparable, V any](name string) trcache.GetOption {
 			return true
 		}
 		return false
-	})
+	}, 115)
 }
 
 type TestOptions1[K comparable, V any] interface {
@@ -133,7 +137,7 @@ func With2Test21[K comparable, V any](name string) trcache.RootOption {
 			return true
 		}
 		return false
-	})
+	}, 221)
 }
 
 func With2Test22[K comparable, V any](value int) trcache.RootOption {
@@ -144,7 +148,7 @@ func With2Test22[K comparable, V any](value int) trcache.RootOption {
 			return true
 		}
 		return false
-	})
+	}, 222)
 }
 
 type TestOptions2[K comparable, V any] interface {

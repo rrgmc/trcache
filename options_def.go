@@ -6,13 +6,23 @@ package trcache
 
 type Option interface {
 	ApplyCacheOpt(any) bool
+	CacheOptHash() uint64
 }
 
-type OptionFunc func(any) bool
-
-func (o OptionFunc) ApplyCacheOpt(c any) bool {
-	return o(c)
+type optionFunc struct {
+	f func(any) bool
+	h uint64
 }
+
+func (o optionFunc) ApplyCacheOpt(c any) bool {
+	return o.f(c)
+}
+
+func (o optionFunc) CacheOptHash() uint64 {
+	return o.h
+}
+
+var _ Option = &optionFunc{}
 
 //
 // Root Options
@@ -28,17 +38,24 @@ type IsRootOption struct {
 
 func (i IsRootOption) isCacheRootOption() {}
 
-type RootOptionFunc func(any) bool
-
-func (f RootOptionFunc) isCacheRootOption() {}
-
-func (f RootOptionFunc) ApplyCacheOpt(c any) bool {
-	return f(c)
+func RootOptionFunc(f func(any) bool, hash uint64) RootOption {
+	return &rootOptionFunc{
+		optionFunc: optionFunc{
+			f: f,
+			h: hash,
+		},
+	}
 }
 
-var _ RootOption = RootOptionFunc(func(a any) bool {
-	return true
-})
+type rootOptionFunc struct {
+	optionFunc
+}
+
+func (f rootOptionFunc) isCacheRootOption() {}
+
+// var _ RootOption = &rootOptionFunc{optionFunc{func(a any) bool {
+// 	return true
+// }, 0}}
 
 // Root options: functions
 
@@ -64,17 +81,24 @@ type IsGetOption struct {
 
 func (i IsGetOption) isCacheGetOption() {}
 
-type GetOptionFunc func(any) bool
-
-func (f GetOptionFunc) isCacheGetOption() {}
-
-func (f GetOptionFunc) ApplyCacheOpt(c any) bool {
-	return f(c)
+func GetOptionFunc(f func(any) bool, hash uint64) GetOption {
+	return &getOptionFunc{
+		optionFunc: optionFunc{
+			f: f,
+			h: hash,
+		},
+	}
 }
 
-var _ GetOption = GetOptionFunc(func(a any) bool {
-	return true
-})
+type getOptionFunc struct {
+	optionFunc
+}
+
+func (f getOptionFunc) isCacheGetOption() {}
+
+// var _ GetOption = &getOptionFunc{optionFunc{func(a any) bool {
+// 	return true
+// }, 0}}
 
 // Get options: functions
 
@@ -100,17 +124,24 @@ type IsSetOption struct {
 
 func (i IsSetOption) isCacheSetOption() {}
 
-type SetOptionFunc func(any) bool
-
-func (f SetOptionFunc) isCacheSetOption() {}
-
-func (f SetOptionFunc) ApplyCacheOpt(c any) bool {
-	return f(c)
+func SetOptionFunc(f func(any) bool, hash uint64) SetOption {
+	return &setOptionFunc{
+		optionFunc: optionFunc{
+			f: f,
+			h: hash,
+		},
+	}
 }
 
-var _ SetOption = SetOptionFunc(func(a any) bool {
-	return true
-})
+type setOptionFunc struct {
+	optionFunc
+}
+
+func (f setOptionFunc) isCacheSetOption() {}
+
+// var _ SetOption = &setOptionFunc{optionFunc{func(a any) bool {
+// 	return true
+// }, 0}}
 
 // Set options: functions
 
@@ -136,17 +167,24 @@ type IsDeleteOption struct {
 
 func (i IsDeleteOption) isCacheDeleteOption() {}
 
-type DeleteOptionFunc func(any) bool
-
-func (f DeleteOptionFunc) isCacheDeleteOption() {}
-
-func (f DeleteOptionFunc) ApplyCacheOpt(c any) bool {
-	return f(c)
+func DeleteOptionFunc(f func(any) bool, hash uint64) DeleteOption {
+	return &deleteOptionFunc{
+		optionFunc: optionFunc{
+			f: f,
+			h: hash,
+		},
+	}
 }
 
-var _ DeleteOption = DeleteOptionFunc(func(a any) bool {
-	return true
-})
+type deleteOptionFunc struct {
+	optionFunc
+}
+
+func (f deleteOptionFunc) isCacheDeleteOption() {}
+
+// var _ DeleteOption = &deleteOptionFunc{optionFunc{func(a any) bool {
+// 	return true
+// }, 0}}
 
 // Cache delete options: functions
 
@@ -172,17 +210,24 @@ type IsRefreshOption struct {
 
 func (i IsRefreshOption) isCacheRefreshOption() {}
 
-type RefreshOptionFunc func(any) bool
-
-func (f RefreshOptionFunc) isCacheRefreshOption() {}
-
-func (f RefreshOptionFunc) ApplyCacheOpt(c any) bool {
-	return f(c)
+func RefreshOptionFunc(f func(any) bool, hash uint64) RefreshOption {
+	return &refreshOptionFunc{
+		optionFunc: optionFunc{
+			f: f,
+			h: hash,
+		},
+	}
 }
 
-var _ RefreshOption = RefreshOptionFunc(func(a any) bool {
-	return true
-})
+type refreshOptionFunc struct {
+	optionFunc
+}
+
+func (f refreshOptionFunc) isCacheRefreshOption() {}
+
+// var _ RefreshOption = &refreshOptionFunc{optionFunc{func(a any) bool {
+// 	return true
+// }, 0}}
 
 // Refresh options: functions
 

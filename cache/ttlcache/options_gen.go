@@ -28,7 +28,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
 	return trcache.WithIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
@@ -46,7 +46,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 
 type GetOption = trcache.GetOption
@@ -64,7 +64,7 @@ func WithGetTouch[K comparable, V any](touch bool) GetOption {
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 
 type SetOption = trcache.SetOption

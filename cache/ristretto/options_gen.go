@@ -19,6 +19,8 @@ func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption
 	return trcache.WithCallDefaultSetOptions[K, V](options...)
 }
 func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/cache/ristretto/options.DefaultDuration"
+	const optionHash = uint64(0x2e7224a23dcd9543)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -26,9 +28,11 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithEventualConsistency[K comparable, V any](eventualConsistency bool) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/cache/ristretto/options.EventualConsistency"
+	const optionHash = uint64(0x237a93cc1fe22bf6)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -36,7 +40,7 @@ func WithEventualConsistency[K comparable, V any](eventualConsistency bool) Root
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
 	return trcache.WithIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
@@ -45,6 +49,8 @@ func WithName[K comparable, V any](name string) RootOption {
 	return trcache.WithName[K, V](name)
 }
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/cache/ristretto/options.Validator"
+	const optionHash = uint64(0x49fcb7b8d9427a66)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -52,9 +58,11 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/cache/ristretto/options.ValueCodec"
+	const optionHash = uint64(0xffc96d014122347f)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:
@@ -62,7 +70,7 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) RootOption
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 
 type GetOption = trcache.GetOption
@@ -74,6 +82,8 @@ func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupport
 type SetOption = trcache.SetOption
 
 func WithSetCost[K comparable, V any](cost int64) SetOption {
+	// const optionName = "github.com/RangelReale/trcache/cache/ristretto/setOptions.Cost"
+	const optionHash = uint64(0xf8e2d52e844e33eb)
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case setOptions[K, V]:
@@ -81,7 +91,7 @@ func WithSetCost[K comparable, V any](cost int64) SetOption {
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	return trcache.WithSetDuration[K, V](duration)

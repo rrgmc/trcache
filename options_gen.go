@@ -5,6 +5,8 @@ package trcache
 import "time"
 
 func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/Options.IgnoreOptionNotSupported"
+	const optionHash = uint64(0x3a6dd3ba41110600)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case Options[K, V]:
@@ -12,9 +14,11 @@ func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported 
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithName[K comparable, V any](name string) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/NameOptions.Name"
+	const optionHash = uint64(0x98d6a600b692b726)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case NameOptions[K, V]:
@@ -22,9 +26,11 @@ func WithName[K comparable, V any](name string) RootOption {
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithMetrics[K comparable, V any](metrics Metrics, name string) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/MetricsOptions.Metrics"
+	const optionHash = uint64(0x1beb63d6b36d066c)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case MetricsOptions[K, V]:
@@ -32,9 +38,11 @@ func WithMetrics[K comparable, V any](metrics Metrics, name string) RootOption {
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/CallDefaultOptions.CallDefaultDeleteOptions"
+	const optionHash = uint64(0x406b2f02562353ed)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
@@ -42,9 +50,11 @@ func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) 
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/CallDefaultOptions.CallDefaultGetOptions"
+	const optionHash = uint64(0x22e5cf931cff25e)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
@@ -52,9 +62,11 @@ func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption) RootOp
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/CallDefaultOptions.CallDefaultSetOptions"
+	const optionHash = uint64(0xbe5b3492dd589c42)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultOptions[K, V]:
@@ -62,9 +74,11 @@ func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOp
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/CallDefaultRefreshOptions.CallDefaultRefreshOptions"
+	const optionHash = uint64(0x1ff4089053065e4c)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case CallDefaultRefreshOptions[K, V]:
@@ -72,9 +86,11 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
+	// const optionName = "github.com/RangelReale/trcache/GetOptions.IgnoreOptionNotSupported"
+	const optionHash = uint64(0x71a0a4381c1387bc)
 	return GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case GetOptions[K, V]:
@@ -82,9 +98,11 @@ func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupport
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
+	// const optionName = "github.com/RangelReale/trcache/SetOptions.Duration"
+	const optionHash = uint64(0x4782e16ce757eefa)
 	return SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
@@ -92,9 +110,11 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) SetOption {
+	// const optionName = "github.com/RangelReale/trcache/SetOptions.IgnoreOptionNotSupported"
+	const optionHash = uint64(0x25eaed3a7f6ffc08)
 	return SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case SetOptions[K, V]:
@@ -102,9 +122,11 @@ func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupport
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
+	// const optionName = "github.com/RangelReale/trcache/DeleteOptions.IgnoreOptionNotSupported"
+	const optionHash = uint64(0xc215b91d706c9995)
 	return DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case DeleteOptions[K, V]:
@@ -112,9 +134,11 @@ func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupp
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
+	// const optionName = "github.com/RangelReale/trcache/RefreshOptions.Data"
+	const optionHash = uint64(0x15f36f99082ff0db)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
@@ -122,9 +146,11 @@ func WithRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K, V, RD]) RefreshOption {
+	// const optionName = "github.com/RangelReale/trcache/RefreshOptions.Func"
+	const optionHash = uint64(0x27dba799127e8249)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
@@ -132,9 +158,11 @@ func WithRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithRefreshGetOptions[K comparable, V any, RD any](options ...GetOption) RefreshOption {
+	// const optionName = "github.com/RangelReale/trcache/RefreshOptions.GetOptions"
+	const optionHash = uint64(0x8991bcf58fe8472d)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
@@ -142,9 +170,11 @@ func WithRefreshGetOptions[K comparable, V any, RD any](options ...GetOption) Re
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithRefreshIgnoreOptionNotSupported[K comparable, V any, RD any](ignoreOptionNotSupported bool) RefreshOption {
+	// const optionName = "github.com/RangelReale/trcache/RefreshOptions.IgnoreOptionNotSupported"
+	const optionHash = uint64(0xa25a1d64dbaadd1)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
@@ -152,9 +182,11 @@ func WithRefreshIgnoreOptionNotSupported[K comparable, V any, RD any](ignoreOpti
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithRefreshSetOptions[K comparable, V any, RD any](options ...SetOption) RefreshOption {
+	// const optionName = "github.com/RangelReale/trcache/RefreshOptions.SetOptions"
+	const optionHash = uint64(0x67f5357186bd5f31)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case RefreshOptions[K, V, RD]:
@@ -162,9 +194,11 @@ func WithRefreshSetOptions[K comparable, V any, RD any](options ...SetOption) Re
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }
 func WithDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K, V, RD]) RootOption {
+	// const optionName = "github.com/RangelReale/trcache/DefaultRefreshOptions.DefaultRefreshFunc"
+	const optionHash = uint64(0x11a5dca1c92613ac)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case DefaultRefreshOptions[K, V, RD]:
@@ -172,5 +206,5 @@ func WithDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefres
 			return true
 		}
 		return false
-	})
+	}, optionHash)
 }

@@ -293,7 +293,9 @@ func runMain() error {
 												))
 
 												g.Return(jen.False())
-											})),
+											}),
+										jen.Id("optionHash"),
+									),
 								)
 							} else {
 								parentNamedType, ok := fsig.Recv().Type().(*types.Named)

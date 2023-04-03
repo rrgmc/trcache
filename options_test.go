@@ -60,6 +60,10 @@ type With1Test13 struct {
 	trcache.IsRootOption
 }
 
+func (o With1Test13) ApplyCacheOpt(opt any) bool {
+	return true
+}
+
 func WithGet1Test115[K comparable, V any](name string) trcache.GetOption {
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -69,13 +73,6 @@ func WithGet1Test115[K comparable, V any](name string) trcache.GetOption {
 		}
 		return false
 	})
-}
-
-func (o With1Test13) isCacheRootOption() {
-}
-
-func (o With1Test13) ApplyCacheOpt(opt any) bool {
-	return true
 }
 
 type TestOptions1[K comparable, V any] interface {

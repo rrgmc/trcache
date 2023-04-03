@@ -23,6 +23,7 @@ func TestOptionsRecursive(t *testing.T) {
 		With1Test12[string, string](12),
 		With2Test21[string, string]("test21"),
 		With2Test22[string, string](22),
+		// WithGet1Test115[string, string]("aaa"),
 	}
 	_ = trcache.ParseRootOptions(&options, optionsParam)
 	// require.NoError(t, err)
@@ -59,6 +60,17 @@ type With1Test13 struct {
 	trcache.IsRootOption
 }
 
+func WithGet1Test115[K comparable, V any](name string) trcache.GetOption {
+	return trcache.GetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case testOptions1[K, V]:
+			opt.OptTest11(name)
+			return true
+		}
+		return false
+	})
+}
+
 func (o With1Test13) isCacheRootOption() {
 }
 
@@ -88,6 +100,30 @@ func (o *testOptions1Impl[K, V]) OptTest11(name string) {
 
 func (o *testOptions1Impl[K, V]) OptTest12(value int) {
 	o.test12 = value
+}
+
+type TestGetOptions1[K comparable, V any] interface {
+	OptGetTest15(name string)
+	OptGetTest16(value int)
+}
+
+type testGetOptions1[K comparable, V any] interface {
+	TestGetOptions1[K, V]
+}
+
+type testGetOptions1Impl[K comparable, V any] struct {
+	test15 string
+	test16 int
+}
+
+var _ testGetOptions1[string, string] = &testGetOptions1Impl[string, string]{}
+
+func (o *testGetOptions1Impl[K, V]) OptGetTest15(name string) {
+	o.test15 = name
+}
+
+func (o *testGetOptions1Impl[K, V]) OptGetTest16(value int) {
+	o.test16 = value
 }
 
 // Test Options 2

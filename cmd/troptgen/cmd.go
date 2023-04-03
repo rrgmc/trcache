@@ -162,13 +162,15 @@ func runMain() error {
 				}
 			}
 
-			// check if the interface implements trcache.IsXXXOptions. If so, a struct will be created
-			// implementing it.
+			// don't create implementations on the main package
 			isImpl := false
 			if pkg.PkgPath != rootPackage {
 				isImpl = true
 			}
 
+			// check if the interface implements trcache.IsXXXOptions. If so, a struct will be created
+			// implementing it.
+			// isImpl := false
 			// for i := 0; i < interfaceType.NumEmbeddeds(); i++ {
 			// 	et := interfaceType.EmbeddedType(i)
 			// 	if etNamedType, ok := et.(*types.Named); ok {

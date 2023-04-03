@@ -111,10 +111,12 @@ func runMain() error {
 				UCDefaultDirectiveCMDOptional = ""
 			}
 
+			var implStructPrefix string
 			if dname, ok := directiveParams["name"]; ok {
 				isDefaultDirective = false
 				directiveCmd = fmt.Sprintf("%s%s", directiveCmd, makeFirstUpperCase(dname))
 				cmds = append(cmds, directiveCmd)
+				implStructPrefix = dname
 			}
 
 			// UCDirectiveCMD := makeFirstUpperCase(directiveCmd)
@@ -174,7 +176,7 @@ func runMain() error {
 				if _, itok := optionsimpltype[directiveCmd]; !itok {
 					optionsimpltype[directiveCmd] = jen.
 						Type().
-						Id(implStructName(namedType.Obj().Name())).
+						Id(implStructName(namedType.Obj().Name(), implStructPrefix)).
 						Add(FromTypeParams(namedType.TypeParams()))
 				}
 
@@ -188,7 +190,7 @@ func runMain() error {
 					jen.Var().
 						Id("_").Id(namedType.Obj().Name()).Add(CallFromTypeParamsFixed(namedType.TypeParams(), "string")).
 						Op("=").
-						Id(fmt.Sprintf("&%s", implStructName(namedType.Obj().Name()))).Add(CallFromTypeParamsFixed(namedType.TypeParams(), "string")).
+						Id(fmt.Sprintf("&%s", implStructName(namedType.Obj().Name(), implStructPrefix))).Add(CallFromTypeParamsFixed(namedType.TypeParams(), "string")).
 						Values(jen.Dict{}),
 				)
 			}
@@ -241,7 +243,7 @@ func runMain() error {
 					// add implementation method to struct
 					optionsimplfuncs[directiveCmd].Add(
 						jen.Func().
-							Params(jen.Id("o").Id(fmt.Sprintf("*%s", implStructName(namedType.Obj().Name()))).Add(CallFromTypeParams(namedType.TypeParams()))).
+							Params(jen.Id("o").Id(fmt.Sprintf("*%s", implStructName(namedType.Obj().Name(), implStructPrefix))).Add(CallFromTypeParams(namedType.TypeParams()))).
 							Id(method.Name()).
 							Add(FromParams(fsig.Params(), fsig.Variadic())).
 							BlockFunc(func(g *jen.Group) {
@@ -359,7 +361,10 @@ func runMain() error {
 	return nil
 }
 
-func implStructName(interfaceName string) string {
+func implStructName(interfaceName string, prefix string) string {
+	if prefix != "" {
+		interfaceName = prefix
+	}
 	ret := makeFirstLowerCase(interfaceName)
 	if ret == "options" {
 		ret = "rootOptions"

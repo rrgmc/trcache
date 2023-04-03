@@ -10,7 +10,6 @@ import (
 
 //troptgen:root
 type options[K comparable, V any] interface {
-	trcache.IsRootOptions
 	trcache.Options[K, V]
 	trcache.NameOptions[K, V]
 	trcache.CallDefaultOptions[K, V]
@@ -27,7 +26,6 @@ type options[K comparable, V any] interface {
 
 //troptgen:get
 type getOptions[K comparable, V any] interface {
-	trcache.IsGetOptions
 	trcache.GetOptions[K, V]
 	OptCustomParams(customParams any)
 	OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V])
@@ -43,7 +41,6 @@ func WithGetRedisGetFuncFunc[K comparable, V any](redisGetFunc RedisGetFuncFunc[
 
 //troptgen:set
 type setOptions[K comparable, V any] interface {
-	trcache.IsSetOptions
 	trcache.SetOptions[K, V]
 	OptCustomParams(customParams any)
 	OptRedisSetFunc(redisSetFunc RedisSetFunc[K, V])
@@ -59,7 +56,6 @@ func WithSetRedisSetFuncFunc[K comparable, V any](redisSetFuncFunc RedisSetFuncF
 
 //troptgen:delete
 type deleteOptions[K comparable, V any] interface {
-	trcache.IsDeleteOptions
 	trcache.DeleteOptions[K, V]
 	OptCustomParams(customParams any)
 	OptRedisDelFunc(redisDelFunc RedisDelFunc[K, V])

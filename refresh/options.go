@@ -8,7 +8,6 @@ import (
 
 //troptgen:refresh
 type refreshOptions[K comparable, V any, RD any] interface {
-	trcache.IsRefreshOptions
 	trcache.RefreshOptions[K, V, RD]
 }
 

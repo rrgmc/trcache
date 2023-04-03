@@ -8,7 +8,6 @@ import (
 
 //troptgen:root
 type wrapRefreshOptions[K comparable, V any, RD any] interface {
-	trcache.IsRootOptions
 	trcache.Options[K, V]
 	trcache.MetricsOptions[K, V]
 	trcache.DefaultRefreshOptions[K, V, RD]
@@ -19,7 +18,6 @@ type wrapRefreshOptions[K comparable, V any, RD any] interface {
 
 //troptgen:refresh
 type wrapRefreshRefreshOptions[K comparable, V any, RD any] interface {
-	trcache.IsRefreshOptions
 	trcache.RefreshOptions[K, V, RD]
 }
 

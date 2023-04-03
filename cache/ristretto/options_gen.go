@@ -97,7 +97,6 @@ func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupp
 }
 
 type rootOptionsImpl[K comparable, V any] struct {
-	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption
 	callDefaultSetOptions    []trcache.SetOption
@@ -140,7 +139,6 @@ func (o *rootOptionsImpl[K, V]) OptValueCodec(valueCodec trcache.Codec[V]) {
 }
 
 type getOptionsImpl[K comparable, V any] struct {
-	trcache.IsGetOptionsImpl
 	ignoreOptionNotSupported bool
 }
 
@@ -151,7 +149,6 @@ func (o *getOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSuppor
 }
 
 type setOptionsImpl[K comparable, V any] struct {
-	trcache.IsSetOptionsImpl
 	cost                     int64
 	duration                 time.Duration
 	ignoreOptionNotSupported bool
@@ -170,7 +167,6 @@ func (o *setOptionsImpl[K, V]) OptIgnoreOptionNotSupported(ignoreOptionNotSuppor
 }
 
 type deleteOptionsImpl[K comparable, V any] struct {
-	trcache.IsDeleteOptionsImpl
 	ignoreOptionNotSupported bool
 }
 

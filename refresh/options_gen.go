@@ -23,7 +23,6 @@ func WithRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOp
 }
 
 type refreshOptionsImpl[K comparable, V any, RD any] struct {
-	trcache.IsRefreshOptionsImpl
 	data                     RD
 	funcx                    trcache.CacheRefreshFunc[K, V, RD]
 	getOptions               []trcache.GetOption

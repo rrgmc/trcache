@@ -117,7 +117,7 @@ func runMain() error {
 				cmds = append(cmds, directiveCmd)
 			}
 
-			UCDirectiveCMD := makeFirstUpperCase(directiveCmd)
+			// UCDirectiveCMD := makeFirstUpperCase(directiveCmd)
 			// UCDirectiveCMDOptional := UCDirectiveCMD
 			// if strings.HasPrefix(directiveCmd, "root") {
 			// 	UCDirectiveCMDOptional = strings.TrimPrefix(directiveCmd, "root")
@@ -165,16 +165,20 @@ func runMain() error {
 			// check if the interface implements trcache.IsXXXOptions. If so, a struct will be created
 			// implementing it.
 			isImpl := false
-			for i := 0; i < interfaceType.NumEmbeddeds(); i++ {
-				et := interfaceType.EmbeddedType(i)
-				if etNamedType, ok := et.(*types.Named); ok {
-					if etNamedType.Obj().Pkg().Path() == rootPackage &&
-						etNamedType.Obj().Name() == fmt.Sprintf("Is%sOptions", UCDirectiveCMD) {
-						isImpl = true
-						break
-					}
-				}
+			if pkg.PkgPath != rootPackage {
+				isImpl = true
 			}
+
+			// for i := 0; i < interfaceType.NumEmbeddeds(); i++ {
+			// 	et := interfaceType.EmbeddedType(i)
+			// 	if etNamedType, ok := et.(*types.Named); ok {
+			// 		if etNamedType.Obj().Pkg().Path() == rootPackage &&
+			// 			etNamedType.Obj().Name() == fmt.Sprintf("Is%sOptions", UCDirectiveCMD) {
+			// 			isImpl = true
+			// 			break
+			// 		}
+			// 	}
+			// }
 
 			if isImpl {
 				// create the implementation struct definition
@@ -185,10 +189,10 @@ func runMain() error {
 						Add(FromTypeParams(namedType.TypeParams()))
 				}
 
-				// embed trcache.IsXXXOptionImpl in the struct
-				optionsimpl[directiveCmd].Add(
-					jen.Qual(rootPackage, fmt.Sprintf("Is%sOptionsImpl", UCDirectiveCMD)),
-				)
+				// // embed trcache.IsXXXOptionImpl in the struct
+				// optionsimpl[directiveCmd].Add(
+				// 	jen.Qual(rootPackage, fmt.Sprintf("Is%sOptionsImpl", UCDirectiveCMD)),
+				// )
 
 				// add var to ensure struct implements the interface
 				optionsimplfuncs[directiveCmd].Add(

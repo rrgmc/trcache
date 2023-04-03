@@ -177,7 +177,6 @@ func WithDeleteRedisDelFunc[K comparable, V any](redisDelFunc RedisDelFunc[K, V]
 }
 
 type rootOptionsImpl[K comparable, V any] struct {
-	trcache.IsRootOptionsImpl
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption
 	callDefaultSetOptions    []trcache.SetOption
@@ -232,7 +231,6 @@ func (o *rootOptionsImpl[K, V]) OptValueCodec(valueCodec trcache.Codec[V]) {
 }
 
 type getOptionsImpl[K comparable, V any] struct {
-	trcache.IsGetOptionsImpl
 	customParams             interface{}
 	ignoreOptionNotSupported bool
 	redisGetFunc             RedisGetFunc[K, V]
@@ -251,7 +249,6 @@ func (o *getOptionsImpl[K, V]) OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V]) 
 }
 
 type setOptionsImpl[K comparable, V any] struct {
-	trcache.IsSetOptionsImpl
 	customParams             interface{}
 	duration                 time.Duration
 	ignoreOptionNotSupported bool
@@ -274,7 +271,6 @@ func (o *setOptionsImpl[K, V]) OptRedisSetFunc(redisSetFunc RedisSetFunc[K, V]) 
 }
 
 type deleteOptionsImpl[K comparable, V any] struct {
-	trcache.IsDeleteOptionsImpl
 	customParams             interface{}
 	ignoreOptionNotSupported bool
 	redisDelFunc             RedisDelFunc[K, V]

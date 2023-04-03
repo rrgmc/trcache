@@ -38,7 +38,6 @@ func WithWrapRefreshSetOptions[K comparable, V any, RD any](options ...trcache.S
 }
 
 type wrapRefreshOptionsImpl[K comparable, V any, RD any] struct {
-	trcache.IsRootOptionsImpl
 	callDefaultRefreshOptions []trcache.RefreshOption
 	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V, RD]
 	ignoreOptionNotSupported  bool
@@ -63,7 +62,6 @@ func (o *wrapRefreshOptionsImpl[K, V, RD]) OptMetrics(metrics trcache.Metrics, n
 }
 
 type wrapRefreshRefreshOptionsImpl[K comparable, V any, RD any] struct {
-	trcache.IsRefreshOptionsImpl
 	data                     RD
 	funcx                    trcache.CacheRefreshFunc[K, V, RD]
 	getOptions               []trcache.GetOption

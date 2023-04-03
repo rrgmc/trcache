@@ -191,7 +191,7 @@ func runMain() error {
 						Add(FromTypeParams(namedType.TypeParams()))
 				}
 
-				// // embed trcache.IsXXXOptionImpl in the struct
+				// embed trcache.IsXXXOptionImpl in the struct
 				// optionsimpl[directiveCmd].Add(
 				// 	jen.Qual(rootPackage, fmt.Sprintf("Is%sOptionsImpl", UCDirectiveCMD)),
 				// )

@@ -67,7 +67,8 @@ func ParseRootOptions(obj any, options ...[]RootOption) ParseOptionsResult {
 }
 
 func NewParseRootOptionChecker(options []RootOption) []RootOption {
-	return []RootOption{NewOptionChecker[RootOption](options)}
+	return []RootOption{NewOptionChecker(options)}
+	// return NewParseOptionChecker(options)
 }
 
 func AppendRootOptions(options ...[]RootOption) []RootOption {
@@ -111,7 +112,7 @@ func ParseGetOptions(obj any, options ...[]GetOption) ParseOptionsResult {
 }
 
 func NewParseGetOptionChecker(options []GetOption) []GetOption {
-	return []GetOption{NewOptionChecker[GetOption](options)}
+	return []GetOption{NewOptionChecker(options)}
 }
 
 func AppendGetOptions(options ...[]GetOption) []GetOption {
@@ -155,7 +156,7 @@ func ParseSetOptions(obj any, options ...[]SetOption) ParseOptionsResult {
 }
 
 func NewParseSetOptionChecker(options []SetOption) []SetOption {
-	return []SetOption{NewOptionChecker[SetOption](options)}
+	return []SetOption{NewOptionChecker(options)}
 }
 
 func AppendSetOptions(options ...[]SetOption) []SetOption {
@@ -199,7 +200,7 @@ func ParseDeleteOptions(obj any, options ...[]DeleteOption) ParseOptionsResult {
 }
 
 func NewParseDeleteOptionChecker(options []DeleteOption) []DeleteOption {
-	return []DeleteOption{NewOptionChecker[DeleteOption](options)}
+	return []DeleteOption{NewOptionChecker(options)}
 }
 
 func AppendDeleteOptions(options ...[]DeleteOption) []DeleteOption {
@@ -243,9 +244,27 @@ func ParseRefreshOptions(obj any, options ...[]RefreshOption) ParseOptionsResult
 }
 
 func NewParseRefreshOptionChecker(options []RefreshOption) []RefreshOption {
-	return []RefreshOption{NewOptionChecker[RefreshOption](options)}
+	return []RefreshOption{NewOptionChecker(options)}
 }
 
 func AppendRefreshOptions(options ...[]RefreshOption) []RefreshOption {
 	return appendOptions(options...)
+}
+
+// Any option
+
+type AnyOption interface {
+	RootOption
+	GetOption
+	SetOption
+	DeleteOption
+	RefreshOption
+}
+
+type IsAnyOption struct {
+	IsRootOption
+	IsGetOption
+	IsSetOption
+	IsDeleteOption
+	IsRefreshOption
 }

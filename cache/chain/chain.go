@@ -27,7 +27,7 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 
 func NewRefresh[K comparable, V any, RD any](cache []trcache.Cache[K, V],
 	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
-	checker := trcache.NewOptionChecker[RootOption](options)
+	checker := trcache.NewOptionChecker(options)
 	c, err := New[K, V](cache,
 		trcache.AppendRootOptions([]RootOption{checker}, options)...,
 	)

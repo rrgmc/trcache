@@ -15,7 +15,7 @@ type RefreshCache[K comparable, V any, RD any] struct {
 
 func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
 	options ...RootOption) (*RefreshCache[K, V, RD], error) {
-	checker := trcache.NewOptionChecker[RootOption](options)
+	checker := trcache.NewOptionChecker(options)
 	c, err := New(cache, trcache.AppendRootOptions([]RootOption{checker}, options)...)
 	if err != nil {
 		return nil, err

@@ -63,6 +63,9 @@ func TestChainRefresh(t *testing.T) {
 		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),
+		trcache.WithCallDefaultGetOptions[string, string](
+			trcache.WithGetNoop[string, string](true),
+		),
 	)
 	require.NoError(t, err)
 

@@ -120,6 +120,9 @@ func WithGetCustomParams[K comparable, V any](customParams interface{}) GetOptio
 		return false
 	}, optionName, optionHash)
 }
+func WithGetNoop[K comparable, V any](x bool) GetOption {
+	return trcache.WithGetNoop[K, V](x)
+}
 func WithGetRedisGetFunc[K comparable, V any](redisGetFunc RedisGetFunc[K, V]) GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/redis/getOptions.RedisGetFunc"
 	const optionHash = uint64(0xc613fed72bb90700)
@@ -242,6 +245,7 @@ func (o *rootOptionsImpl[K, V]) OptValueCodec(valueCodec trcache.Codec[V]) {
 
 type getOptionsImpl[K comparable, V any] struct {
 	customParams interface{}
+	noop         bool
 	redisGetFunc RedisGetFunc[K, V]
 }
 
@@ -249,6 +253,9 @@ var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
 func (o *getOptionsImpl[K, V]) OptCustomParams(customParams interface{}) {
 	o.customParams = customParams
+}
+func (o *getOptionsImpl[K, V]) OptNoop(x bool) {
+	o.noop = x
 }
 func (o *getOptionsImpl[K, V]) OptRedisGetFunc(redisGetFunc RedisGetFunc[K, V]) {
 	o.redisGetFunc = redisGetFunc

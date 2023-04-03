@@ -36,6 +36,9 @@ func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetO
 		return false
 	}, optionName, optionHash)
 }
+func WithGetNoop[K comparable, V any](x bool) GetOption {
+	return trcache.WithGetNoop[K, V](x)
+}
 func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
 	const optionHash = uint64(0x20cdc9d4030ddb85)
@@ -106,6 +109,7 @@ func (o *rootOptionsImpl[K, V]) OptName(name string) {
 
 type getOptionsImpl[K comparable, V any] struct {
 	getStrategy GetStrategy[K, V]
+	noop        bool
 	setOptions  []trcache.SetOption
 }
 
@@ -113,6 +117,9 @@ var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
 func (o *getOptionsImpl[K, V]) OptGetStrategy(getStrategy GetStrategy[K, V]) {
 	o.getStrategy = getStrategy
+}
+func (o *getOptionsImpl[K, V]) OptNoop(x bool) {
+	o.noop = x
 }
 func (o *getOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options

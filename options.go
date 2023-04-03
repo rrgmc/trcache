@@ -48,6 +48,7 @@ type CallDefaultRefreshOptions[K comparable, V any] interface {
 
 //troptgen:get
 type GetOptions[K comparable, V any] interface {
+	OptNoop(x bool)
 }
 
 //

@@ -88,6 +88,18 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 		return false
 	}, optionName, optionHash)
 }
+func WithGetNoop[K comparable, V any](x bool) GetOption {
+	const optionName = "github.com/RangelReale/trcache/GetOptions.Noop"
+	const optionHash = uint64(0x413e12c1d941e416)
+	return GetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case GetOptions[K, V]:
+			opt.OptNoop(x)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 	const optionName = "github.com/RangelReale/trcache/SetOptions.Duration"
 	const optionHash = uint64(0x4782e16ce757eefa)

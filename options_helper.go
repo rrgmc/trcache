@@ -6,13 +6,13 @@ import (
 
 // parse options
 
-func parseOptions[O Option](obj any, options ...[]O) error {
-	var checkers []optionChecker
+func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
+	var checkers []optionChecker[O]
 
 	var err error
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
-			if oc, ok := any(opt).(optionChecker); ok {
+			if oc, ok := any(opt).(optionChecker[O]); ok {
 				checkers = append(checkers, oc)
 			}
 			if !opt.ApplyCacheOpt(obj) {
@@ -24,10 +24,26 @@ func parseOptions[O Option](obj any, options ...[]O) error {
 			}
 		}
 	}
-	if len(checkers) > 0 {
-		return nil
+	return ParseOptionsResult{
+		isCheck: len(checkers) > 0,
+		err:     err,
 	}
-	return err
+}
+
+type ParseOptionsResult struct {
+	isCheck bool
+	err     error
+}
+
+func (r ParseOptionsResult) Err() error {
+	if !r.isCheck {
+		return r.err
+	}
+	return nil
+}
+
+func (r ParseOptionsResult) CheckErr() error {
+	return r.err
 }
 
 // append options
@@ -42,7 +58,7 @@ func appendOptions[O Option](options ...[]O) []O {
 
 // checker
 
-type optionChecker interface {
+type optionChecker[O Option] interface {
 	Option
 	CheckCacheOpt(opt Option)
 	isCacheRootOption()
@@ -52,19 +68,24 @@ type optionChecker interface {
 	isCacheRefreshOption()
 }
 
-type OptionChecker struct {
+type OptionChecker[O Option] struct {
+	Check []O
 	optns map[uint64]Option
 }
 
-func (o *OptionChecker) ApplyCacheOpt(a any) bool {
+func (o *OptionChecker[O]) ApplyCacheOpt(a any) bool {
 	return true
 }
 
-func (o *OptionChecker) CacheOptHash() uint64 {
+func (o *OptionChecker[O]) CacheOptName() string {
+	return "checker"
+}
+
+func (o *OptionChecker[O]) CacheOptHash() uint64 {
 	return 1
 }
 
-func (o *OptionChecker) CheckCacheOpt(opt Option) {
+func (o *OptionChecker[O]) CheckCacheOpt(opt Option) {
 	if o.optns == nil {
 		o.optns = map[uint64]Option{}
 	}
@@ -74,10 +95,21 @@ func (o *OptionChecker) CheckCacheOpt(opt Option) {
 	}
 }
 
-func (o *OptionChecker) isCacheRootOption()    {}
-func (o *OptionChecker) isCacheGetOption()     {}
-func (o *OptionChecker) isCacheSetOption()     {}
-func (o *OptionChecker) isCacheDeleteOption()  {}
-func (o *OptionChecker) isCacheRefreshOption() {}
+func (o *OptionChecker[O]) CheckError() error {
+	var err error
+	for _, opt := range o.Check {
+		if _, ok := o.optns[opt.CacheOptHash()]; !ok {
+			err = multierr.Append(err, NewOptionNotSupportedError(opt))
 
-var _ optionChecker = &OptionChecker{}
+		}
+	}
+	return err
+}
+
+func (o *OptionChecker[O]) isCacheRootOption()    {}
+func (o *OptionChecker[O]) isCacheGetOption()     {}
+func (o *OptionChecker[O]) isCacheSetOption()     {}
+func (o *OptionChecker[O]) isCacheDeleteOption()  {}
+func (o *OptionChecker[O]) isCacheRefreshOption() {}
+
+var _ optionChecker[Option] = &OptionChecker[Option]{}

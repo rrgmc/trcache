@@ -28,7 +28,7 @@ func WithName[K comparable, V any](name string) RootOption {
 type GetOption = trcache.GetOption
 
 func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.GetStrategy"
+	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.GetStrategy"
 	const optionHash = uint64(0x6ab81482970279a6)
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -37,13 +37,13 @@ func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetO
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) GetOption {
 	return trcache.WithGetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) GetOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
+	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
 	const optionHash = uint64(0x20cdc9d4030ddb85)
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -52,7 +52,7 @@ func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) GetOpt
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 
 type SetOption = trcache.SetOption
@@ -64,7 +64,7 @@ func WithSetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupport
 	return trcache.WithSetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) SetOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/chain/setOptions.SetStrategy"
+	const optionName = "github.com/RangelReale/trcache/cache/chain/setOptions.SetStrategy"
 	const optionHash = uint64(0xfc4183c47cd45f1e)
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -73,13 +73,13 @@ func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) SetO
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 
 type DeleteOption = trcache.DeleteOption
 
 func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) DeleteOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/chain/deleteOptions.DeleteStrategy"
+	const optionName = "github.com/RangelReale/trcache/cache/chain/deleteOptions.DeleteStrategy"
 	const optionHash = uint64(0x562ad4dca6e88296)
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -88,7 +88,7 @@ func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 func WithDeleteIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) DeleteOption {
 	return trcache.WithDeleteIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)

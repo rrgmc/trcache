@@ -18,9 +18,7 @@ import (
 
 func TestOptionsRecursive(t *testing.T) {
 	options := testOptions1Impl[string, string]{}
-	chk := &trcache.OptionChecker{}
 	optionsParam := []trcache.RootOption{
-		chk,
 		With1Test13{},
 		With1Test11[string, string]("test11"),
 		With1Test12[string, string](12),
@@ -28,8 +26,15 @@ func TestOptionsRecursive(t *testing.T) {
 		With2Test22[string, string](22),
 		// WithGet1Test115[string, string]("aaa"),
 	}
-	err := trcache.ParseRootOptions(&options, optionsParam)
-	require.NoError(t, err)
+
+	// err := trcache.ParseRootOptions(&options, optionsParam)
+
+	chk := &trcache.OptionChecker[trcache.RootOption]{Check: optionsParam}
+	err := trcache.ParseRootOptions(&options, trcache.AppendRootOptions([]trcache.RootOption{chk}, optionsParam))
+
+	require.NoError(t, err.Err())
+	require.NoError(t, chk.CheckError())
+
 	// if optErr != nil && !options.ignoreOptionNotSupported {
 	// 	return nil, optErr
 	// }
@@ -45,7 +50,7 @@ func With1Test11[K comparable, V any](name string) trcache.RootOption {
 			return true
 		}
 		return false
-	}, 111)
+	}, "111", 111)
 }
 
 func With1Test12[K comparable, V any](value int) trcache.RootOption {
@@ -56,7 +61,7 @@ func With1Test12[K comparable, V any](value int) trcache.RootOption {
 			return true
 		}
 		return false
-	}, 112)
+	}, "112", 112)
 }
 
 type With1Test13 struct {
@@ -65,6 +70,10 @@ type With1Test13 struct {
 
 func (o With1Test13) ApplyCacheOpt(opt any) bool {
 	return true
+}
+
+func (o With1Test13) CacheOptName() string {
+	return "113"
 }
 
 func (o With1Test13) CacheOptHash() uint64 {
@@ -79,7 +88,7 @@ func WithGet1Test115[K comparable, V any](name string) trcache.GetOption {
 			return true
 		}
 		return false
-	}, 115)
+	}, "115", 115)
 }
 
 type TestOptions1[K comparable, V any] interface {
@@ -140,7 +149,7 @@ func With2Test21[K comparable, V any](name string) trcache.RootOption {
 			return true
 		}
 		return false
-	}, 221)
+	}, "221", 221)
 }
 
 func With2Test22[K comparable, V any](value int) trcache.RootOption {
@@ -151,7 +160,7 @@ func With2Test22[K comparable, V any](value int) trcache.RootOption {
 			return true
 		}
 		return false
-	}, 222)
+	}, "222", 222)
 }
 
 type TestOptions2[K comparable, V any] interface {

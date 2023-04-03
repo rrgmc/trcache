@@ -6,16 +6,22 @@ package trcache
 
 type Option interface {
 	ApplyCacheOpt(any) bool
+	CacheOptName() string
 	CacheOptHash() uint64
 }
 
 type optionFunc struct {
 	f func(any) bool
+	n string
 	h uint64
 }
 
 func (o optionFunc) ApplyCacheOpt(c any) bool {
 	return o.f(c)
+}
+
+func (o optionFunc) CacheOptName() string {
+	return o.n
 }
 
 func (o optionFunc) CacheOptHash() uint64 {
@@ -38,12 +44,9 @@ type IsRootOption struct {
 
 func (i IsRootOption) isCacheRootOption() {}
 
-func RootOptionFunc(f func(any) bool, hash uint64) RootOption {
+func RootOptionFunc(f func(any) bool, name string, hash uint64) RootOption {
 	return &rootOptionFunc{
-		optionFunc: optionFunc{
-			f: f,
-			h: hash,
-		},
+		optionFunc: optionFunc{f, name, hash},
 	}
 }
 
@@ -59,7 +62,7 @@ func (f rootOptionFunc) isCacheRootOption() {}
 
 // Root options: functions
 
-func ParseRootOptions(obj any, options ...[]RootOption) error {
+func ParseRootOptions(obj any, options ...[]RootOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
@@ -81,12 +84,9 @@ type IsGetOption struct {
 
 func (i IsGetOption) isCacheGetOption() {}
 
-func GetOptionFunc(f func(any) bool, hash uint64) GetOption {
+func GetOptionFunc(f func(any) bool, name string, hash uint64) GetOption {
 	return &getOptionFunc{
-		optionFunc: optionFunc{
-			f: f,
-			h: hash,
-		},
+		optionFunc: optionFunc{f, name, hash},
 	}
 }
 
@@ -102,7 +102,7 @@ func (f getOptionFunc) isCacheGetOption() {}
 
 // Get options: functions
 
-func ParseGetOptions(obj any, options ...[]GetOption) error {
+func ParseGetOptions(obj any, options ...[]GetOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
@@ -124,12 +124,9 @@ type IsSetOption struct {
 
 func (i IsSetOption) isCacheSetOption() {}
 
-func SetOptionFunc(f func(any) bool, hash uint64) SetOption {
+func SetOptionFunc(f func(any) bool, name string, hash uint64) SetOption {
 	return &setOptionFunc{
-		optionFunc: optionFunc{
-			f: f,
-			h: hash,
-		},
+		optionFunc: optionFunc{f, name, hash},
 	}
 }
 
@@ -145,7 +142,7 @@ func (f setOptionFunc) isCacheSetOption() {}
 
 // Set options: functions
 
-func ParseSetOptions(obj any, options ...[]SetOption) error {
+func ParseSetOptions(obj any, options ...[]SetOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
@@ -167,12 +164,9 @@ type IsDeleteOption struct {
 
 func (i IsDeleteOption) isCacheDeleteOption() {}
 
-func DeleteOptionFunc(f func(any) bool, hash uint64) DeleteOption {
+func DeleteOptionFunc(f func(any) bool, name string, hash uint64) DeleteOption {
 	return &deleteOptionFunc{
-		optionFunc: optionFunc{
-			f: f,
-			h: hash,
-		},
+		optionFunc: optionFunc{f, name, hash},
 	}
 }
 
@@ -188,7 +182,7 @@ func (f deleteOptionFunc) isCacheDeleteOption() {}
 
 // Cache delete options: functions
 
-func ParseDeleteOptions(obj any, options ...[]DeleteOption) error {
+func ParseDeleteOptions(obj any, options ...[]DeleteOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 
@@ -210,12 +204,9 @@ type IsRefreshOption struct {
 
 func (i IsRefreshOption) isCacheRefreshOption() {}
 
-func RefreshOptionFunc(f func(any) bool, hash uint64) RefreshOption {
+func RefreshOptionFunc(f func(any) bool, name string, hash uint64) RefreshOption {
 	return &refreshOptionFunc{
-		optionFunc: optionFunc{
-			f: f,
-			h: hash,
-		},
+		optionFunc: optionFunc{f, name, hash},
 	}
 }
 
@@ -231,7 +222,7 @@ func (f refreshOptionFunc) isCacheRefreshOption() {}
 
 // Refresh options: functions
 
-func ParseRefreshOptions(obj any, options ...[]RefreshOption) error {
+func ParseRefreshOptions(obj any, options ...[]RefreshOption) ParseOptionsResult {
 	return parseOptions(obj, options...)
 }
 

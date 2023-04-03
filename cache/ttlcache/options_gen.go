@@ -19,7 +19,7 @@ func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption
 	return trcache.WithCallDefaultSetOptions[K, V](options...)
 }
 func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.DefaultDuration"
+	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.DefaultDuration"
 	const optionHash = uint64(0xf4362521639a8ceb)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -28,7 +28,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 func WithIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupported bool) RootOption {
 	return trcache.WithIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
@@ -37,7 +37,7 @@ func WithName[K comparable, V any](name string) RootOption {
 	return trcache.WithName[K, V](name)
 }
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.Validator"
+	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.Validator"
 	const optionHash = uint64(0xb698c8bd56c6af3e)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -46,7 +46,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 
 type GetOption = trcache.GetOption
@@ -55,7 +55,7 @@ func WithGetIgnoreOptionNotSupported[K comparable, V any](ignoreOptionNotSupport
 	return trcache.WithGetIgnoreOptionNotSupported[K, V](ignoreOptionNotSupported)
 }
 func WithGetTouch[K comparable, V any](touch bool) GetOption {
-	// const optionName = "github.com/RangelReale/trcache/cache/ttlcache/getOptions.Touch"
+	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/getOptions.Touch"
 	const optionHash = uint64(0x88193653496df4fd)
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -64,7 +64,7 @@ func WithGetTouch[K comparable, V any](touch bool) GetOption {
 			return true
 		}
 		return false
-	}, optionHash)
+	}, optionName, optionHash)
 }
 
 type SetOption = trcache.SetOption

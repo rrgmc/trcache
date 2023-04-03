@@ -25,16 +25,16 @@ type IsRootOption interface {
 type IsRootOptionImpl struct {
 }
 
-func (i IsRootOptionImpl) isCacheOption() {}
+func (i IsRootOptionImpl) isCacheRootOption() {}
 
 type IsRootOptions interface {
-	isCacheOptions()
+	isCacheRootOptions()
 }
 
 type IsRootOptionsImpl struct {
 }
 
-func (i IsRootOptionsImpl) isCacheOptions() {}
+func (i IsRootOptionsImpl) isCacheRootOptions() {}
 
 type RootOption interface {
 	IsRootOption

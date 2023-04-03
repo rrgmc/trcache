@@ -8,13 +8,17 @@ import (
 
 func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
 	var checkers []optionChecker[O]
-
-	var err error
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
 			if oc, ok := any(opt).(optionChecker[O]); ok {
 				checkers = append(checkers, oc)
 			}
+		}
+	}
+
+	var err error
+	for _, optinstance := range options {
+		for _, opt := range optinstance {
 			if !opt.ApplyCacheOpt(obj) {
 				err = multierr.Append(err, NewOptionNotSupportedError(opt))
 			} else {

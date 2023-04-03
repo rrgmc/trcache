@@ -4,20 +4,23 @@ import (
 	"testing"
 
 	"github.com/RangelReale/trcache"
+	"github.com/stretchr/testify/require"
 )
 
 // func TestOptions1(t *testing.T) {
 // 	var opt Option
-// 	opt = NewOptionCheckerImpl()
+// 	opt = NewOptionChecker()
 //
-// 	if oc, ok := opt.(OptionChecker); ok {
+// 	if oc, ok := opt.(optionChecker); ok {
 //
 // 	}
 // }
 
 func TestOptionsRecursive(t *testing.T) {
 	options := testOptions1Impl[string, string]{}
+	chk := &trcache.OptionChecker{}
 	optionsParam := []trcache.RootOption{
+		chk,
 		With1Test13{},
 		With1Test11[string, string]("test11"),
 		With1Test12[string, string](12),
@@ -25,8 +28,8 @@ func TestOptionsRecursive(t *testing.T) {
 		With2Test22[string, string](22),
 		// WithGet1Test115[string, string]("aaa"),
 	}
-	_ = trcache.ParseRootOptions(&options, optionsParam)
-	// require.NoError(t, err)
+	err := trcache.ParseRootOptions(&options, optionsParam)
+	require.NoError(t, err)
 	// if optErr != nil && !options.ignoreOptionNotSupported {
 	// 	return nil, optErr
 	// }

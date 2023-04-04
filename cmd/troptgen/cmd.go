@@ -427,6 +427,25 @@ func findAnnotation(doc *ast.CommentGroup) *ast.Comment {
 	return nil
 }
 
+func checkIsImpl(interfaceType *types.Interface, UCDirectiveCMD string, firstLevel bool) (isImpl bool, isImplFirstLevel bool) {
+	for i := 0; i < interfaceType.NumEmbeddeds(); i++ {
+		et := interfaceType.EmbeddedType(i)
+		if etNamedType, ok := et.(*types.Named); ok {
+			if etNamedType.Obj().Pkg().Path() == rootPackage &&
+				etNamedType.Obj().Name() == fmt.Sprintf("Is%sOptions", UCDirectiveCMD) {
+				return true, firstLevel
+			}
+			// recursive check
+			if innerInterfaceType, ok := etNamedType.Underlying().(*types.Interface); ok {
+				if ok, _ := checkIsImpl(innerInterfaceType, UCDirectiveCMD, false); ok {
+					return true, false
+				}
+			}
+		}
+	}
+	return false, false
+}
+
 func makeFirstUpperCase(s string) string {
 	if len(s) == 0 {
 		return s

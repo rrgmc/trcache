@@ -67,8 +67,7 @@ func ParseRootOptions(obj any, options ...[]RootOption) ParseOptionsResult {
 }
 
 func NewParseRootOptionChecker(options []RootOption) []RootOption {
-	// return []RootOption{NewOptionChecker(options)}
-	return NewParseOptionChecker(options)
+	return []RootOption{NewOptionChecker(options)}
 }
 
 func AppendRootOptions(options ...[]RootOption) []RootOption {

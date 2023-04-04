@@ -84,20 +84,9 @@ func Test() {
 	fmt.Println(i, ii)
 }
 
-func NewParseOptionChecker[S ~[]O, O Option](options S) S {
-	var i O = &optionCheckerImpl[O]{
-		check: options,
-	}
-	var ret S
-	ret = append(ret, i)
-	return ret
-
-	// return S{&optionCheckerImpl[O]{
-	// 	check: options,
-	// }}
-
-	// return S{NewOptionChecker(options)}
-}
+// func NewParseOptionChecker[S ~[]O, O Option](options S) S {
+// 	return S{NewOptionChecker(options)}
+// }
 
 type optionCheckerImpl[O Option] struct {
 	IsAnyOption

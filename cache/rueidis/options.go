@@ -35,7 +35,7 @@ type getOptions[K comparable, V any] interface {
 
 // helpers
 
-func WithGetRedisGetFuncFunc[K comparable, V any](redisGetFunc RedisGetFuncFunc[K, V]) GetOption {
+func WithGetRedisGetFuncFunc[K comparable, V any](redisGetFunc RedisGetFuncFunc[K, V]) trcache.GetOption {
 	return WithGetRedisGetFunc[K, V](redisGetFunc)
 }
 
@@ -50,7 +50,7 @@ type setOptions[K comparable, V any] interface {
 
 // helpers
 
-func WithSetRedisSetFuncFunc[K comparable, V any](redisSetFuncFunc RedisSetFuncFunc[K, V]) SetOption {
+func WithSetRedisSetFuncFunc[K comparable, V any](redisSetFuncFunc RedisSetFuncFunc[K, V]) trcache.SetOption {
 	return WithSetRedisSetFunc[K, V](redisSetFuncFunc)
 }
 
@@ -65,7 +65,7 @@ type deleteOptions[K comparable, V any] interface {
 
 // helpers
 
-func WithDeleteRedisDelFuncFunc[K comparable, V any](redisDelFunc RedisDelFuncFunc[K, V]) DeleteOption {
+func WithDeleteRedisDelFuncFunc[K comparable, V any](redisDelFunc RedisDelFuncFunc[K, V]) trcache.DeleteOption {
 	return WithDeleteRedisDelFunc[K, V](redisDelFunc)
 }
 

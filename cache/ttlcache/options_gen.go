@@ -7,18 +7,7 @@ import (
 	"time"
 )
 
-type RootOption = trcache.RootOption
-
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) RootOption {
-	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
-}
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) RootOption {
-	return trcache.WithCallDefaultGetOptions[K, V](options...)
-}
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) RootOption {
-	return trcache.WithCallDefaultSetOptions[K, V](options...)
-}
-func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption {
+func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.DefaultDuration"
 	const optionHash = uint64(0xf4362521639a8ceb)
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -30,10 +19,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 		return false
 	}, optionName, optionHash)
 }
-func WithName[K comparable, V any](name string) RootOption {
-	return trcache.WithName[K, V](name)
-}
-func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOption {
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.Validator"
 	const optionHash = uint64(0xb698c8bd56c6af3e)
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -45,10 +31,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 		return false
 	}, optionName, optionHash)
 }
-
-type GetOption = trcache.GetOption
-
-func WithGetTouch[K comparable, V any](touch bool) GetOption {
+func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/getOptions.Touch"
 	const optionHash = uint64(0x88193653496df4fd)
 	return trcache.GetOptionFunc(func(o any) bool {
@@ -61,13 +44,6 @@ func WithGetTouch[K comparable, V any](touch bool) GetOption {
 	}, optionName, optionHash)
 }
 
-type SetOption = trcache.SetOption
-
-func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
-	return trcache.WithSetDuration[K, V](duration)
-}
-
-type DeleteOption = trcache.DeleteOption
 type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption

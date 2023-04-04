@@ -15,7 +15,7 @@ type Chain[K comparable, V any] struct {
 var _ trcache.Cache[string, string] = &Chain[string, string]{}
 
 func New[K comparable, V any](cache []trcache.Cache[K, V],
-	options ...RootOption) (*Chain[K, V], error) {
+	options ...trcache.RootOption) (*Chain[K, V], error) {
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
@@ -31,7 +31,7 @@ func (c *Chain[K, V]) Name() string {
 }
 
 func (c *Chain[K, V]) Get(ctx context.Context, key K,
-	options ...GetOption) (V, error) {
+	options ...trcache.GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
 
 	callGetOpts := trcache.AppendGetOptions(c.options.callDefaultGetOptions, options)
@@ -119,7 +119,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 }
 
 func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
-	options ...SetOption) error {
+	options ...trcache.SetOption) error {
 	var optns setOptionsImpl[K, V]
 
 	callOpts := trcache.AppendSetOptions(c.options.callDefaultSetOptions, options)
@@ -177,7 +177,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 }
 
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
-	options ...DeleteOption) error {
+	options ...trcache.DeleteOption) error {
 	var optns deleteOptionsImpl[K, V]
 	callOpts := trcache.AppendDeleteOptions(c.options.callDefaultDeleteOptions, options)
 	checker := trcache.NewOptionChecker(callOpts)

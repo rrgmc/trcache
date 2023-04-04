@@ -16,7 +16,7 @@ type RefreshCache[K comparable, V any, RD any] struct {
 var _ trcache.RefreshCache[string, string, string] = &RefreshCache[string, string, string]{}
 
 func NewRefresh[K comparable, V any, RD any](redis *redis.Client,
-	options ...RootOption) (*RefreshCache[K, V, RD], error) {
+	options ...trcache.RootOption) (*RefreshCache[K, V, RD], error) {
 	checker := trcache.NewOptionChecker(options)
 
 	c, err := New[K, V](redis, trcache.AppendRootOptionsChecker(checker, options)...)

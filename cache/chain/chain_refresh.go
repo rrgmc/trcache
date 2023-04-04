@@ -15,11 +15,11 @@ type ChainRefresh[K comparable, V any, RD any] struct {
 var _ trcache.RefreshCache[string, string, string] = &ChainRefresh[string, string, string]{}
 
 func NewRefresh[K comparable, V any, RD any](cache []trcache.Cache[K, V],
-	options ...RootOption) (*ChainRefresh[K, V, RD], error) {
+	options ...trcache.RootOption) (*ChainRefresh[K, V, RD], error) {
 	checker := trcache.NewOptionChecker(options)
 
 	c, err := New[K, V](cache,
-		trcache.AppendRootOptions([]RootOption{checker}, options)...,
+		trcache.AppendRootOptionsChecker(checker, options)...,
 	)
 	if err != nil {
 		return nil, err

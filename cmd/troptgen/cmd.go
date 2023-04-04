@@ -104,7 +104,7 @@ func runMain() error {
 				}
 			}
 
-			isDefaultDirective := true
+			// isDefaultDirective := true
 			UCDefaultDirectiveCMD := makeFirstUpperCase(directiveCmd)
 			UCDefaultDirectiveCMDOptional := makeFirstUpperCase(directiveCmd)
 			if directiveCmd == "root" {
@@ -113,7 +113,7 @@ func runMain() error {
 
 			var implStructPrefix string
 			if dname, ok := directiveParams["name"]; ok {
-				isDefaultDirective = false
+				// isDefaultDirective = false
 				directiveCmd = fmt.Sprintf("%s%s", directiveCmd, makeFirstUpperCase(dname))
 				cmds = append(cmds, directiveCmd)
 				implStructPrefix = dname
@@ -146,20 +146,6 @@ func runMain() error {
 				isImpl = true
 			}
 
-			// check if the interface implements trcache.IsXXXOptions. If so, a struct will be created
-			// implementing it.
-			// isImpl := false
-			// for i := 0; i < interfaceType.NumEmbeddeds(); i++ {
-			// 	et := interfaceType.EmbeddedType(i)
-			// 	if etNamedType, ok := et.(*types.Named); ok {
-			// 		if etNamedType.Obj().Pkg().Path() == rootPackage &&
-			// 			etNamedType.Obj().Name() == fmt.Sprintf("Is%sOptions", UCDirectiveCMD) {
-			// 			isImpl = true
-			// 			break
-			// 		}
-			// 	}
-			// }
-
 			// initialize implementation statements
 			if isImpl {
 				_, optiok := optionsimpl[directiveCmd]
@@ -180,11 +166,6 @@ func runMain() error {
 						Add(FromTypeParams(namedType.TypeParams()))
 				}
 
-				// embed trcache.IsXXXOptionImpl in the struct
-				// optionsimpl[directiveCmd].Add(
-				// 	jen.Qual(rootPackage, fmt.Sprintf("Is%sOptionsImpl", UCDirectiveCMD)),
-				// )
-
 				// add var to ensure struct implements the interface
 				optionsimplfuncs[directiveCmd].Add(
 					jen.Var().
@@ -198,14 +179,14 @@ func runMain() error {
 			_, optfok := optionsfuncs[directiveCmd]
 			if !optfok {
 				optionsfuncs[directiveCmd] = &jen.Statement{}
-				if isDefaultDirective && pkg.PkgPath != rootPackage {
-					optionsfuncs[directiveCmd].Add(
-						jen.Type().
-							Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
-							Op("=").
-							Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)),
-					)
-				}
+				// if isDefaultDirective && pkg.PkgPath != rootPackage {
+				// 	optionsfuncs[directiveCmd].Add(
+				// 		jen.Type().
+				// 			Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+				// 			Op("=").
+				// 			Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)),
+				// 	)
+				// }
 			}
 
 			explicitMethods := map[*types.Func]bool{}
@@ -261,17 +242,17 @@ func runMain() error {
 				_, isExplicitMethod := explicitMethods[method]
 
 				// "With" are added only for explicit methods
-				// if !isExplicitMethod {
-				// 	continue
-				// }
+				if !isExplicitMethod {
+					continue
+				}
 
 				// generate a "With" function for each interface method
 				optionsfuncs[directiveCmd].Add(
 					jen.Func().Id(methodName).
 						Add(FromTypeParams(namedType.TypeParams())).
 						Add(FromParams(fsig.Params(), fsig.Variadic())).
-						// Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
-						Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+						Qual(rootPackage, fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
+						// Id(fmt.Sprintf("%sOption", UCDefaultDirectiveCMD)).
 						BlockFunc(func(g *jen.Group) {
 							if isExplicitMethod {
 								g.Const().Id("optionName").Op("=").Lit(optionMethodName)
@@ -301,6 +282,7 @@ func runMain() error {
 									),
 								)
 							} else {
+								// alias (currently disabled)
 								parentNamedType, ok := fsig.Recv().Type().(*types.Named)
 								if ok {
 									g.Return(

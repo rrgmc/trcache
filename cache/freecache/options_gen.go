@@ -7,18 +7,7 @@ import (
 	"time"
 )
 
-type RootOption = trcache.RootOption
-
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) RootOption {
-	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
-}
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) RootOption {
-	return trcache.WithCallDefaultGetOptions[K, V](options...)
-}
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) RootOption {
-	return trcache.WithCallDefaultSetOptions[K, V](options...)
-}
-func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption {
+func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.DefaultDuration"
 	const optionHash = uint64(0xfc78f1dc412cb93)
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -30,7 +19,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) RootOption
 		return false
 	}, optionName, optionHash)
 }
-func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) RootOption {
+func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.KeyCodec"
 	const optionHash = uint64(0xb9ee75f082d5a609)
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -42,10 +31,7 @@ func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) RootOption 
 		return false
 	}, optionName, optionHash)
 }
-func WithName[K comparable, V any](name string) RootOption {
-	return trcache.WithName[K, V](name)
-}
-func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOption {
+func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.Validator"
 	const optionHash = uint64(0x6922cae8c8088f36)
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -57,7 +43,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 		return false
 	}, optionName, optionHash)
 }
-func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) RootOption {
+func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.ValueCodec"
 	const optionHash = uint64(0x24b0cbecad2b20f)
 	return trcache.RootOptionFunc(func(o any) bool {
@@ -70,14 +56,6 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) RootOption
 	}, optionName, optionHash)
 }
 
-type GetOption = trcache.GetOption
-type SetOption = trcache.SetOption
-
-func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
-	return trcache.WithSetDuration[K, V](duration)
-}
-
-type DeleteOption = trcache.DeleteOption
 type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption

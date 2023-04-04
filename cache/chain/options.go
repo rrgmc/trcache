@@ -18,7 +18,7 @@ type options[K comparable, V any] interface {
 //troptgen:get
 type getOptions[K comparable, V any] interface {
 	trcache.GetOptions[K, V]
-	OptSetOptions(options ...SetOption)
+	OptSetOptions(options ...trcache.SetOption)
 	OptGetStrategy(getStrategy GetStrategy[K, V])
 }
 

@@ -4,33 +4,6 @@ package refresh
 
 import trcache "github.com/RangelReale/trcache"
 
-type RootOption = trcache.RootOption
-
-func WithCallDefaultRefreshOptions[K comparable, V any, RD any](options ...trcache.RefreshOption) RootOption {
-	return trcache.WithCallDefaultRefreshOptions[K, V](options...)
-}
-func WithDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) RootOption {
-	return trcache.WithDefaultRefreshFunc[K, V, RD](refreshFunc)
-}
-func WithMetrics[K comparable, V any, RD any](metrics trcache.Metrics, name string) RootOption {
-	return trcache.WithMetrics[K, V](metrics, name)
-}
-
-type RefreshOption = trcache.RefreshOption
-
-func WithRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
-	return trcache.WithRefreshData[K, V, RD](data)
-}
-func WithRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) RefreshOption {
-	return trcache.WithRefreshFunc[K, V, RD](refreshFunc)
-}
-func WithRefreshGetOptions[K comparable, V any, RD any](options ...trcache.GetOption) RefreshOption {
-	return trcache.WithRefreshGetOptions[K, V, RD](options...)
-}
-func WithRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOption) RefreshOption {
-	return trcache.WithRefreshSetOptions[K, V, RD](options...)
-}
-
 type rootOptionsImpl[K comparable, V any, RD any] struct {
 	callDefaultRefreshOptions []trcache.RefreshOption
 	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V, RD]

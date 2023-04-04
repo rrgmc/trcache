@@ -7,24 +7,7 @@ import (
 	"time"
 )
 
-type RootOption = trcache.RootOption
-
-func WithCallDefaultDeleteOptions[K comparable, V any](options ...trcache.DeleteOption) RootOption {
-	return trcache.WithCallDefaultDeleteOptions[K, V](options...)
-}
-func WithCallDefaultGetOptions[K comparable, V any](options ...trcache.GetOption) RootOption {
-	return trcache.WithCallDefaultGetOptions[K, V](options...)
-}
-func WithCallDefaultSetOptions[K comparable, V any](options ...trcache.SetOption) RootOption {
-	return trcache.WithCallDefaultSetOptions[K, V](options...)
-}
-func WithName[K comparable, V any](name string) RootOption {
-	return trcache.WithName[K, V](name)
-}
-
-type GetOption = trcache.GetOption
-
-func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetOption {
+func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache.GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.GetStrategy"
 	const optionHash = uint64(0x6ab81482970279a6)
 	return trcache.GetOptionFunc(func(o any) bool {
@@ -36,7 +19,7 @@ func WithGetGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) GetO
 		return false
 	}, optionName, optionHash)
 }
-func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) GetOption {
+func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
 	const optionHash = uint64(0x20cdc9d4030ddb85)
 	return trcache.GetOptionFunc(func(o any) bool {
@@ -48,13 +31,7 @@ func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) GetOpt
 		return false
 	}, optionName, optionHash)
 }
-
-type SetOption = trcache.SetOption
-
-func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
-	return trcache.WithSetDuration[K, V](duration)
-}
-func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) SetOption {
+func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache.SetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/setOptions.SetStrategy"
 	const optionHash = uint64(0xfc4183c47cd45f1e)
 	return trcache.SetOptionFunc(func(o any) bool {
@@ -66,10 +43,7 @@ func WithSetSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) SetO
 		return false
 	}, optionName, optionHash)
 }
-
-type DeleteOption = trcache.DeleteOption
-
-func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) DeleteOption {
+func WithDeleteDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) trcache.DeleteOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/deleteOptions.DeleteStrategy"
 	const optionHash = uint64(0x562ad4dca6e88296)
 	return trcache.DeleteOptionFunc(func(o any) bool {

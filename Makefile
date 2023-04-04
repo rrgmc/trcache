@@ -13,7 +13,7 @@ gen: tools
 	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go generate ./...'
 
 .PHONY: test
-test: tools
+test:
 	go test -count=1 ./...
 	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go test -count=1 ./...'
 

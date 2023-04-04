@@ -37,9 +37,12 @@ type CallDefaultRefreshOptions[K comparable, V any] interface {
 	OptCallDefaultRefreshOptions(options ...RefreshOption)
 }
 
-//
 // Get options
 //
+
+//troptgen:get
+type GetOptions[K comparable, V any] interface {
+}
 
 //
 // Set options

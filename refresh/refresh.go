@@ -7,38 +7,51 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
-func GetOrRefresh[K comparable, V any, RD any](ctx context.Context, c trcache.Cache[K, V], key K,
-	defaultOptions DefaultRefreshOptions[K, V, RD], options ...trcache.RefreshOption) (V, error) {
-	optns := refreshOptionsImpl[K, V, RD]{
-		funcx: defaultOptions.DefaultRefreshFunc,
+type Helper[K comparable, V any, RD any] struct {
+	options rootOptionsImpl[K, V, RD]
+}
+
+func NewHelper[K comparable, V any, RD any](options ...trcache.RootOption) (*Helper[K, V, RD], error) {
+	ret := &Helper[K, V, RD]{}
+	optErr := trcache.ParseRootOptions(&ret.options, options)
+	if optErr.Err() != nil {
+		return nil, optErr.Err()
 	}
-	optErr := trcache.ParseRefreshOptions(&optns, defaultOptions.CallDefaultRefreshOptions, options)
+	return ret, nil
+}
+
+func (r *Helper[K, V, RD]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], key K,
+	options ...trcache.RefreshOption) (V, error) {
+	optns := refreshOptionsImpl[K, V, RD]{
+		funcx: r.options.defaultRefreshFunc,
+	}
+	optErr := trcache.ParseRefreshOptions(&optns, r.options.callDefaultRefreshOptions, options)
 	if optErr.Err() != nil {
 		var empty V
 		return empty, optErr.Err()
 	}
 
-	ret, err := c.Get(ctx, key, trcache.AppendGetOptions(defaultOptions.CallDefaultGetOptions, optns.getOptions)...)
+	ret, err := c.Get(ctx, key, optns.getOptions...)
 	if err == nil {
-		if defaultOptions.MetricsMetrics != nil {
-			defaultOptions.MetricsMetrics.Hit(ctx, defaultOptions.MetricsName)
+		if r.options.metricsMetrics != nil {
+			r.options.metricsMetrics.Hit(ctx, r.options.metricsName)
 		}
 		return ret, nil
 	} else if err != nil && !errors.Is(err, trcache.ErrNotFound) {
-		if defaultOptions.MetricsMetrics != nil {
+		if r.options.metricsMetrics != nil {
 			var cerr *trcache.CodecError
 			if errors.As(err, &cerr) {
-				defaultOptions.MetricsMetrics.Error(ctx, defaultOptions.MetricsName, trcache.MetricsErrorTypeDecode)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeDecode)
 			} else {
-				defaultOptions.MetricsMetrics.Error(ctx, defaultOptions.MetricsName, trcache.MetricsErrorTypeGet)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeGet)
 			}
 		}
 		var empty V
 		return empty, err
 	}
 
-	if defaultOptions.MetricsMetrics != nil {
-		defaultOptions.MetricsMetrics.Miss(ctx, defaultOptions.MetricsName)
+	if r.options.metricsMetrics != nil {
+		r.options.metricsMetrics.Miss(ctx, r.options.metricsName)
 	}
 
 	// call refresh
@@ -51,21 +64,21 @@ func GetOrRefresh[K comparable, V any, RD any](ctx context.Context, c trcache.Ca
 		Data: optns.data,
 	})
 	if err != nil {
-		if defaultOptions.MetricsMetrics != nil {
-			defaultOptions.MetricsMetrics.Error(ctx, defaultOptions.MetricsName, trcache.MetricsErrorTypeRefresh)
+		if r.options.metricsMetrics != nil {
+			r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeRefresh)
 		}
 		var empty V
 		return empty, err
 	}
 
-	err = c.Set(ctx, key, ret, trcache.AppendSetOptions(defaultOptions.CallDefaultSetOptions, optns.setOptions)...)
+	err = c.Set(ctx, key, ret, optns.setOptions...)
 	if err != nil {
-		if defaultOptions.MetricsMetrics != nil {
+		if r.options.metricsMetrics != nil {
 			var cerr *trcache.CodecError
 			if errors.As(err, &cerr) {
-				defaultOptions.MetricsMetrics.Error(ctx, defaultOptions.MetricsName, trcache.MetricsErrorTypeEncode)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeEncode)
 			} else {
-				defaultOptions.MetricsMetrics.Error(ctx, defaultOptions.MetricsName, trcache.MetricsErrorTypeSet)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeSet)
 			}
 		}
 		var empty V

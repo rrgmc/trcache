@@ -74,6 +74,10 @@ func AppendRootOptions(options ...[]RootOption) []RootOption {
 	return appendOptions(options...)
 }
 
+func AppendRootOptionsChecker(checker OptionChecker, options ...[]RootOption) []RootOption {
+	return append([]RootOption{checker}, AppendRootOptions(options...)...)
+}
+
 //
 // Get options
 //

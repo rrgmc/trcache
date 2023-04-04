@@ -60,13 +60,13 @@ func appendOptions[O Option](options ...[]O) []O {
 
 // checker
 
-type optionChecker interface {
+type OptionChecker interface {
 	AnyOption
 	CheckCacheOpt(opt Option)
 	CheckCacheError() error
 }
 
-func NewOptionChecker[S ~[]O, O Option](options S) optionChecker {
+func NewOptionChecker[S ~[]O, O Option](options S) OptionChecker {
 	return &optionCheckerImpl[O]{
 		check: options,
 	}
@@ -128,11 +128,11 @@ func (o *optionCheckerImpl[O]) CheckCacheError() error {
 
 // var _ optionCheckerImpl[Option] = &optionCheckerImpl[Option]{}
 
-func parseOptionsCheckers[O Option](options ...[]O) []optionChecker {
-	var checkers []optionChecker
+func parseOptionsCheckers[O Option](options ...[]O) []OptionChecker {
+	var checkers []OptionChecker
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
-			if oc, ok := any(opt).(optionChecker); ok {
+			if oc, ok := any(opt).(OptionChecker); ok {
 				checkers = append(checkers, oc)
 			}
 		}

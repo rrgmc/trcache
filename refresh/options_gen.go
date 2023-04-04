@@ -4,6 +4,18 @@ package refresh
 
 import trcache "github.com/RangelReale/trcache"
 
+type RootOption = trcache.RootOption
+
+func WithCallDefaultRefreshOptions[K comparable, V any, RD any](options ...trcache.RefreshOption) RootOption {
+	return trcache.WithCallDefaultRefreshOptions[K, V](options...)
+}
+func WithDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc trcache.CacheRefreshFunc[K, V, RD]) RootOption {
+	return trcache.WithDefaultRefreshFunc[K, V, RD](refreshFunc)
+}
+func WithMetrics[K comparable, V any, RD any](metrics trcache.Metrics, name string) RootOption {
+	return trcache.WithMetrics[K, V](metrics, name)
+}
+
 type RefreshOption = trcache.RefreshOption
 
 func WithRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
@@ -17,6 +29,26 @@ func WithRefreshGetOptions[K comparable, V any, RD any](options ...trcache.GetOp
 }
 func WithRefreshSetOptions[K comparable, V any, RD any](options ...trcache.SetOption) RefreshOption {
 	return trcache.WithRefreshSetOptions[K, V, RD](options...)
+}
+
+type rootOptionsImpl[K comparable, V any, RD any] struct {
+	callDefaultRefreshOptions []trcache.RefreshOption
+	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V, RD]
+	metricsMetrics            trcache.Metrics
+	metricsName               string
+}
+
+var _ options[string, string, string] = &rootOptionsImpl[string, string, string]{}
+
+func (o *rootOptionsImpl[K, V, RD]) OptCallDefaultRefreshOptions(options ...trcache.RefreshOption) {
+	o.callDefaultRefreshOptions = options
+}
+func (o *rootOptionsImpl[K, V, RD]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V, RD]) {
+	o.defaultRefreshFunc = refreshFunc
+}
+func (o *rootOptionsImpl[K, V, RD]) OptMetrics(metrics trcache.Metrics, name string) {
+	o.metricsMetrics = metrics
+	o.metricsName = name
 }
 
 type refreshOptionsImpl[K comparable, V any, RD any] struct {

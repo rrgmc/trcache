@@ -218,3 +218,29 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+func TestCacheRefresh(t *testing.T) {
+	ctx := context.Background()
+
+	redis, mockRedis := redismock.NewClientMock()
+
+	mockRedis.ExpectGet("a").RedisNil()
+	mockRedis.ExpectSet("a", "abc123", time.Minute).SetVal("abc123")
+
+	c, err := NewRefresh[string, string, int](redis,
+		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
+		WithDefaultDuration[string, string](time.Minute),
+		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+			return fmt.Sprintf("abc%d", options.Data), nil
+		}),
+	)
+	require.NoError(t, err)
+
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	require.NoError(t, err)
+	require.Equal(t, "abc123", value)
+
+	if err := mockRedis.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}

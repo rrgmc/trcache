@@ -7,7 +7,6 @@ import (
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
-	"github.com/RangelReale/trcache/wrap"
 	"github.com/rueian/rueidis"
 )
 
@@ -37,15 +36,6 @@ func New[K comparable, V any](redis rueidis.Client, options ...RootOption) (*Cac
 		ret.options.keyCodec = codec.NewStringKeyCodec[K]()
 	}
 	return ret, nil
-}
-
-func NewRefresh[K comparable, V any, RD any](redis rueidis.Client,
-	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
-	cache, err := New[K, V](redis, options...)
-	if err != nil {
-		return nil, err
-	}
-	return wrap.NewWrapRefreshCache[K, V, RD](cache, options...)
 }
 
 func (c *Cache[K, V]) Handle() rueidis.Client {

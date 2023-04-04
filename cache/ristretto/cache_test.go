@@ -2,6 +2,7 @@ package trristretto
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -108,4 +109,28 @@ func TestCacheOptions(t *testing.T) {
 
 	v, err = c.Get(ctx, "z")
 	require.ErrorIs(t, err, trcache.ErrNotFound)
+}
+
+func TestCacheRefresh(t *testing.T) {
+	ctx := context.Background()
+
+	cache, err := ristretto.NewCache(&ristretto.Config{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+	})
+	require.NoError(t, err)
+
+	c, err := NewRefresh[string, string, int](cache,
+		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
+		WithDefaultDuration[string, string](time.Minute),
+		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+			return fmt.Sprintf("abc%d", options.Data), nil
+		}),
+	)
+	require.NoError(t, err)
+
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	require.NoError(t, err)
+	require.Equal(t, "abc123", value)
 }

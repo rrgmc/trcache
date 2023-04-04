@@ -2,6 +2,7 @@ package trgocache
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -91,4 +92,23 @@ func TestCacheOptions(t *testing.T) {
 
 	v, err = c.Get(ctx, "z")
 	require.ErrorIs(t, err, trcache.ErrNotFound)
+}
+
+func TestCacheRefresh(t *testing.T) {
+	ctx := context.Background()
+
+	gocache := cache.New(5*time.Minute, 10*time.Minute)
+
+	c, err := NewRefresh[string, string, int](gocache,
+		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
+		WithDefaultDuration[string, string](time.Minute),
+		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+			return fmt.Sprintf("abc%d", options.Data), nil
+		}),
+	)
+	require.NoError(t, err)
+
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	require.NoError(t, err)
+	require.Equal(t, "abc123", value)
 }

@@ -220,3 +220,30 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 	err = c.Set(ctx, "a", 12)
 	require.ErrorAs(t, err, new(*trcache.InvalidValueTypeError))
 }
+
+func TestCacheRefresh(t *testing.T) {
+	ctx := context.Background()
+
+	ctrl := gomock.NewController(t)
+	mockRedis := mock.NewClient(ctrl)
+
+	mockRedis.EXPECT().
+		DoCache(gomock.Any(), mock.Match("GET", "a"), gomock.Any()).
+		Return(mock.Result(mock.RedisNil()))
+	mockRedis.EXPECT().
+		Do(gomock.Any(), mock.Match("SET", "a", "abc123", "EX", "60")).
+		Return(mock.Result(mock.RedisString("")))
+
+	c, err := NewRefresh[string, string, int](mockRedis,
+		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
+		WithDefaultDuration[string, string](time.Minute),
+		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+			return fmt.Sprintf("abc%d", options.Data), nil
+		}),
+	)
+	require.NoError(t, err)
+
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	require.NoError(t, err)
+	require.Equal(t, "abc123", value)
+}

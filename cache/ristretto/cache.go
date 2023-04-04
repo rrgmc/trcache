@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/wrap"
 	"github.com/dgraph-io/ristretto"
 )
 
@@ -31,19 +30,6 @@ func New[K comparable, V any](cache *ristretto.Cache,
 	}
 	return ret, nil
 }
-
-func NewRefresh[K comparable, V any, RD any](cache *ristretto.Cache,
-	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
-	c, err := New[K, V](cache, options...)
-	if err != nil {
-		return nil, err
-	}
-	return wrap.NewWrapRefreshCache[K, V, RD](c, options...)
-}
-
-// func NewDefault[K comparable, V any](options ...RootOption) *Cache[K, V] {
-// 	return New(cache.New(), options...)
-// }
 
 func (c *Cache[K, V]) Handle() *ristretto.Cache {
 	return c.cache

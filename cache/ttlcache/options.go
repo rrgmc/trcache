@@ -17,13 +17,6 @@ type options[K comparable, V any] interface {
 	OptDefaultDuration(duration time.Duration)
 }
 
-//troptgen:root name=rootRefreshOptions
-type optionsRefresh[K comparable, V any, RD any] interface {
-	trcache.DefaultRefreshOptions[K, V, RD]
-	trcache.MetricsOptions[K, V]
-	trcache.CallDefaultRefreshOptions[K, V]
-}
-
 // Get options
 
 //troptgen:get
@@ -44,13 +37,6 @@ type setOptions[K comparable, V any] interface {
 //troptgen:delete
 type deleteOptions[K comparable, V any] interface {
 	trcache.DeleteOptions[K, V]
-}
-
-// Refresh options
-
-//troptgen:refresh
-type refreshOptions[K comparable, V any, RD any] interface {
-	trcache.RefreshOptions[K, V, RD]
 }
 
 //go:generate troptgen

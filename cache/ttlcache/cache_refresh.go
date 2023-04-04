@@ -10,8 +10,7 @@ import (
 
 type RefreshCache[K comparable, V any, RD any] struct {
 	*Cache[K, V]
-	refreshOptions rootRefreshOptionsImpl[K, V, RD]
-	helper         *refresh.Helper[K, V, RD]
+	helper *refresh.Helper[K, V, RD]
 }
 
 func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
@@ -28,18 +27,13 @@ func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
 		return nil, err
 	}
 
-	ret := &RefreshCache[K, V, RD]{
-		Cache:          c,
-		refreshOptions: rootRefreshOptionsImpl[K, V, RD]{},
-		helper:         helper,
-	}
-	optErr := trcache.ParseRootOptions(&ret.refreshOptions, trcache.AppendRootOptionsChecker(checker, options))
-	if optErr.Err() != nil {
-		return nil, optErr.Err()
-	}
-
 	if err = checker.CheckCacheError(); err != nil {
 		return nil, err
+	}
+
+	ret := &RefreshCache[K, V, RD]{
+		Cache:  c,
+		helper: helper,
 	}
 	return ret, nil
 }
@@ -49,13 +43,5 @@ func NewDefaultRefresh[K comparable, V any, RD any](options ...RootOption) (*Ref
 }
 
 func (c *RefreshCache[K, V, RD]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {
-	optns := refreshOptionsImpl[K, V, RD]{
-		funcx: c.refreshOptions.defaultRefreshFunc,
-	}
-	optErr := trcache.ParseRefreshOptions(&optns, c.refreshOptions.callDefaultRefreshOptions, options)
-	if optErr.Err() != nil {
-		var empty V
-		return empty, optErr.Err()
-	}
 	return c.helper.GetOrRefresh(ctx, c, key, options...)
 }

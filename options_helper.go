@@ -60,17 +60,6 @@ func appendOptions[O Option](options ...[]O) []O {
 
 // checker
 
-// type optionChecker interface {
-// 	Option
-// 	CheckCacheOpt(opt Option)
-// 	CheckCacheError() error
-// 	isCacheRootOption()
-// 	isCacheGetOption()
-// 	isCacheSetOption()
-// 	isCacheDeleteOption()
-// 	isCacheRefreshOption()
-// }
-
 type optionChecker interface {
 	AnyOption
 	CheckCacheOpt(opt Option)
@@ -91,23 +80,24 @@ func NewOptionChecker[S ~[]O, O Option](options S) optionChecker {
 
 func Test() {
 	var i GetOption = &optionCheckerImpl[RootOption]{}
-	fmt.Println(i)
+	ii := []GetOption{i}
+	fmt.Println(i, ii)
 }
 
-// func NewParseOptionChecker[S ~[]O, O Option](options S) S {
-// 	var i O = &optionCheckerImpl[O]{
-// 		check: options,
-// 	}
-// 	var ret S
-// 	ret = append(ret, i)
-// 	return ret
-//
-// 	// return S{&optionCheckerImpl[O]{
-// 	// 	check: options,
-// 	// }}
-//
-// 	// return S{NewOptionChecker(options)}
-// }
+func NewParseOptionChecker[S ~[]O, O Option](options S) S {
+	var i O = &optionCheckerImpl[O]{
+		check: options,
+	}
+	var ret S
+	ret = append(ret, i)
+	return ret
+
+	// return S{&optionCheckerImpl[O]{
+	// 	check: options,
+	// }}
+
+	// return S{NewOptionChecker(options)}
+}
 
 type optionCheckerImpl[O Option] struct {
 	IsAnyOption

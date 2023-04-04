@@ -2,6 +2,7 @@ package trbigcache
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -153,4 +154,24 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 
 	err = c.Set(ctx, "a", 12)
 	require.ErrorAs(t, err, new(*trcache.InvalidValueTypeError))
+}
+
+func TestCacheRefresh(t *testing.T) {
+	ctx := context.Background()
+
+	cache, err := bigcache.New(context.Background(), bigcache.DefaultConfig(10*time.Minute))
+	require.NoError(t, err)
+
+	c, err := NewRefresh[string, string, int](cache,
+		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
+		WithDefaultDuration[string, string](time.Minute),
+		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+			return fmt.Sprintf("abc%d", options.Data), nil
+		}),
+	)
+	require.NoError(t, err)
+
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	require.NoError(t, err)
+	require.Equal(t, "abc123", value)
 }

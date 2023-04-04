@@ -7,7 +7,6 @@ import (
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/codec"
-	"github.com/RangelReale/trcache/wrap"
 	"github.com/allegro/bigcache/v3"
 )
 
@@ -35,19 +34,6 @@ func New[K comparable, V any](cache *bigcache.BigCache,
 	}
 	return ret, nil
 }
-
-func NewRefresh[K comparable, V any, RD any](cache *bigcache.BigCache,
-	options ...RootOption) (trcache.RefreshCache[K, V, RD], error) {
-	c, err := New[K, V](cache, options...)
-	if err != nil {
-		return nil, err
-	}
-	return wrap.NewWrapRefreshCache[K, V, RD](c, options...)
-}
-
-// func NewDefault[K comparable, V any](options ...RootOption) *Cache[K, V] {
-// 	return New(cache.New(), options...)
-// }
 
 func (c *Cache[K, V]) Handle() *bigcache.BigCache {
 	return c.cache

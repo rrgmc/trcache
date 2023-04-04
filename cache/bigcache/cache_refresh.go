@@ -1,11 +1,11 @@
-package trttlcache
+package trbigcache
 
 import (
 	"context"
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/refresh"
-	"github.com/jellydator/ttlcache/v3"
+	"github.com/allegro/bigcache/v3"
 )
 
 type RefreshCache[K comparable, V any, RD any] struct {
@@ -15,7 +15,7 @@ type RefreshCache[K comparable, V any, RD any] struct {
 
 var _ trcache.RefreshCache[string, string, string] = &RefreshCache[string, string, string]{}
 
-func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
+func NewRefresh[K comparable, V any, RD any](cache *bigcache.BigCache,
 	options ...RootOption) (*RefreshCache[K, V, RD], error) {
 	checker := trcache.NewOptionChecker(options)
 
@@ -38,10 +38,6 @@ func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
 		helper: helper,
 	}
 	return ret, nil
-}
-
-func NewDefaultRefresh[K comparable, V any, RD any](options ...RootOption) (*RefreshCache[K, V, RD], error) {
-	return NewRefresh[K, V, RD](ttlcache.New[K, V](), options...)
 }
 
 func (c *RefreshCache[K, V, RD]) GetOrRefresh(ctx context.Context, key K, options ...trcache.RefreshOption) (V, error) {

@@ -71,11 +71,6 @@ func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) RootOption
 }
 
 type GetOption = trcache.GetOption
-
-func WithGetNoop[K comparable, V any](x bool) GetOption {
-	return trcache.WithGetNoop[K, V](x)
-}
-
 type SetOption = trcache.SetOption
 
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
@@ -121,15 +116,9 @@ func (o *rootOptionsImpl[K, V]) OptValueCodec(valueCodec trcache.Codec[V]) {
 	o.valueCodec = valueCodec
 }
 
-type getOptionsImpl[K comparable, V any] struct {
-	noop bool
-}
+type getOptionsImpl[K comparable, V any] struct{}
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
-
-func (o *getOptionsImpl[K, V]) OptNoop(x bool) {
-	o.noop = x
-}
 
 type setOptionsImpl[K comparable, V any] struct {
 	duration time.Duration

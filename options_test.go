@@ -29,7 +29,7 @@ func TestOptionsRecursive(t *testing.T) {
 
 	err := trcache.ParseRootOptions(&options,
 		optionsParam)
-	require.NoError(t, err.Err())
+	require.Error(t, err.Err())
 	//
 	// err = trcache.ParseRootOptions(&options,
 	// 	trcache.NewParseRootOptionChecker(optionsParam),

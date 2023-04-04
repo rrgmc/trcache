@@ -53,7 +53,6 @@ type OptionNotSupportedError struct {
 
 func NewOptionNotSupportedError(option Option) OptionNotSupportedError {
 	return OptionNotSupportedError{
-		// Message: fmt.Sprintf("option not supported: %s (%T)", getName(option), option),
 		Message: fmt.Sprintf("option not supported: %s", option.CacheOptName()),
 		Option:  option,
 	}

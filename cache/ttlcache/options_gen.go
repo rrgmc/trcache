@@ -48,9 +48,6 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) RootOpti
 
 type GetOption = trcache.GetOption
 
-func WithGetNoop[K comparable, V any](x bool) GetOption {
-	return trcache.WithGetNoop[K, V](x)
-}
 func WithGetTouch[K comparable, V any](touch bool) GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/getOptions.Touch"
 	const optionHash = uint64(0x88193653496df4fd)
@@ -102,15 +99,11 @@ func (o *rootOptionsImpl[K, V]) OptValidator(validator trcache.Validator[V]) {
 }
 
 type getOptionsImpl[K comparable, V any] struct {
-	noop  bool
 	touch bool
 }
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
-func (o *getOptionsImpl[K, V]) OptNoop(x bool) {
-	o.noop = x
-}
 func (o *getOptionsImpl[K, V]) OptTouch(touch bool) {
 	o.touch = touch
 }

@@ -334,13 +334,13 @@ func runMain() error {
 				continue
 			}
 
-			// if len(*ob) > 0 {
-			f.Add(optionsimpltype[d].StructFunc(func(g *jen.Group) {
-				for _, obi := range *ob {
-					g.Add(obi)
-				}
-			}))
-			// }
+			if obt, ok := optionsimpltype[d]; ok {
+				f.Add(obt.StructFunc(func(g *jen.Group) {
+					for _, obi := range *ob {
+						g.Add(obi)
+					}
+				}))
+			}
 
 			of, ok := optionsimplfuncs[d]
 			if !ok {

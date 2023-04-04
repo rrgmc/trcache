@@ -1,8 +1,6 @@
 package trcache
 
 import (
-	"fmt"
-
 	"go.uber.org/multierr"
 )
 
@@ -27,8 +25,6 @@ func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
 	var retErr error
 	if len(checkers) == 0 {
 		retErr = err
-		// } else if len(checkers) == 1 {
-		// 	retErr = checkers[0].CheckCacheError()
 	}
 	return ParseOptionsResult{
 		err:     retErr,
@@ -72,22 +68,6 @@ func NewOptionChecker[S ~[]O, O Option](options S) OptionChecker {
 	}
 }
 
-// func NewOptionChecker[O Option, S ~[]O](options S) O {
-// 	return &optionCheckerImpl[O]{
-// 		check: options,
-// 	}
-// }
-
-func Test() {
-	var i GetOption = &optionCheckerImpl[RootOption]{}
-	ii := []GetOption{i}
-	fmt.Println(i, ii)
-}
-
-// func NewParseOptionChecker[S ~[]O, O Option](options S) S {
-// 	return S{NewOptionChecker(options)}
-// }
-
 type optionCheckerImpl[O Option] struct {
 	IsAnyOption
 	check []O
@@ -125,8 +105,6 @@ func (o *optionCheckerImpl[O]) CheckCacheError() error {
 	}
 	return err
 }
-
-// var _ optionCheckerImpl[Option] = &optionCheckerImpl[Option]{}
 
 func parseOptionsCheckers[O Option](options ...[]O) []OptionChecker {
 	var checkers []OptionChecker

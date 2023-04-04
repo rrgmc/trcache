@@ -13,6 +13,8 @@ type RefreshCache[K comparable, V any, RD any] struct {
 	helper *refresh.Helper[K, V, RD]
 }
 
+var _ trcache.RefreshCache[string, string, string] = &RefreshCache[string, string, string]{}
+
 func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
 	options ...RootOption) (*RefreshCache[K, V, RD], error) {
 	checker := trcache.NewOptionChecker(options)

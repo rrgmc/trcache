@@ -19,9 +19,9 @@ func TestChain(t *testing.T) {
 	mockCache3 := mocks.NewCache[string, string](t)
 
 	// first cache will not find
-	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything).Return("", trcache.ErrNotFound)
+	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("", trcache.ErrNotFound)
 	// second cache will find
-	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything).Return("12", nil)
+	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("12", nil)
 
 	// first cache will receive the found value
 	mockCache1.EXPECT().Set(mock.Anything, "a", "12", mock.Anything).Return(nil)
@@ -47,8 +47,8 @@ func TestChainRefresh(t *testing.T) {
 	mockCache2 := mocks.NewCache[string, string](t)
 
 	// no cache will find
-	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything).Return("", trcache.ErrNotFound)
-	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything).Return("", trcache.ErrNotFound)
+	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("", trcache.ErrNotFound)
+	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("", trcache.ErrNotFound)
 
 	// refresh will be called
 

@@ -3,8 +3,8 @@ module github.com/RangelReale/trcache/cache/ristretto
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.6.0
-	github.com/RangelReale/trcache/mocks v0.6.0
+	github.com/RangelReale/trcache v0.7.0
+	github.com/RangelReale/trcache/mocks v0.7.0
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/stretchr/testify v1.8.2
 )

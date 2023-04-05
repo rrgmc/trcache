@@ -27,14 +27,14 @@ func TestOptionsRecursive(t *testing.T) {
 		// WithGet1Test115[string, string]("aaa"),
 	}
 
-	err := trcache.ParseRootOptions(&options,
+	err := trcache.ParseOptions[trcache.RootOption](&options,
 		optionsParam)
 	require.Error(t, err.Err())
-	//
-	// err = trcache.ParseRootOptions(&options,
-	// 	trcache.NewParseRootOptionChecker(optionsParam),
-	// 	optionsParam)
-	// require.Error(t, err.Err())
+
+	checker := trcache.NewOptionChecker[trcache.RootOption](optionsParam)
+
+	err = trcache.ParseOptionsChecker(checker, &options)
+	require.NoError(t, err.Err())
 }
 
 // Test Options 1

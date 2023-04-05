@@ -19,7 +19,7 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	optErr := trcache.ParseRootOptions(&ret.options, options)
+	optErr := trcache.ParseOptions[trcache.RootOption](&ret.options, options)
 	if optErr.Err() != nil {
 		return nil, optErr.Err()
 	}
@@ -34,9 +34,9 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
 
-	getChecker := trcache.NewOptionChecker(c.options.callDefaultGetOptions, options)
+	getChecker := trcache.NewOptionChecker[trcache.GetOption](c.options.callDefaultGetOptions, options)
 
-	optErr := trcache.ParseGetOptionsChecker(getChecker, &optns)
+	optErr := trcache.ParseOptionsChecker(getChecker, &optns)
 	if optErr.Err() != nil {
 		var empty V
 		return empty, optErr.Err()
@@ -59,7 +59,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 			break
 		}
 
-		value, err := cache.Get(ctx, key, trcache.ForwardGetOptionsChecker(getChecker)...)
+		value, err := cache.Get(ctx, key, trcache.ForwardOptionsChecker(getChecker)...)
 
 		switch optns.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err) {
 		case GetStrategyAfterResultSkip:
@@ -88,7 +88,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 		return empty, trcache.ErrNotFound
 	}
 
-	setChecker := trcache.NewOptionChecker(c.options.callDefaultSetOptions, optns.setOptions)
+	setChecker := trcache.NewOptionChecker[trcache.SetOption](c.options.callDefaultSetOptions, optns.setOptions)
 
 	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
 		switch optns.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
@@ -98,7 +98,7 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 			break
 		}
 
-		err := c.caches[cacheIdx].Set(ctx, key, ret, trcache.ForwardSetOptionsChecker(setChecker)...)
+		err := c.caches[cacheIdx].Set(ctx, key, ret, trcache.ForwardOptionsChecker(setChecker)...)
 
 		switch optns.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err) {
 		case GetStrategyAfterSetResultReturn:
@@ -120,9 +120,9 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	options ...trcache.SetOption) error {
 	var optns setOptionsImpl[K, V]
 
-	checker := trcache.NewOptionChecker(c.options.callDefaultSetOptions, options)
+	checker := trcache.NewOptionChecker[trcache.SetOption](c.options.callDefaultSetOptions, options)
 
-	optErr := trcache.ParseSetOptionsChecker(checker, &optns)
+	optErr := trcache.ParseOptionsChecker(checker, &optns)
 	if optErr.Err() != nil {
 		return optErr.Err()
 	}
@@ -142,7 +142,7 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 			break
 		}
 
-		err := cache.Set(ctx, key, value, trcache.ForwardSetOptionsChecker(checker)...)
+		err := cache.Set(ctx, key, value, trcache.ForwardOptionsChecker(checker)...)
 
 		switch optns.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err) {
 		case SetStrategyAfterResultReturn:
@@ -176,9 +176,9 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption) error {
 	var optns deleteOptionsImpl[K, V]
-	checker := trcache.NewOptionChecker(c.options.callDefaultDeleteOptions, options)
+	checker := trcache.NewOptionChecker[trcache.DeleteOption](c.options.callDefaultDeleteOptions, options)
 
-	optErr := trcache.ParseDeleteOptionsChecker(checker, &optns)
+	optErr := trcache.ParseOptionsChecker(checker, &optns)
 	if optErr.Err() != nil {
 		return optErr.Err()
 	}
@@ -199,7 +199,7 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 			break
 		}
 
-		err := cache.Delete(ctx, key, trcache.ForwardDeleteOptionsChecker(checker)...)
+		err := cache.Delete(ctx, key, trcache.ForwardOptionsChecker(checker)...)
 
 		switch optns.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err) {
 		case DeleteStrategyAfterResultReturn:

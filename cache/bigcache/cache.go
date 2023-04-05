@@ -22,7 +22,7 @@ func New[K comparable, V any](cache *bigcache.BigCache,
 	ret := &Cache[K, V]{
 		cache: cache,
 	}
-	optErr := trcache.ParseRootOptions(&ret.options, options)
+	optErr := trcache.ParseOptions[trcache.RootOption](&ret.options, options)
 	if optErr.Err() != nil {
 		return nil, optErr.Err()
 	}
@@ -46,7 +46,7 @@ func (c *Cache[K, V]) Name() string {
 func (c *Cache[K, V]) Get(ctx context.Context, key K,
 	options ...trcache.GetOption) (V, error) {
 	var optns getOptionsImpl[K, V]
-	optErr := trcache.ParseGetOptions(&optns, c.options.callDefaultGetOptions, options)
+	optErr := trcache.ParseOptions[trcache.GetOption](&optns, c.options.callDefaultGetOptions, options)
 	if optErr.Err() != nil {
 		var empty V
 		return empty, optErr.Err()
@@ -88,7 +88,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 	optns := setOptionsImpl[K, V]{
 		duration: c.options.defaultDuration,
 	}
-	optErr := trcache.ParseSetOptions(&optns, c.options.callDefaultSetOptions, options)
+	optErr := trcache.ParseOptions[trcache.SetOption](&optns, c.options.callDefaultSetOptions, options)
 	if optErr.Err() != nil {
 		return optErr.Err()
 	}
@@ -119,7 +119,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 func (c *Cache[K, V]) Delete(ctx context.Context, key K,
 	options ...trcache.DeleteOption) error {
 	optns := deleteOptionsImpl[K, V]{}
-	optErr := trcache.ParseDeleteOptions(&optns, c.options.callDefaultDeleteOptions, options)
+	optErr := trcache.ParseOptions[trcache.DeleteOption](&optns, c.options.callDefaultDeleteOptions, options)
 	if optErr.Err() != nil {
 		return optErr.Err()
 	}

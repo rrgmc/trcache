@@ -6,7 +6,7 @@ import (
 
 // parse options
 
-func parseOptions[O IOption[TO], TO any](obj any, options ...[]IOption[TO]) ParseOptionsResult {
+func ParseOptions[O IOption[TO], TO any](obj any, options ...[]IOption[TO]) ParseOptionsResult {
 	checkers := parseOptionsCheckers[O, TO](options...)
 
 	var err error
@@ -45,7 +45,7 @@ func (r ParseOptionsResult) SelfErr() error {
 }
 
 func ParseOptionsChecker[O IOption[TO], TO any](checker OptionChecker[O, TO], obj any) ParseOptionsResult {
-	return parseOptions[IOption[TO], TO](obj, ConcatOptionsChecker[O, TO](checker, checker.CheckCacheOptList()))
+	return ParseOptions[IOption[TO], TO](obj, ConcatOptionsChecker[O, TO](checker, checker.CheckCacheOptList()))
 }
 
 func ConcatOptionsChecker[O IOption[TO], TO any](checker OptionChecker[O, TO], options ...[]IOption[TO]) []IOption[TO] {

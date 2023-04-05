@@ -17,15 +17,13 @@ var _ trcache.RefreshCache[string, string, string] = &RefreshCache[string, strin
 
 func NewRefresh[K comparable, V any, RD any](cache *bigcache.BigCache,
 	options ...trcache.RootOption) (*RefreshCache[K, V, RD], error) {
-	checker := trcache.NewOptionChecker[trcache.IOption[trcache.IRootOpt]](options)
+	checker := trcache.NewOptionChecker[trcache.RootOption](options)
 
-	// c, err := New[K, V](cache, trcache.ForwardRootOptionsChecker(checker)...)
 	c, err := New[K, V](cache, trcache.ForwardOptionsChecker(checker)...)
 	if err != nil {
 		return nil, err
 	}
 
-	// helper, err := refresh.NewHelper[K, V, RD](trcache.ForwardRootOptionsChecker(checker)...)
 	helper, err := refresh.NewHelper[K, V, RD](trcache.ForwardOptionsChecker(checker)...)
 	if err != nil {
 		return nil, err

@@ -75,29 +75,11 @@ type OptionChecker[O IOption[TO], TO any] interface {
 	CheckCacheOptList() []IOption[TO]
 }
 
-// func NewOptionChecker[S ~[]O, O Option](options ...S) OptionChecker[O] {
-// 	return &optionCheckerImpl[O]{
-// 		check: ConcatOptions(options...),
-// 	}
-// }
-
-// func NewOptionChecker[S ~[]O, O IOption[TO], TO any](options ...S) OptionChecker[O, TO] {
-// 	return &optionCheckerImpl[O, TO]{
-// 		check: ConcatOptions(options...),
-// 	}
-// }
-
 func NewOptionChecker[O IOption[TO], TO any](options ...[]IOption[TO]) OptionChecker[O, TO] {
 	return &optionCheckerImpl[O, TO]{
 		check: ConcatOptions(options...),
 	}
 }
-
-// func NewOptionChecker[O IOption[TO], TO any](options ...IOption[TO]) OptionChecker[O, TO] {
-// 	return &optionCheckerImpl[O, TO]{
-// 		check: ConcatOptions[[]IOption[TO], IOption[TO]](options...),
-// 	}
-// }
 
 type optionCheckerImpl[O IOption[TO], TO any] struct {
 	IIsOption[TO]

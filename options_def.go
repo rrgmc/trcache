@@ -32,11 +32,11 @@ var _ Option = &optionFunc{}
 
 //
 
-type IRootOpt string
-type IGetOpt string
-type ISetOpt string
-type IDeleteOpt string
-type IRefreshOpt string
+type IRootOpt int
+type IGetOpt int
+type ISetOpt int
+type IDeleteOpt int
+type IRefreshOpt int
 
 type IOption[T any] interface {
 	Option

@@ -21,6 +21,7 @@ func TestCache(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
+		// trcache.WithSetDuration[string, string](time.Minute),
 		WithDefaultDuration[string, string](time.Minute),
 		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 	)

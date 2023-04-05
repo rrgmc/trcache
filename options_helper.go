@@ -6,8 +6,8 @@ import (
 
 // parse options
 
-func parseOptions[O Option](obj any, options ...[]O) ParseOptionsResult {
-	checkers := parseOptionsCheckers(options...)
+func parseOptions[O IOption[TO], TO any](obj any, options ...[]IOption[TO]) ParseOptionsResult {
+	checkers := parseOptionsCheckers[O, TO](options...)
 
 	var err error
 	for _, optinstance := range options {
@@ -44,6 +44,18 @@ func (r ParseOptionsResult) SelfErr() error {
 	return r.selfErr
 }
 
+func ParseOptionsChecker[O IOption[TO], TO any](checker OptionChecker[O, TO], obj any) ParseOptionsResult {
+	return parseOptions[IOption[TO], TO](obj, ConcatOptionsChecker[O, TO](checker, checker.CheckCacheOptList()))
+}
+
+func ConcatOptionsChecker[O IOption[TO], TO any](checker OptionChecker[O, TO], options ...[]IOption[TO]) []IOption[TO] {
+	return append([]IOption[TO]{checker}, ConcatOptions(options...)...)
+}
+
+func ForwardOptionsChecker[O IOption[TO], TO any](checker OptionChecker[O, TO]) []IOption[TO] {
+	return append([]IOption[TO]{checker}, checker.CheckCacheOptList()...)
+}
+
 // ConcatOptions
 
 func ConcatOptions[S ~[]O, O Option](options ...S) S {
@@ -56,38 +68,56 @@ func ConcatOptions[S ~[]O, O Option](options ...S) S {
 
 // checker
 
-type OptionChecker[O Option] interface {
-	AnyOption
+type OptionChecker[O IOption[TO], TO any] interface {
+	IOption[TO]
 	CheckCacheOpt(opt Option)
 	CheckCacheError() error
-	CheckCacheOptList() []O
+	CheckCacheOptList() []IOption[TO]
 }
 
-func NewOptionChecker[S ~[]O, O Option](options ...S) OptionChecker[O] {
-	return &optionCheckerImpl[O]{
+// func NewOptionChecker[S ~[]O, O Option](options ...S) OptionChecker[O] {
+// 	return &optionCheckerImpl[O]{
+// 		check: ConcatOptions(options...),
+// 	}
+// }
+
+// func NewOptionChecker[S ~[]O, O IOption[TO], TO any](options ...S) OptionChecker[O, TO] {
+// 	return &optionCheckerImpl[O, TO]{
+// 		check: ConcatOptions(options...),
+// 	}
+// }
+
+func NewOptionChecker[O IOption[TO], TO any](options ...[]IOption[TO]) OptionChecker[O, TO] {
+	return &optionCheckerImpl[O, TO]{
 		check: ConcatOptions(options...),
 	}
 }
 
-type optionCheckerImpl[O Option] struct {
-	IsAnyOption
-	check []O
+// func NewOptionChecker[O IOption[TO], TO any](options ...IOption[TO]) OptionChecker[O, TO] {
+// 	return &optionCheckerImpl[O, TO]{
+// 		check: ConcatOptions[[]IOption[TO], IOption[TO]](options...),
+// 	}
+// }
+
+type optionCheckerImpl[O IOption[TO], TO any] struct {
+	IIsOption[TO]
+	check []IOption[TO]
 	optns map[uint64]Option
 }
 
-func (o *optionCheckerImpl[O]) ApplyCacheOpt(a any) bool {
+func (o *optionCheckerImpl[O, TO]) ApplyCacheOpt(a any) bool {
 	return true
 }
 
-func (o *optionCheckerImpl[O]) CacheOptName() string {
+func (o *optionCheckerImpl[O, TO]) CacheOptName() string {
 	return "checker"
 }
 
-func (o *optionCheckerImpl[O]) CacheOptHash() uint64 {
+func (o *optionCheckerImpl[O, TO]) CacheOptHash() uint64 {
 	return 1
 }
 
-func (o *optionCheckerImpl[O]) CheckCacheOpt(opt Option) {
+func (o *optionCheckerImpl[O, TO]) CheckCacheOpt(opt Option) {
 	if o.optns == nil {
 		o.optns = map[uint64]Option{}
 	}
@@ -97,7 +127,7 @@ func (o *optionCheckerImpl[O]) CheckCacheOpt(opt Option) {
 	}
 }
 
-func (o *optionCheckerImpl[O]) CheckCacheError() error {
+func (o *optionCheckerImpl[O, TO]) CheckCacheError() error {
 	var err error
 	for _, opt := range o.check {
 		if _, ok := o.optns[opt.CacheOptHash()]; !ok {
@@ -107,15 +137,15 @@ func (o *optionCheckerImpl[O]) CheckCacheError() error {
 	return err
 }
 
-func (o *optionCheckerImpl[O]) CheckCacheOptList() []O {
+func (o *optionCheckerImpl[O, TO]) CheckCacheOptList() []IOption[TO] {
 	return o.check
 }
 
-func parseOptionsCheckers[O Option](options ...[]O) []OptionChecker[O] {
-	var checkers []OptionChecker[O]
+func parseOptionsCheckers[O IOption[TO], TO any](options ...[]IOption[TO]) []OptionChecker[O, TO] {
+	var checkers []OptionChecker[O, TO]
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
-			if oc, ok := any(opt).(OptionChecker[O]); ok {
+			if oc, ok := any(opt).(OptionChecker[O, TO]); ok {
 				checkers = append(checkers, oc)
 			}
 		}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/types"
 	"hash/fnv"
+	"strings"
 
 	"github.com/dave/jennifer/jen"
 )
@@ -118,6 +119,10 @@ func QualFromType(typ types.Type, options ...QualFromTypeOption) *jen.Statement 
 			panic(fmt.Errorf("unexpected ChanDir: %v", t.Dir()))
 		}
 	case *types.Named:
+		if ok, ct := CheckCustomNamedType(t); ok {
+			return ct
+		}
+
 		var ftypes []jen.Code
 		for p := 0; p < t.TypeParams().Len(); p++ {
 			fid := jen.Id(t.TypeParams().At(p).String())
@@ -147,6 +152,22 @@ func FromTypeParam(tp *types.TypeParam) *jen.Statement {
 	default:
 		return jen.Id(tp.String())
 	}
+}
+
+func CheckCustomNamedType(t *types.Named) (bool, *jen.Statement) {
+	if t.Obj().Pkg() != nil && t.Obj().Pkg().Path() == rootPackage && t.Obj().Name() == "IOption" {
+		// github.com/RangelReale/trcache/IOption[IXXXOpt]
+		if t.TypeArgs().Len() > 0 {
+			switch tt := t.TypeArgs().At(0).(type) {
+			case *types.Named:
+				optionName := fmt.Sprintf("%sOption", strings.TrimPrefix(strings.TrimSuffix(tt.Obj().Name(), "Opt"), "I"))
+				j := jen.Qual(t.Obj().Pkg().Path(), optionName)
+				return true, j
+			}
+		}
+	}
+
+	return false, nil
 }
 
 func FromTypeParams(t *types.TypeParamList) *jen.Statement {

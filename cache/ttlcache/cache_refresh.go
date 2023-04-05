@@ -19,12 +19,12 @@ func NewRefresh[K comparable, V any, RD any](cache *ttlcache.Cache[K, V],
 	options ...trcache.RootOption) (*RefreshCache[K, V, RD], error) {
 	checker := trcache.NewOptionChecker(options)
 
-	c, err := New[K, V](cache, trcache.AppendRootOptionsChecker(checker, options)...)
+	c, err := New[K, V](cache, trcache.ConcatRootOptionsChecker(checker, options)...)
 	if err != nil {
 		return nil, err
 	}
 
-	helper, err := refresh.NewHelper[K, V, RD](trcache.AppendRootOptionsChecker(checker, options)...)
+	helper, err := refresh.NewHelper[K, V, RD](trcache.ConcatRootOptionsChecker(checker, options)...)
 	if err != nil {
 		return nil, err
 	}

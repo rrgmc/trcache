@@ -44,15 +44,31 @@ func (r ParseOptionsResult) SelfErr() error {
 	return r.selfErr
 }
 
-// append options
+// ConcatOptions
 
-func appendOptions[O Option](options ...[]O) []O {
+func ConcatOptions[O Option](options ...[]O) []O {
 	var ret []O
 	for _, opt := range options {
 		ret = append(ret, opt...)
 	}
 	return ret
 }
+
+// func ConcatOptionsChecker[S ~[]O, O Option](checker OptionChecker[O], options ...S) S {
+// 	ret := S{checker}
+// 	for _, opt := range options {
+// 		ret = append(ret, opt...)
+// 	}
+// 	return ret
+// }
+
+// func ConcatOptionsChecker[O Option](checker OptionChecker[O], options ...[]O) []O {
+// 	ret := []O{checker}
+// 	for _, opt := range options {
+// 		ret = append(ret, opt...)
+// 	}
+// 	return ret
+// }
 
 // checker
 

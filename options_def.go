@@ -63,15 +63,15 @@ func ParseRootOptions(obj any, options ...[]RootOption) ParseOptionsResult {
 }
 
 func ParseRootOptionsChecker(checker OptionChecker[RootOption], obj any, options ...[]RootOption) ParseOptionsResult {
-	return parseOptions(obj, AppendRootOptionsChecker(checker, options...))
+	return parseOptions(obj, ConcatRootOptionsChecker(checker, options...))
 }
 
-func AppendRootOptions(options ...[]RootOption) []RootOption {
-	return appendOptions(options...)
-}
+// func AppendRootOptions(options ...[]RootOption) []RootOption {
+// 	return appendOptions(options...)
+// }
 
-func AppendRootOptionsChecker(checker OptionChecker[RootOption], options ...[]RootOption) []RootOption {
-	return append([]RootOption{checker}, AppendRootOptions(options...)...)
+func ConcatRootOptionsChecker(checker OptionChecker[RootOption], options ...[]RootOption) []RootOption {
+	return append([]RootOption{checker}, ConcatOptions(options...)...)
 }
 
 //
@@ -107,15 +107,15 @@ func ParseGetOptions(obj any, options ...[]GetOption) ParseOptionsResult {
 }
 
 func ParseGetOptionsChecker(checker OptionChecker[GetOption], obj any, options ...[]GetOption) ParseOptionsResult {
-	return parseOptions(obj, AppendGetOptionsChecker(checker, options...))
+	return parseOptions(obj, ConcatGetOptionsChecker(checker, options...))
 }
 
-func AppendGetOptions(options ...[]GetOption) []GetOption {
-	return appendOptions(options...)
-}
+// func AppendGetOptions(options ...[]GetOption) []GetOption {
+// 	return appendOptions(options...)
+// }
 
-func AppendGetOptionsChecker(checker OptionChecker[GetOption], options ...[]GetOption) []GetOption {
-	return append([]GetOption{checker}, AppendGetOptions(options...)...)
+func ConcatGetOptionsChecker(checker OptionChecker[GetOption], options ...[]GetOption) []GetOption {
+	return append([]GetOption{checker}, ConcatOptions(options...)...)
 }
 
 //
@@ -151,15 +151,15 @@ func ParseSetOptions(obj any, options ...[]SetOption) ParseOptionsResult {
 }
 
 func ParseSetOptionsChecker(checker OptionChecker[SetOption], obj any, options ...[]SetOption) ParseOptionsResult {
-	return parseOptions(obj, AppendSetOptionsChecker(checker, options...))
+	return parseOptions(obj, ConcatSetOptionsChecker(checker, options...))
 }
 
-func AppendSetOptions(options ...[]SetOption) []SetOption {
-	return appendOptions(options...)
-}
+// func AppendSetOptions(options ...[]SetOption) []SetOption {
+// 	return appendOptions(options...)
+// }
 
-func AppendSetOptionsChecker(checker OptionChecker[SetOption], options ...[]SetOption) []SetOption {
-	return append([]SetOption{checker}, AppendSetOptions(options...)...)
+func ConcatSetOptionsChecker(checker OptionChecker[SetOption], options ...[]SetOption) []SetOption {
+	return append([]SetOption{checker}, ConcatOptions(options...)...)
 }
 
 //
@@ -195,15 +195,15 @@ func ParseDeleteOptions(obj any, options ...[]DeleteOption) ParseOptionsResult {
 }
 
 func ParseDeleteOptionsChecker(checker OptionChecker[DeleteOption], obj any, options ...[]DeleteOption) ParseOptionsResult {
-	return parseOptions(obj, AppendDeleteOptionsChecker(checker, options...))
+	return parseOptions(obj, ConcatDeleteOptionsChecker(checker, options...))
 }
 
-func AppendDeleteOptions(options ...[]DeleteOption) []DeleteOption {
-	return appendOptions(options...)
-}
+// func AppendDeleteOptions(options ...[]DeleteOption) []DeleteOption {
+// 	return appendOptions(options...)
+// }
 
-func AppendDeleteOptionsChecker(checker OptionChecker[DeleteOption], options ...[]DeleteOption) []DeleteOption {
-	return append([]DeleteOption{checker}, AppendDeleteOptions(options...)...)
+func ConcatDeleteOptionsChecker(checker OptionChecker[DeleteOption], options ...[]DeleteOption) []DeleteOption {
+	return append([]DeleteOption{checker}, ConcatOptions(options...)...)
 }
 
 //
@@ -239,15 +239,15 @@ func ParseRefreshOptions(obj any, options ...[]RefreshOption) ParseOptionsResult
 }
 
 func ParseRefreshOptionsChecker(checker OptionChecker[RefreshOption], obj any, options ...[]RefreshOption) ParseOptionsResult {
-	return parseOptions(obj, AppendRefreshOptionsChecker(checker, options...))
+	return parseOptions(obj, ConcatRefreshOptionsChecker(checker, options...))
 }
 
-func AppendRefreshOptions(options ...[]RefreshOption) []RefreshOption {
-	return appendOptions(options...)
-}
+// func AppendRefreshOptions(options ...[]RefreshOption) []RefreshOption {
+// 	return appendOptions(options...)
+// }
 
-func AppendRefreshOptionsChecker(checker OptionChecker[RefreshOption], options ...[]RefreshOption) []RefreshOption {
-	return append([]RefreshOption{checker}, AppendRefreshOptions(options...)...)
+func ConcatRefreshOptionsChecker(checker OptionChecker[RefreshOption], options ...[]RefreshOption) []RefreshOption {
+	return append([]RefreshOption{checker}, ConcatOptions(options...)...)
 }
 
 // Any option

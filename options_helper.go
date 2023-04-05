@@ -46,29 +46,13 @@ func (r ParseOptionsResult) SelfErr() error {
 
 // ConcatOptions
 
-func ConcatOptions[O Option](options ...[]O) []O {
-	var ret []O
+func ConcatOptions[S ~[]O, O Option](options ...S) S {
+	var ret S
 	for _, opt := range options {
 		ret = append(ret, opt...)
 	}
 	return ret
 }
-
-// func ConcatOptionsChecker[S ~[]O, O Option](checker OptionChecker[O], options ...S) S {
-// 	ret := S{checker}
-// 	for _, opt := range options {
-// 		ret = append(ret, opt...)
-// 	}
-// 	return ret
-// }
-
-// func ConcatOptionsChecker[O Option](checker OptionChecker[O], options ...[]O) []O {
-// 	ret := []O{checker}
-// 	for _, opt := range options {
-// 		ret = append(ret, opt...)
-// 	}
-// 	return ret
-// }
 
 // checker
 
@@ -79,9 +63,9 @@ type OptionChecker[O Option] interface {
 	CheckCacheOptList() []O
 }
 
-func NewOptionChecker[S ~[]O, O Option](options S) OptionChecker[O] {
+func NewOptionChecker[S ~[]O, O Option](options ...S) OptionChecker[O] {
 	return &optionCheckerImpl[O]{
-		check: options,
+		check: ConcatOptions(options...),
 	}
 }
 

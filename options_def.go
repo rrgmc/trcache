@@ -48,6 +48,11 @@ type IIsOption[T any] struct {
 
 func (i IIsOption[T]) isCacheOption(T) {}
 
+type iOptionFunc[T any] struct {
+	IIsOption[T]
+	optionFunc
+}
+
 //
 // Root Options
 //
@@ -57,14 +62,9 @@ type RootOption = IOption[IRootOpt]
 type IsRootOption = IIsOption[IRootOpt]
 
 func RootOptionFunc(f func(any) bool, name string, hash uint64) RootOption {
-	return &rootOptionFunc{
+	return &iOptionFunc[IRootOpt]{
 		optionFunc: optionFunc{f, name, hash},
 	}
-}
-
-type rootOptionFunc struct {
-	IsRootOption
-	optionFunc
 }
 
 //
@@ -76,14 +76,9 @@ type GetOption = IOption[IGetOpt]
 type IsGetOption = IIsOption[IGetOpt]
 
 func GetOptionFunc(f func(any) bool, name string, hash uint64) GetOption {
-	return &getOptionFunc{
+	return &iOptionFunc[IGetOpt]{
 		optionFunc: optionFunc{f, name, hash},
 	}
-}
-
-type getOptionFunc struct {
-	IsGetOption
-	optionFunc
 }
 
 //
@@ -95,14 +90,9 @@ type SetOption = IOption[ISetOpt]
 type IsSetOption = IIsOption[ISetOpt]
 
 func SetOptionFunc(f func(any) bool, name string, hash uint64) SetOption {
-	return &setOptionFunc{
+	return &iOptionFunc[ISetOpt]{
 		optionFunc: optionFunc{f, name, hash},
 	}
-}
-
-type setOptionFunc struct {
-	IsSetOption
-	optionFunc
 }
 
 //
@@ -114,14 +104,9 @@ type DeleteOption = IOption[IDeleteOpt]
 type IsDeleteOption = IIsOption[IDeleteOpt]
 
 func DeleteOptionFunc(f func(any) bool, name string, hash uint64) DeleteOption {
-	return &deleteOptionFunc{
+	return &iOptionFunc[IDeleteOpt]{
 		optionFunc: optionFunc{f, name, hash},
 	}
-}
-
-type deleteOptionFunc struct {
-	IsDeleteOption
-	optionFunc
 }
 
 //
@@ -133,12 +118,7 @@ type RefreshOption = IOption[IRefreshOpt]
 type IsRefreshOption = IIsOption[IRefreshOpt]
 
 func RefreshOptionFunc(f func(any) bool, name string, hash uint64) RefreshOption {
-	return &refreshOptionFunc{
+	return &iOptionFunc[IRefreshOpt]{
 		optionFunc: optionFunc{f, name, hash},
 	}
-}
-
-type refreshOptionFunc struct {
-	IsRefreshOption
-	optionFunc
 }

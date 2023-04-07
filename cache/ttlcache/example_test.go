@@ -16,6 +16,9 @@ func ExampleCache() {
 	cache, err := New[string, string](tcache,
 		WithDefaultDuration[string, string](time.Minute),
 	)
+	if err != nil {
+		panic(err)
+	}
 
 	err = cache.Set(ctx, "a", "12")
 	if err != nil {

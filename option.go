@@ -4,12 +4,14 @@ package trcache
 // Option
 //
 
+// Option is the base interface for all options.
 type Option interface {
 	ApplyCacheOpt(any) bool
 	CacheOptName() string
 	CacheOptHash() uint64
 }
 
+// optionFunc is a functional implementation of [Option].
 type optionFunc struct {
 	f func(any) bool
 	n string
@@ -30,7 +32,9 @@ func (o optionFunc) CacheOptHash() uint64 {
 
 var _ Option = &optionFunc{}
 
-// Option interface
+// Option type markers.
+// As Go type declarations creates new unrelated types even if they have the same underlying type,
+// we leverage this to make methods accept only one type and not the others.
 
 type IRootOpt int
 type IGetOpt int
@@ -38,16 +42,21 @@ type ISetOpt int
 type IDeleteOpt int
 type IRefreshOpt int
 
+// IOption is used to segregate option types, not allowing different types to be mixed.
+// The combination of a "isCacheOption" function and a single parameter of a type marker makes interfaces
+// compatible only between the same marker type.
 type IOption[T any] interface {
 	Option
 	isCacheOption(T)
 }
 
+// IIsOption is an implementation of IOption, meant to be embedded in structs.
 type IIsOption[T any] struct {
 }
 
 func (i IIsOption[T]) isCacheOption(T) {}
 
+// iOptionFunc is a functional implementation of IOption.
 type iOptionFunc[T any] struct {
 	IIsOption[T]
 	optionFunc

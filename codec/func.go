@@ -6,7 +6,7 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
-// FuncCodec is a Codec that returns the same object passed.
+// FuncCodec is a Codec that uses the passed functions as its methods.
 type FuncCodec[V any] struct {
 	m func(ctx context.Context, data V) (any, error)
 	u func(ctx context.Context, data any) (V, error)

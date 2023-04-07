@@ -6,6 +6,7 @@ import (
 
 	"github.com/RangelReale/trcache"
 	"github.com/RangelReale/trcache/cache/chain"
+	trttlcache "github.com/RangelReale/trcache/cache/ttlcache"
 )
 
 func main() {
@@ -15,14 +16,27 @@ func main() {
 }
 
 func sampleChain(ctx context.Context) {
-	cache1 := trttlcache.NewDefault[string, string]()
-	cache2 := trttlcache.NewDefault[string, string]()
+	cache1, err := trttlcache.NewDefault[string, string]()
+	if err != nil {
+		panic(err)
+	}
 
-	cache := chain.New[string, string]([]trcache.Cache[string, string]{
+	cache2, err := trttlcache.NewDefault[string, string]()
+	if err != nil {
+		panic(err)
+	}
+
+	cache, err := chain.New[string, string]([]trcache.Cache[string, string]{
 		cache1, cache2,
 	})
+	if err != nil {
+		panic(err)
+	}
 
-	cache.Set(ctx, "a", "b")
+	err = cache.Set(ctx, "a", "b")
+	if err != nil {
+		panic(err)
+	}
 
 	v, err := cache.Get(ctx, "a")
 	if err != nil {

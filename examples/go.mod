@@ -15,4 +15,4 @@ require (
 
 replace github.com/RangelReale/trcache => ../
 
-replace github.com/RangelReale/trcache/cache/ttlcache => ../cache/ttlcache
+replace github.com/RangelReale/trcache/cache/ttlcache => ../cache/ttlcache/

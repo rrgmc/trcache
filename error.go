@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	ErrNotFound     = errors.New("not found")     // key was not found
+	ErrNotFound     = errors.New("not found")     // key not found
 	ErrNotSupported = errors.New("not supported") // operation not supported
 )
 

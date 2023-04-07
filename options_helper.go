@@ -75,8 +75,8 @@ type OptionChecker[O IOption[TO], TO any] interface {
 	CheckCacheOptList() []IOption[TO]
 }
 
-func NewOptionChecker[O IOption[TO], TO any](options ...[]IOption[TO]) OptionChecker[O, TO] {
-	return &optionCheckerImpl[O, TO]{
+func NewOptionChecker[OA ~[]IOption[TO], TO any](options ...OA) OptionChecker[IOption[TO], TO] {
+	return &optionCheckerImpl[IOption[TO], TO]{
 		check: ConcatOptions(options...),
 	}
 }

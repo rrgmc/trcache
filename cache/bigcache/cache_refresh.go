@@ -17,7 +17,7 @@ var _ trcache.RefreshCache[string, string, string] = &RefreshCache[string, strin
 
 func NewRefresh[K comparable, V any, RD any](cache *bigcache.BigCache,
 	options ...trcache.RootOption) (*RefreshCache[K, V, RD], error) {
-	checker := trcache.NewOptionChecker[trcache.RootOption](options)
+	checker := trcache.NewOptionChecker(options)
 
 	c, err := New[K, V](cache, trcache.ForwardOptionsChecker(checker)...)
 	if err != nil {

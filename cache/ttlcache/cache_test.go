@@ -69,7 +69,6 @@ func TestCacheOptions(t *testing.T) {
 
 	c, err := New[string, string](cache,
 		WithDefaultDuration[string, string](time.Minute),
-		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCallDefaultGetOptions[string, string](
 			WithGetTouch[string, string](true),
 		),

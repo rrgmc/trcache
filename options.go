@@ -21,8 +21,8 @@ type MetricsOptions[K comparable, V any] interface {
 }
 
 //troptgen:root name=refresh
-type DefaultRefreshOptions[K comparable, V any, RD any] interface {
-	OptDefaultRefreshFunc(refreshFunc CacheRefreshFunc[K, V, RD])
+type DefaultRefreshOptions[K comparable, V any] interface {
+	OptDefaultRefreshFunc(refreshFunc CacheRefreshFunc[K, V])
 }
 
 //troptgen:root
@@ -65,16 +65,16 @@ type DeleteOptions[K comparable, V any] interface {
 // Refresh options
 //
 
-type RefreshFuncOptions[RD any] struct {
-	Data RD
+type RefreshFuncOptions struct {
+	Data any
 }
 
 //troptgen:refresh
-type RefreshOptions[K comparable, V any, RD any] interface {
-	OptData(data RD)
+type RefreshOptions[K comparable, V any] interface {
+	OptData(data any)
 	OptGetOptions(options ...GetOption)
 	OptSetOptions(options ...SetOption)
-	OptFunc(refreshFunc CacheRefreshFunc[K, V, RD])
+	OptFunc(refreshFunc CacheRefreshFunc[K, V])
 }
 
 //go:generate troptgen

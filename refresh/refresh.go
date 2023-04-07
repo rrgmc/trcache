@@ -7,12 +7,12 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
-type Helper[K comparable, V any, RD any] struct {
-	options rootOptionsImpl[K, V, RD]
+type Helper[K comparable, V any] struct {
+	options rootOptionsImpl[K, V]
 }
 
-func NewHelper[K comparable, V any, RD any](options ...trcache.RootOption) (*Helper[K, V, RD], error) {
-	ret := &Helper[K, V, RD]{}
+func NewHelper[K comparable, V any](options ...trcache.RootOption) (*Helper[K, V], error) {
+	ret := &Helper[K, V]{}
 	optErr := trcache.ParseOptions[trcache.RootOption](&ret.options, options)
 	if optErr.Err() != nil {
 		return nil, optErr.Err()
@@ -20,9 +20,9 @@ func NewHelper[K comparable, V any, RD any](options ...trcache.RootOption) (*Hel
 	return ret, nil
 }
 
-func (r *Helper[K, V, RD]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], key K,
+func (r *Helper[K, V]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], key K,
 	options ...trcache.RefreshOption) (V, error) {
-	optns := refreshOptionsImpl[K, V, RD]{
+	optns := refreshOptionsImpl[K, V]{
 		funcx: r.options.defaultRefreshFunc,
 	}
 	optErr := trcache.ParseOptions[trcache.RefreshOption](&optns, r.options.callDefaultRefreshOptions, options)
@@ -60,7 +60,7 @@ func (r *Helper[K, V, RD]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, 
 		return empty, errors.New("refresh function not set")
 	}
 
-	ret, err = optns.funcx(ctx, key, trcache.RefreshFuncOptions[RD]{
+	ret, err = optns.funcx(ctx, key, trcache.RefreshFuncOptions{
 		Data: optns.data,
 	})
 	if err != nil {

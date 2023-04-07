@@ -42,8 +42,8 @@ func ExampleCache() {
 func ExampleRefreshCache() {
 	ctx := context.Background()
 
-	cache, err := trmap.NewRefreshDefault[string, string, int](
-		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+	cache, err := trmap.NewRefreshDefault[string, string](
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),
 	)
@@ -70,7 +70,7 @@ func ExampleRefreshCache() {
 	_, err = cache.Get(ctx, "a")
 	fmt.Println(err)
 
-	v, err = cache.GetOrRefresh(ctx, "b", trcache.WithRefreshData[string, string, int](123))
+	v, err = cache.GetOrRefresh(ctx, "b", trcache.WithRefreshData[string, string](123))
 	if err != nil {
 		panic(err)
 	}

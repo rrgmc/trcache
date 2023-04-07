@@ -88,60 +88,60 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 		return false
 	}, optionName, optionHash)
 }
-func WithRefreshData[K comparable, V any, RD any](data RD) RefreshOption {
+func WithRefreshData[K comparable, V any](data interface{}) RefreshOption {
 	const optionName = "github.com/RangelReale/trcache/RefreshOptions.Data"
 	const optionHash = uint64(0x15f36f99082ff0db)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V, RD]:
+		case RefreshOptions[K, V]:
 			opt.OptData(data)
 			return true
 		}
 		return false
 	}, optionName, optionHash)
 }
-func WithRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K, V, RD]) RefreshOption {
+func WithRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) RefreshOption {
 	const optionName = "github.com/RangelReale/trcache/RefreshOptions.Func"
 	const optionHash = uint64(0x27dba799127e8249)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V, RD]:
+		case RefreshOptions[K, V]:
 			opt.OptFunc(refreshFunc)
 			return true
 		}
 		return false
 	}, optionName, optionHash)
 }
-func WithRefreshGetOptions[K comparable, V any, RD any](options ...GetOption) RefreshOption {
+func WithRefreshGetOptions[K comparable, V any](options ...GetOption) RefreshOption {
 	const optionName = "github.com/RangelReale/trcache/RefreshOptions.GetOptions"
 	const optionHash = uint64(0x8991bcf58fe8472d)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V, RD]:
+		case RefreshOptions[K, V]:
 			opt.OptGetOptions(options...)
 			return true
 		}
 		return false
 	}, optionName, optionHash)
 }
-func WithRefreshSetOptions[K comparable, V any, RD any](options ...SetOption) RefreshOption {
+func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOption {
 	const optionName = "github.com/RangelReale/trcache/RefreshOptions.SetOptions"
 	const optionHash = uint64(0x67f5357186bd5f31)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case RefreshOptions[K, V, RD]:
+		case RefreshOptions[K, V]:
 			opt.OptSetOptions(options...)
 			return true
 		}
 		return false
 	}, optionName, optionHash)
 }
-func WithDefaultRefreshFunc[K comparable, V any, RD any](refreshFunc CacheRefreshFunc[K, V, RD]) RootOption {
+func WithDefaultRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) RootOption {
 	const optionName = "github.com/RangelReale/trcache/DefaultRefreshOptions.DefaultRefreshFunc"
 	const optionHash = uint64(0x11a5dca1c92613ac)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
-		case DefaultRefreshOptions[K, V, RD]:
+		case DefaultRefreshOptions[K, V]:
 			opt.OptDefaultRefreshFunc(refreshFunc)
 			return true
 		}

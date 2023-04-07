@@ -35,14 +35,14 @@ func TestCache(t *testing.T) {
 func TestCacheRefresh(t *testing.T) {
 	ctx := context.Background()
 
-	c, err := NewRefreshDefault[string, string, int](
-		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+	c, err := NewRefreshDefault[string, string](
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),
 	)
 	require.NoError(t, err)
 
-	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string](123))
 	require.NoError(t, err)
 	require.Equal(t, "abc123", value)
 }

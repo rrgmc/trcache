@@ -4,44 +4,44 @@ package refresh
 
 import trcache "github.com/RangelReale/trcache"
 
-type rootOptionsImpl[K comparable, V any, RD any] struct {
+type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultRefreshOptions []trcache.RefreshOption
-	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V, RD]
+	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V]
 	metricsMetrics            trcache.Metrics
 	metricsName               string
 }
 
-var _ options[string, string, string] = &rootOptionsImpl[string, string, string]{}
+var _ options[string, string] = &rootOptionsImpl[string, string]{}
 
-func (o *rootOptionsImpl[K, V, RD]) OptCallDefaultRefreshOptions(options ...trcache.RefreshOption) {
+func (o *rootOptionsImpl[K, V]) OptCallDefaultRefreshOptions(options ...trcache.RefreshOption) {
 	o.callDefaultRefreshOptions = options
 }
-func (o *rootOptionsImpl[K, V, RD]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V, RD]) {
+func (o *rootOptionsImpl[K, V]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
 	o.defaultRefreshFunc = refreshFunc
 }
-func (o *rootOptionsImpl[K, V, RD]) OptMetrics(metrics trcache.Metrics, name string) {
+func (o *rootOptionsImpl[K, V]) OptMetrics(metrics trcache.Metrics, name string) {
 	o.metricsMetrics = metrics
 	o.metricsName = name
 }
 
-type refreshOptionsImpl[K comparable, V any, RD any] struct {
-	data       RD
-	funcx      trcache.CacheRefreshFunc[K, V, RD]
+type refreshOptionsImpl[K comparable, V any] struct {
+	data       interface{}
+	funcx      trcache.CacheRefreshFunc[K, V]
 	getOptions []trcache.GetOption
 	setOptions []trcache.SetOption
 }
 
-var _ refreshOptions[string, string, string] = &refreshOptionsImpl[string, string, string]{}
+var _ refreshOptions[string, string] = &refreshOptionsImpl[string, string]{}
 
-func (o *refreshOptionsImpl[K, V, RD]) OptData(data RD) {
+func (o *refreshOptionsImpl[K, V]) OptData(data interface{}) {
 	o.data = data
 }
-func (o *refreshOptionsImpl[K, V, RD]) OptFunc(refreshFunc trcache.CacheRefreshFunc[K, V, RD]) {
+func (o *refreshOptionsImpl[K, V]) OptFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
 	o.funcx = refreshFunc
 }
-func (o *refreshOptionsImpl[K, V, RD]) OptGetOptions(options ...trcache.GetOption) {
+func (o *refreshOptionsImpl[K, V]) OptGetOptions(options ...trcache.GetOption) {
 	o.getOptions = options
 }
-func (o *refreshOptionsImpl[K, V, RD]) OptSetOptions(options ...trcache.SetOption) {
+func (o *refreshOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options
 }

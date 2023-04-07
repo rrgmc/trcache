@@ -56,16 +56,16 @@ func TestChainRefresh(t *testing.T) {
 	mockCache1.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
 	mockCache2.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
 
-	c, err := NewRefresh[string, string, int]([]trcache.Cache[string, string]{
+	c, err := NewRefresh[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
-		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),
 	)
 	require.NoError(t, err)
 
-	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string](123))
 	require.NoError(t, err)
 	require.Equal(t, "abc123", value)
 }

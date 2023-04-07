@@ -99,16 +99,16 @@ func TestCacheRefresh(t *testing.T) {
 
 	gocache := cache.New(5*time.Minute, 10*time.Minute)
 
-	c, err := NewRefresh[string, string, int](gocache,
+	c, err := NewRefresh[string, string](gocache,
 		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
-		trcache.WithDefaultRefreshFunc[string, string, int](func(ctx context.Context, key string, options trcache.RefreshFuncOptions[int]) (string, error) {
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),
 	)
 	require.NoError(t, err)
 
-	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string, int](123))
+	value, err := c.GetOrRefresh(ctx, "a", trcache.WithRefreshData[string, string](123))
 	require.NoError(t, err)
 	require.Equal(t, "abc123", value)
 }

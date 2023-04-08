@@ -10,6 +10,9 @@ The wrappers are highly customizable and allows accessing the underlying cache f
 A loadable (refresh) implementation is available for all caches, which provides a "GetOrRefresh" method which
 calls a refresh function if the data was not found in "Get".
 
+A [chain](https://pkg.go.dev/github.com/RangelReale/trcache/cache/chain) implementation is available to chain
+multiples caches in sequence, for example to use an in-memory cache with a lower TTL before calling a Redis backend.
+
 ## Installation
 
 ```go

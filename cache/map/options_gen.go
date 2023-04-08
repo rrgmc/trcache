@@ -3,8 +3,9 @@
 package trmap
 
 import (
-	trcache "github.com/RangelReale/trcache"
 	"time"
+
+	trcache "github.com/RangelReale/trcache"
 )
 
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {

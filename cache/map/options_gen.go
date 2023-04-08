@@ -3,14 +3,13 @@
 package trmap
 
 import (
-	"time"
-
 	trcache "github.com/RangelReale/trcache"
+	"time"
 )
 
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/map/options.Validator"
-	const optionHash = uint64(0xb09fb791b089f6ff)
+	const optionName = "github.com/RangelReale/trcache/cache/map/options.Validator"
+	const optionHash = uint64(0x8e4bac8c480a9c30)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
 		case options[K, V]:

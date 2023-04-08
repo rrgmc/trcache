@@ -7,16 +7,22 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// func TestOptions1(t *testing.T) {
-// 	var opt Option
-// 	opt = NewOptionChecker()
-//
-// 	if oc, ok := opt.(optionCheckerImpl); ok {
-//
-// 	}
-// }
+func TestOptions(t *testing.T) {
+	options := testOptions1Impl[string, string]{}
+	optionsParam := []trcache.RootOption{
+		With1Test13{},
+		With1Test11[string, string]("test11"),
+		With1Test12[string, string](12),
+	}
 
-func TestOptionsRecursive(t *testing.T) {
+	err := trcache.ParseOptions(&options, optionsParam)
+	require.NoError(t, err.Err())
+
+	require.Equal(t, "test11", options.test11)
+	require.Equal(t, 12, options.test12)
+}
+
+func TestOptionsError(t *testing.T) {
 	options := testOptions1Impl[string, string]{}
 	optionsParam := []trcache.RootOption{
 		With1Test13{},
@@ -24,16 +30,45 @@ func TestOptionsRecursive(t *testing.T) {
 		With1Test12[string, string](12),
 		With2Test21[string, string]("test21"),
 		With2Test22[string, string](22),
-		// WithGet1Test115[string, string]("aaa"),
 	}
 
 	err := trcache.ParseOptions(&options, optionsParam)
 	require.Error(t, err.Err())
+}
+
+func TestOptionsChecker(t *testing.T) {
+	options := testOptions1Impl[string, string]{}
+	optionsParam := []trcache.RootOption{
+		With1Test13{},
+		With1Test11[string, string]("test11"),
+		With1Test12[string, string](12),
+	}
 
 	checker := trcache.NewOptionChecker(optionsParam)
 
-	err = trcache.ParseOptionsChecker(checker, &options)
+	err := trcache.ParseOptionsChecker(checker, &options)
 	require.NoError(t, err.Err())
+	require.NoError(t, checker.CheckCacheError())
+
+	require.Equal(t, "test11", options.test11)
+	require.Equal(t, 12, options.test12)
+}
+
+func TestOptionsCheckerError(t *testing.T) {
+	options := testOptions1Impl[string, string]{}
+	optionsParam := []trcache.RootOption{
+		With1Test13{},
+		With1Test11[string, string]("test11"),
+		With1Test12[string, string](12),
+		With2Test21[string, string]("test21"),
+		With2Test22[string, string](22),
+	}
+
+	checker := trcache.NewOptionChecker(optionsParam)
+
+	err := trcache.ParseOptionsChecker(checker, &options)
+	require.NoError(t, err.Err())
+	require.Error(t, checker.CheckCacheError())
 }
 
 // Test Options 1

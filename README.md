@@ -96,15 +96,15 @@ fmt.Println(v)
 
 ## Implementations
 
-- Go `map`: [https://pkg.go.dev/github.com/RangelReale/trcache/cache/map](https://pkg.go.dev/github.com/RangelReale/trcache/cache/map)
-- Chain (uses an ordered list of caches): [https://pkg.go.dev/github.com/RangelReale/trcache/cache/chain](https://pkg.go.dev/github.com/RangelReale/trcache/cache/chain)
-- bigcache: [https://pkg.go.dev/github.com/RangelReale/trcache/cache/bigcache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/bigcache)
-- freecache: [https://pkg.go.dev/github.com/RangelReale/trcache/cache/freecache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/freecache)
-- gocache: [https://pkg.go.dev/github.com/RangelReale/trcache/cache/gocache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/gocache)
-- ristretto: [https://pkg.go.dev/github.com/RangelReale/trcache/cache/ristretto](https://pkg.go.dev/github.com/RangelReale/trcache/cache/ristretto)
-- ttlcache: [https://pkg.go.dev/github.com/RangelReale/trcache/cache/ttlcache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/ttlcache)
-- goredis: [https://github.com/RangelReale/trcache-goredis](https://github.com/RangelReale/trcache-goredis)
-- rueidis: [https://github.com/RangelReale/trcache-rueidis](https://github.com/RangelReale/trcache-rueidis)
+- Go `map`: [github.com/RangelReale/trcache/cache/map](https://pkg.go.dev/github.com/RangelReale/trcache/cache/map)
+- Chain (ordered list of caches): [github.com/RangelReale/trcache/cache/chain](https://pkg.go.dev/github.com/RangelReale/trcache/cache/chain)
+- bigcache: [github.com/RangelReale/trcache/cache/bigcache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/bigcache)
+- freecache: [github.com/RangelReale/trcache/cache/freecache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/freecache)
+- gocache: [github.com/RangelReale/trcache/cache/gocache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/gocache)
+- ristretto: [github.com/RangelReale/trcache/cache/ristretto](https://pkg.go.dev/github.com/RangelReale/trcache/cache/ristretto)
+- ttlcache: [github.com/RangelReale/trcache/cache/ttlcache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/ttlcache)
+- goredis: [github.com/RangelReale/trcache-goredis](https://github.com/RangelReale/trcache-goredis)
+- rueidis: [github.com/RangelReale/trcache-rueidis](https://github.com/RangelReale/trcache-rueidis)
 
 ## Author
 

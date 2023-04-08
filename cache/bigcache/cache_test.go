@@ -21,7 +21,6 @@ func TestCache(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
-		// trcache.WithSetDuration[string, string](time.Minute),
 		WithDefaultDuration[string, string](time.Minute),
 		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 	)
@@ -58,8 +57,8 @@ func TestCacheValidator(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
-		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
+		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithValidator[string, string](mockValidator),
 	)
 	require.NoError(t, err)
@@ -78,8 +77,8 @@ func TestCacheOptions(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
-		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
+		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		trcache.WithCallDefaultGetOptions[string, string](),
 	)
 	require.NoError(t, err)
@@ -108,8 +107,8 @@ func TestCacheJSONCodec(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
-		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
+		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 	)
 	require.NoError(t, err)
 
@@ -128,8 +127,8 @@ func TestCacheJSONCodecInt(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, int](cache,
-		WithValueCodec[string, int](codec.NewJSONCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
+		WithValueCodec[string, int](codec.NewJSONCodec[int]()),
 	)
 	require.NoError(t, err)
 
@@ -148,8 +147,8 @@ func TestCacheCodecInvalidInt(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, int](cache,
-		WithValueCodec[string, int](codec.NewForwardCodec[int]()),
 		WithDefaultDuration[string, int](time.Minute),
+		WithValueCodec[string, int](codec.NewForwardCodec[int]()),
 	)
 	require.NoError(t, err)
 
@@ -164,8 +163,8 @@ func TestCacheRefresh(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := NewRefresh[string, string](cache,
-		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
+		WithValueCodec[string, string](codec.NewJSONCodec[string]()),
 		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),

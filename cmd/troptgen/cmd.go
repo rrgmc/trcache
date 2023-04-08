@@ -90,6 +90,11 @@ func runMain() error {
 				continue
 			}
 
+			stinterface, ok := stype.typ.Type.(*ast.InterfaceType)
+			if !ok {
+				continue
+			}
+
 			// root, get, set, delete, refresh
 			directiveList := strings.Split(strings.TrimSpace(strings.TrimPrefix(stype.comment.Text, directive)), " ")
 			var directiveCmd string
@@ -207,6 +212,9 @@ func runMain() error {
 				defaultMethodName := fmt.Sprintf("With%s%s", UCDefaultDirectiveCMDOptional, baseMethodName)
 				fsig := method.Type().(*types.Signature)
 
+				methodDoc := getMethodComments(stinterface, method.Name())
+				methodDoc = strings.Replace(methodDoc, method.Name(), methodName, 1)
+
 				if isImpl && fsig.Params().Len() > 0 {
 					// add implementation field to struct
 					implFieldName := makeFirstLowerCase(baseMethodName)
@@ -247,6 +255,12 @@ func runMain() error {
 				}
 
 				// generate a "With" function for each interface method
+				if methodDoc != "" {
+					optionsfuncs[directiveCmd].Add(
+						jen.Comment(methodDoc),
+					)
+				}
+
 				optionsfuncs[directiveCmd].Add(
 					jen.Func().Id(methodName).
 						Add(FromTypeParams(namedType.TypeParams())).
@@ -407,6 +421,30 @@ func findAnnotation(doc *ast.CommentGroup) *ast.Comment {
 	}
 
 	return nil
+}
+
+func getMethodComments(intf *ast.InterfaceType, method string) string {
+	for _, field := range intf.Methods.List {
+		found := false
+		for _, name := range field.Names {
+			if name.Name == method {
+				found = true
+				break
+			}
+		}
+		if !found {
+			continue
+		}
+
+		var ret []string
+		if field.Doc != nil {
+			for _, doc := range field.Doc.List {
+				ret = append(ret, strings.TrimSpace(strings.TrimPrefix(doc.Text, "//")))
+			}
+		}
+		return strings.Join(ret, "\n")
+	}
+	return ""
 }
 
 func checkIsImpl(interfaceType *types.Interface, UCDirectiveCMD string, firstLevel bool) (isImpl bool, isImplFirstLevel bool) {

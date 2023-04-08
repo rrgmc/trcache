@@ -19,7 +19,7 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 	ret := &Chain[K, V]{
 		caches: cache,
 	}
-	optErr := trcache.ParseOptions[trcache.RootOption](&ret.options, options)
+	optErr := trcache.ParseOptions(&ret.options, options)
 	if optErr.Err() != nil {
 		return nil, optErr.Err()
 	}

@@ -10,8 +10,8 @@ import (
 // the parameters was not accepted.
 // If options of [OptionChecker] type exist in the list, the error is reported to them instead of being returned to
 // the caller. See [OptionChecker] for details.
-func ParseOptions[O IOption[TO], TO any](obj any, options ...[]IOption[TO]) ParseOptionsResult {
-	checkers := parseOptionsCheckers[O, TO](options...)
+func ParseOptions[OA ~[]IOption[TO], TO any](obj any, options ...OA) ParseOptionsResult {
+	checkers := parseOptionsCheckers(options...)
 
 	var err error
 	for _, optinstance := range options {
@@ -62,7 +62,7 @@ func ConcatOptions[S ~[]O, O Option](options ...S) S {
 
 // ParseOptionsChecker parses the options using the passed [OptionChecker] to report usage.
 func ParseOptionsChecker[O IOption[TO], TO any](checker OptionChecker[O, TO], obj any) ParseOptionsResult {
-	return ParseOptions[IOption[TO], TO](obj, ConcatOptionsChecker[O, TO](checker, checker.CheckCacheOptList()))
+	return ParseOptions(obj, ConcatOptionsChecker[O, TO](checker, checker.CheckCacheOptList()))
 }
 
 // ConcatOptionsChecker concatenates multiple option lists and prepends an [OptionChecker] to it.
@@ -136,11 +136,11 @@ func (o *optionCheckerImpl[O, TO]) CheckCacheOptList() []IOption[TO] {
 }
 
 // parseOptionsCheckers returns [OptionChecker] implementations from a list of options.
-func parseOptionsCheckers[O IOption[TO], TO any](options ...[]IOption[TO]) []OptionChecker[O, TO] {
-	var checkers []OptionChecker[O, TO]
+func parseOptionsCheckers[OA ~[]IOption[TO], TO any](options ...OA) []OptionChecker[IOption[TO], TO] {
+	var checkers []OptionChecker[IOption[TO], TO]
 	for _, optinstance := range options {
 		for _, opt := range optinstance {
-			if oc, ok := any(opt).(OptionChecker[O, TO]); ok {
+			if oc, ok := any(opt).(OptionChecker[IOption[TO], TO]); ok {
 				checkers = append(checkers, oc)
 			}
 		}

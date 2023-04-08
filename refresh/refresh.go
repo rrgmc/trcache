@@ -13,7 +13,7 @@ type Helper[K comparable, V any] struct {
 
 func NewHelper[K comparable, V any](options ...trcache.RootOption) (*Helper[K, V], error) {
 	ret := &Helper[K, V]{}
-	optErr := trcache.ParseOptions[trcache.RootOption](&ret.options, options)
+	optErr := trcache.ParseOptions(&ret.options, options)
 	if optErr.Err() != nil {
 		return nil, optErr.Err()
 	}
@@ -25,7 +25,7 @@ func (r *Helper[K, V]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], 
 	optns := refreshOptionsImpl[K, V]{
 		funcx: r.options.defaultRefreshFunc,
 	}
-	optErr := trcache.ParseOptions[trcache.RefreshOption](&optns, r.options.callDefaultRefreshOptions, options)
+	optErr := trcache.ParseOptions(&optns, r.options.callDefaultRefreshOptions, options)
 	if optErr.Err() != nil {
 		var empty V
 		return empty, optErr.Err()

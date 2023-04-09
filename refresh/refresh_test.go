@@ -2,6 +2,7 @@ package refresh
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -38,6 +39,75 @@ func TestRefresh(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "123", value)
+}
+
+func TestNoLoader(t *testing.T) {
+	mockCache := mocks.NewCache[string, string](t)
+
+	// get will not find
+	mockCache.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("", trcache.ErrNotFound)
+
+	helper, err := NewHelper[string, string]()
+	require.NoError(t, err)
+
+	ctx := context.Background()
+
+	_, err = helper.GetOrRefresh(ctx, mockCache, "a")
+	require.Error(t, err)
+}
+
+func TestGetError(t *testing.T) {
+	mockCache := mocks.NewCache[string, string](t)
+
+	getErr := errors.New("get error")
+
+	// get will error
+	mockCache.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("", getErr)
+
+	helper, err := NewHelper[string, string](
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string,
+			options trcache.RefreshFuncOptions) (string, error) {
+			return "123", nil
+		}),
+	)
+	require.NoError(t, err)
+
+	ctx := context.Background()
+
+	_, err = helper.GetOrRefresh(ctx, mockCache, "a")
+	require.ErrorIs(t, err, getErr)
+}
+
+func TestSetError(t *testing.T) {
+	mockCache := mocks.NewCache[string, string](t)
+
+	setErr := errors.New("set error")
+
+	// get will not find
+	mockCache.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("", trcache.ErrNotFound)
+	// set will error
+	mockCache.EXPECT().
+		Set(mock.Anything, "a", "123").
+		Return(setErr)
+
+	helper, err := NewHelper[string, string](
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string,
+			options trcache.RefreshFuncOptions) (string, error) {
+			return "123", nil
+		}),
+	)
+	require.NoError(t, err)
+
+	ctx := context.Background()
+
+	_, err = helper.GetOrRefresh(ctx, mockCache, "a")
+	require.Error(t, setErr)
 }
 
 func TestCustomLoader(t *testing.T) {

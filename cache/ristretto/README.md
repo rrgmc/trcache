@@ -15,10 +15,10 @@ This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [Ristret
 
 ### wrapper
 
-| info              |                   |
-|-------------------|-------------------|
-| Default codec     | `NewForwardCodec` |
-| Default key codec | N/A               |
+| info              |                |
+|-------------------|----------------|
+| Default codec     | `ForwardCodec` |
+| Default key codec | N/A            |
 
 ## Installation
 

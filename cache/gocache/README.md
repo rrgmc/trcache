@@ -15,10 +15,10 @@ This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [go-cach
 
 ### wrapper
 
-| info              |                   |
-|-------------------|-------------------|
-| Default codec     | `NewForwardCodec` |
-| Default key codec | `StringKeyCodec`  |
+| info              |                  |
+|-------------------|------------------|
+| Default codec     | `ForwardCodec`   |
+| Default key codec | `StringKeyCodec` |
 
 ## Installation
 

@@ -65,7 +65,7 @@ func (c *Cache[K, V]) Get(ctx context.Context, key K,
 		return empty, trcache.ErrNotFound
 	}
 
-	dec, err := c.options.valueCodec.Unmarshal(ctx, value)
+	dec, err := c.options.valueCodec.Decode(ctx, value)
 	if err != nil {
 		var empty V
 		return empty, trcache.CodecError{err}
@@ -91,7 +91,7 @@ func (c *Cache[K, V]) Set(ctx context.Context, key K, value V,
 		return optErr.Err()
 	}
 
-	enc, err := c.options.valueCodec.Marshal(ctx, value)
+	enc, err := c.options.valueCodec.Encode(ctx, value)
 	if err != nil {
 		return trcache.CodecError{err}
 	}

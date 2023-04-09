@@ -20,10 +20,10 @@ func NewFuncCodec[V any](marshal func(ctx context.Context, data V) (any, error),
 	}
 }
 
-func (c FuncCodec[V]) Marshal(ctx context.Context, data V) (any, error) {
+func (c FuncCodec[V]) Encode(ctx context.Context, data V) (any, error) {
 	return c.m(ctx, data)
 }
 
-func (c FuncCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
+func (c FuncCodec[V]) Decode(ctx context.Context, data any) (V, error) {
 	return c.u(ctx, data)
 }

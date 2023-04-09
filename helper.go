@@ -9,8 +9,8 @@ type KeyCodec[K comparable] interface {
 
 // Codec is a codec to convert a cache value the requested type.
 type Codec[V any] interface {
-	Marshal(ctx context.Context, data V) (any, error)
-	Unmarshal(ctx context.Context, data any) (V, error)
+	Encode(ctx context.Context, data V) (any, error)
+	Decode(ctx context.Context, data any) (V, error)
 }
 
 // Validator allows validating data retrieved from the cache, allowing to check for a previous format for example.

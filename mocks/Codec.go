@@ -22,7 +22,7 @@ func (_m *Codec[V]) EXPECT() *Codec_Expecter[V] {
 }
 
 // Marshal provides a mock function with given fields: ctx, data
-func (_m *Codec[V]) Marshal(ctx context.Context, data V) (interface{}, error) {
+func (_m *Codec[V]) Encode(ctx context.Context, data V) (interface{}, error) {
 	ret := _m.Called(ctx, data)
 
 	var r0 interface{}
@@ -47,7 +47,7 @@ func (_m *Codec[V]) Marshal(ctx context.Context, data V) (interface{}, error) {
 	return r0, r1
 }
 
-// Codec_Marshal_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Marshal'
+// Codec_Marshal_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Encode'
 type Codec_Marshal_Call[V interface{}] struct {
 	*mock.Call
 }
@@ -56,7 +56,7 @@ type Codec_Marshal_Call[V interface{}] struct {
 //   - ctx context.Context
 //   - data V
 func (_e *Codec_Expecter[V]) Marshal(ctx interface{}, data interface{}) *Codec_Marshal_Call[V] {
-	return &Codec_Marshal_Call[V]{Call: _e.mock.On("Marshal", ctx, data)}
+	return &Codec_Marshal_Call[V]{Call: _e.mock.On("Encode", ctx, data)}
 }
 
 func (_c *Codec_Marshal_Call[V]) Run(run func(ctx context.Context, data V)) *Codec_Marshal_Call[V] {
@@ -77,7 +77,7 @@ func (_c *Codec_Marshal_Call[V]) RunAndReturn(run func(context.Context, V) (inte
 }
 
 // Unmarshal provides a mock function with given fields: ctx, data
-func (_m *Codec[V]) Unmarshal(ctx context.Context, data interface{}) (V, error) {
+func (_m *Codec[V]) Decode(ctx context.Context, data interface{}) (V, error) {
 	ret := _m.Called(ctx, data)
 
 	var r0 V
@@ -100,7 +100,7 @@ func (_m *Codec[V]) Unmarshal(ctx context.Context, data interface{}) (V, error) 
 	return r0, r1
 }
 
-// Codec_Unmarshal_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Unmarshal'
+// Codec_Unmarshal_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Decode'
 type Codec_Unmarshal_Call[V interface{}] struct {
 	*mock.Call
 }
@@ -109,7 +109,7 @@ type Codec_Unmarshal_Call[V interface{}] struct {
 //   - ctx context.Context
 //   - data interface{}
 func (_e *Codec_Expecter[V]) Unmarshal(ctx interface{}, data interface{}) *Codec_Unmarshal_Call[V] {
-	return &Codec_Unmarshal_Call[V]{Call: _e.mock.On("Unmarshal", ctx, data)}
+	return &Codec_Unmarshal_Call[V]{Call: _e.mock.On("Decode", ctx, data)}
 }
 
 func (_c *Codec_Unmarshal_Call[V]) Run(run func(ctx context.Context, data interface{})) *Codec_Unmarshal_Call[V] {

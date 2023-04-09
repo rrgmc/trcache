@@ -15,11 +15,11 @@ func NewForwardCodec[V any]() trcache.Codec[V] {
 	return ForwardCodec[V]{}
 }
 
-func (c ForwardCodec[V]) Marshal(ctx context.Context, data V) (any, error) {
+func (c ForwardCodec[V]) Encode(ctx context.Context, data V) (any, error) {
 	return data, nil
 }
 
-func (c ForwardCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
+func (c ForwardCodec[V]) Decode(ctx context.Context, data any) (V, error) {
 	switch dt := data.(type) {
 	case V:
 		return dt, nil

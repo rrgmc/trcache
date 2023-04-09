@@ -25,7 +25,7 @@ func NewJSONCodec[V any](options ...JSONCodecOption) trcache.Codec[V] {
 	return ret
 }
 
-func (c JSONCodec[V]) Marshal(ctx context.Context, data V) (any, error) {
+func (c JSONCodec[V]) Encode(ctx context.Context, data V) (any, error) {
 	ret, err := json.Marshal(data)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (c JSONCodec[V]) Marshal(ctx context.Context, data V) (any, error) {
 	return ret, nil
 }
 
-func (c JSONCodec[V]) Unmarshal(ctx context.Context, data any) (V, error) {
+func (c JSONCodec[V]) Decode(ctx context.Context, data any) (V, error) {
 	var ret V
 	var udata []byte
 

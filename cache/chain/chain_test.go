@@ -19,19 +19,26 @@ func TestChain(t *testing.T) {
 	mockCache3 := mocks.NewCache[string, string](t)
 
 	// first cache will not find
-	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("", trcache.ErrNotFound)
+	mockCache1.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("", trcache.ErrNotFound)
 	// second cache will find
-	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("12", nil)
+	mockCache2.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("12", nil)
 
 	// first cache will receive the found value
-	mockCache1.EXPECT().Set(mock.Anything, "a", "12", mock.Anything).Return(nil)
+	mockCache1.EXPECT().
+		Set(mock.Anything, "a", "12", mock.Anything).
+		Return(nil)
 
 	c, err := New[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2, mockCache3,
 	},
-		trcache.WithCallDefaultGetOptions[string, string](
-			WithGetGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
-		),
+		// set all default strategies
+		WithGetStrategy[string, string](&GetStrategyGetFirstSetPrevious[string, string]{}),
+		WithSetStrategy[string, string](&SetStrategySetAll[string, string]{}),
+		WithDeleteStrategy[string, string](&DeleteStrategyDeleteAll[string, string]{}),
 	)
 	require.NoError(t, err)
 
@@ -47,19 +54,28 @@ func TestChainRefresh(t *testing.T) {
 	mockCache2 := mocks.NewCache[string, string](t)
 
 	// no cache will find
-	mockCache1.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("", trcache.ErrNotFound)
-	mockCache2.EXPECT().Get(mock.Anything, "a", mock.Anything, mock.Anything).Return("", trcache.ErrNotFound)
+	mockCache1.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("", trcache.ErrNotFound)
+	mockCache2.EXPECT().
+		Get(mock.Anything, "a", mock.Anything, mock.Anything).
+		Return("", trcache.ErrNotFound)
 
 	// refresh will be called
 
 	// all cache will be set
-	mockCache1.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
-	mockCache2.EXPECT().Set(mock.Anything, "a", "abc123", mock.Anything).Return(nil)
+	mockCache1.EXPECT().
+		Set(mock.Anything, "a", "abc123", mock.Anything).
+		Return(nil)
+	mockCache2.EXPECT().
+		Set(mock.Anything, "a", "abc123", mock.Anything).
+		Return(nil)
 
 	c, err := NewRefresh[string, string]([]trcache.Cache[string, string]{
 		mockCache1, mockCache2,
 	},
-		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
+		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string,
+			options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil
 		}),
 	)

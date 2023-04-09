@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/RangelReale/trcache v0.10.1
-	github.com/RangelReale/trcache/mocks v0.10.1
 	github.com/stretchr/testify v1.8.2
 	go.uber.org/multierr v1.10.0
 )
@@ -17,5 +16,3 @@ require (
 )
 
 replace github.com/RangelReale/trcache => ../..
-
-replace github.com/RangelReale/trcache/mocks => ../../mocks

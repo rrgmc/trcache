@@ -15,5 +15,3 @@ require (
 )
 
 replace github.com/RangelReale/trcache => ../..
-
-replace github.com/RangelReale/trcache/mocks => ../../mocks

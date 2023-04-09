@@ -27,7 +27,7 @@ func New[K comparable, V any](cache *bigcache.BigCache,
 		return nil, optErr.Err()
 	}
 	if ret.options.valueCodec == nil {
-		return nil, errors.New("value codec is required")
+		ret.options.valueCodec = codec.NewGOBCodec[V]()
 	}
 	if ret.options.keyCodec == nil {
 		ret.options.keyCodec = codec.NewStringKeyCodec[K]()

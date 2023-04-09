@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/codec"
 	"github.com/RangelReale/trcache/mocks"
 	"github.com/patrickmn/go-cache"
 	"github.com/stretchr/testify/mock"
@@ -21,7 +20,6 @@ func TestCache(t *testing.T) {
 
 	c, err := New[string, string](gocache,
 		WithDefaultDuration[string, string](time.Minute),
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 	)
 	require.NoError(t, err)
 
@@ -52,7 +50,6 @@ func TestCacheValidator(t *testing.T) {
 		Once()
 
 	c, err := New[string, string](cache.New(5*time.Minute, 10*time.Minute),
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 		WithValidator[string, string](mockValidator),
 	)
@@ -71,9 +68,7 @@ func TestCacheOptions(t *testing.T) {
 	gocache := cache.New(5*time.Minute, 10*time.Minute)
 
 	c, err := New[string, string](gocache,
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
-		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCallDefaultGetOptions[string, string](),
 	)
 	require.NoError(t, err)
@@ -100,7 +95,6 @@ func TestCacheRefresh(t *testing.T) {
 	gocache := cache.New(5*time.Minute, 10*time.Minute)
 
 	c, err := NewRefresh[string, string](gocache,
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil

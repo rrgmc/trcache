@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/codec"
 	"github.com/RangelReale/trcache/mocks"
 	"github.com/dgraph-io/ristretto"
 	"github.com/stretchr/testify/mock"
@@ -26,7 +25,6 @@ func TestCache(t *testing.T) {
 
 	c, err := New[string, string](cache,
 		WithDefaultDuration[string, string](time.Minute),
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 	)
 	require.NoError(t, err)
 
@@ -64,7 +62,6 @@ func TestCacheValidator(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 		WithValidator[string, string](mockValidator),
 	)
@@ -88,9 +85,7 @@ func TestCacheOptions(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := New[string, string](cache,
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
-		// redis.WithDefaultDuration[string, string](time.Minute),
 		trcache.WithCallDefaultGetOptions[string, string](),
 	)
 	require.NoError(t, err)
@@ -122,7 +117,6 @@ func TestCacheRefresh(t *testing.T) {
 	require.NoError(t, err)
 
 	c, err := NewRefresh[string, string](cache,
-		WithValueCodec[string, string](codec.NewForwardCodec[string]()),
 		WithDefaultDuration[string, string](time.Minute),
 		trcache.WithDefaultRefreshFunc[string, string](func(ctx context.Context, key string, options trcache.RefreshFuncOptions) (string, error) {
 			return fmt.Sprintf("abc%d", options.Data), nil

@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/RangelReale/trcache"
+	"github.com/RangelReale/trcache/codec"
 	"github.com/dgraph-io/ristretto"
 )
 
@@ -26,7 +27,7 @@ func New[K comparable, V any](cache *ristretto.Cache,
 		return nil, optErr.Err()
 	}
 	if ret.options.valueCodec == nil {
-		return nil, errors.New("value codec is required")
+		ret.options.valueCodec = codec.NewForwardCodec[V]()
 	}
 	return ret, nil
 }

@@ -2,7 +2,6 @@ package trgocache
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/RangelReale/trcache"
@@ -28,7 +27,7 @@ func New[K comparable, V any](cache *cache.Cache,
 		return nil, optErr.Err()
 	}
 	if ret.options.valueCodec == nil {
-		return nil, errors.New("value codec is required")
+		ret.options.valueCodec = codec.NewForwardCodec[V]()
 	}
 	if ret.options.keyCodec == nil {
 		ret.options.keyCodec = codec.NewStringKeyCodec[K]()

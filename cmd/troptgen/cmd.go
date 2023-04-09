@@ -439,7 +439,7 @@ func getMethodComments(intf *ast.InterfaceType, method string) string {
 		var ret []string
 		if field.Doc != nil {
 			for _, doc := range field.Doc.List {
-				ret = append(ret, strings.TrimSpace(strings.TrimPrefix(doc.Text, "//")))
+				ret = append(ret, doc.Text)
 			}
 		}
 		return strings.Join(ret, "\n")

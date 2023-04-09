@@ -7,10 +7,8 @@ import (
 	"time"
 )
 
-/*
-WithDeleteStrategy sets the [DeleteStrategy] to use for the chain operation. The default is
-[DeleteStrategyDeleteAll].
-*/
+// WithDeleteStrategy sets the [DeleteStrategy] to use for the chain operation. The default is
+// [DeleteStrategyDeleteAll].
 func WithDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/options.DeleteStrategy"
 	const optionHash = uint64(0x9611f18cf7185dfb)
@@ -24,10 +22,8 @@ func WithDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]
 	}, optionName, optionHash)
 }
 
-/*
-WithGetStrategy sets the [GetStrategy] to use for the chain operation. The default is
-[GetStrategyGetFirstSetPrevious].
-*/
+// WithGetStrategy sets the [GetStrategy] to use for the chain operation. The default is
+// [GetStrategyGetFirstSetPrevious].
 func WithGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/options.GetStrategy"
 	const optionHash = uint64(0x6eeb406b2a0672b8)
@@ -41,10 +37,8 @@ func WithGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache
 	}, optionName, optionHash)
 }
 
-/*
-WithSetStrategy sets the [SetStrategy] to use for the chain operation. The default is
-[SetStrategySetAll].
-*/
+// WithSetStrategy sets the [SetStrategy] to use for the chain operation. The default is
+// [SetStrategySetAll].
 func WithSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache.RootOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/options.SetStrategy"
 	const optionHash = uint64(0x1dcc48665967d4c)

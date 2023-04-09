@@ -60,19 +60,25 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 	for cacheIdx, cache := range c.caches {
 		switch c.options.getStrategy.BeforeGet(ctx, cacheIdx, cache, key) {
-		case GetStrategyBeforeResultSkip:
+		case GetStrategyBeforeResultSKIP:
 			continue
-		case GetStrategyBeforeResultGet:
+		case GetStrategyBeforeResultGET:
 			break
+		default:
+			var empty V
+			return empty, ErrInvalidStrategyResult
 		}
 
 		value, err := cache.Get(ctx, key, trcache.ForwardOptionsChecker(getChecker)...)
 
 		switch c.options.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err) {
-		case GetStrategyAfterResultSkip:
+		case GetStrategyAfterResultSKIP:
 			continue
-		case GetStrategyAfterResultReturn:
+		case GetStrategyAfterResultRETURN:
 			break
+		default:
+			var empty V
+			return empty, ErrInvalidStrategyResult
 		}
 
 		gotCacheIdx = cacheIdx
@@ -99,19 +105,25 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
 		switch c.options.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
-		case GetStrategyBeforeSetResultSkip:
+		case GetStrategyBeforeSetResultSKIP:
 			continue
-		case GetStrategyBeforeSetResultSet:
+		case GetStrategyBeforeSetResultSET:
 			break
+		default:
+			var empty V
+			return empty, ErrInvalidStrategyResult
 		}
 
 		err := c.caches[cacheIdx].Set(ctx, key, ret, trcache.ForwardOptionsChecker(setChecker)...)
 
 		switch c.options.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err) {
-		case GetStrategyAfterSetResultReturn:
+		case GetStrategyAfterSetResultRETURN:
 			return ret, err
-		case GetStrategyAfterSetResultContinue:
+		case GetStrategyAfterSetResultCONTINUE:
 			break
+		default:
+			var empty V
+			return empty, ErrInvalidStrategyResult
 		}
 	}
 
@@ -139,21 +151,25 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	success := false
 	for cacheIdx, cache := range c.caches {
 		switch c.options.setStrategy.BeforeSet(ctx, cacheIdx, cache, key, value) {
-		case SetStrategyBeforeResultSkip:
+		case SetStrategyBeforeResultSKIP:
 			continue
-		case SetStrategyBeforeResultSet:
+		case SetStrategyBeforeResultSET:
 			break
+		default:
+			return ErrInvalidStrategyResult
 		}
 
 		err := cache.Set(ctx, key, value, trcache.ForwardOptionsChecker(checker)...)
 
 		switch c.options.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err) {
-		case SetStrategyAfterResultReturn:
+		case SetStrategyAfterResultRETURN:
 			return err
-		case SetStrategyAfterResultContinueWithError:
+		case SetStrategyAfterResultCONTINUEWITHERROR:
 			reterr = multierr.Append(reterr, err)
-		case SetStrategyAfterResultContinue:
+		case SetStrategyAfterResultCONTINUE:
 			break
+		default:
+			return ErrInvalidStrategyResult
 		}
 
 		if err != nil {
@@ -192,21 +208,25 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 	success := false
 	for cacheIdx, cache := range c.caches {
 		switch c.options.deleteStrategy.BeforeDelete(ctx, cacheIdx, cache, key) {
-		case DeleteStrategyBeforeResultSkip:
+		case DeleteStrategyBeforeResultSKIP:
 			continue
-		case DeleteStrategyBeforeResultDelete:
+		case DeleteStrategyBeforeResultDELETE:
 			break
+		default:
+			return ErrInvalidStrategyResult
 		}
 
 		err := cache.Delete(ctx, key, trcache.ForwardOptionsChecker(checker)...)
 
 		switch c.options.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err) {
-		case DeleteStrategyAfterResultReturn:
+		case DeleteStrategyAfterResultRETURN:
 			return err
-		case DeleteStrategyAfterResultContinueWithError:
+		case DeleteStrategyAfterResultCONTINUEWITHERROR:
 			reterr = multierr.Append(reterr, err)
-		case DeleteStrategyAfterResultContinue:
+		case DeleteStrategyAfterResultCONTINUE:
 			break
+		default:
+			return ErrInvalidStrategyResult
 		}
 
 		if err != nil {

@@ -2,6 +2,10 @@ package chain
 
 import "errors"
 
+var (
+	ErrInvalidStrategyResult = errors.New("invalid strategy result")
+)
+
 type ChainErrorType int
 
 const (

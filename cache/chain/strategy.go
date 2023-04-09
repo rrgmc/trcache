@@ -14,23 +14,23 @@ type GetStrategyBeforeSetResult int
 type GetStrategyAfterSetResult int
 
 const (
-	GetStrategyBeforeResultGet GetStrategyBeforeResult = iota
-	GetStrategyBeforeResultSkip
+	GetStrategyBeforeResultGET GetStrategyBeforeResult = iota
+	GetStrategyBeforeResultSKIP
 )
 
 const (
-	GetStrategyAfterResultReturn GetStrategyAfterResult = iota
-	GetStrategyAfterResultSkip
+	GetStrategyAfterResultRETURN GetStrategyAfterResult = iota
+	GetStrategyAfterResultSKIP
 )
 
 const (
-	GetStrategyBeforeSetResultSet GetStrategyBeforeSetResult = iota
-	GetStrategyBeforeSetResultSkip
+	GetStrategyBeforeSetResultSET GetStrategyBeforeSetResult = iota
+	GetStrategyBeforeSetResultSKIP
 )
 
 const (
-	GetStrategyAfterSetResultContinue GetStrategyAfterSetResult = iota
-	GetStrategyAfterSetResultReturn
+	GetStrategyAfterSetResultCONTINUE GetStrategyAfterSetResult = iota
+	GetStrategyAfterSetResultRETURN
 )
 
 type GetStrategy[K comparable, V any] interface {
@@ -69,14 +69,14 @@ type SetStrategyBeforeResult int
 type SetStrategyAfterResult int
 
 const (
-	SetStrategyBeforeResultSet SetStrategyBeforeResult = iota
-	SetStrategyBeforeResultSkip
+	SetStrategyBeforeResultSET SetStrategyBeforeResult = iota
+	SetStrategyBeforeResultSKIP
 )
 
 const (
-	SetStrategyAfterResultContinue SetStrategyAfterResult = iota
-	SetStrategyAfterResultReturn
-	SetStrategyAfterResultContinueWithError
+	SetStrategyAfterResultCONTINUE SetStrategyAfterResult = iota
+	SetStrategyAfterResultRETURN
+	SetStrategyAfterResultCONTINUEWITHERROR
 )
 
 type SetStrategy[K comparable, V any] interface {
@@ -103,14 +103,14 @@ type DeleteStrategyBeforeResult int
 type DeleteStrategyAfterResult int
 
 const (
-	DeleteStrategyBeforeResultDelete DeleteStrategyBeforeResult = iota
-	DeleteStrategyBeforeResultSkip
+	DeleteStrategyBeforeResultDELETE DeleteStrategyBeforeResult = iota
+	DeleteStrategyBeforeResultSKIP
 )
 
 const (
-	DeleteStrategyAfterResultContinue DeleteStrategyAfterResult = iota
-	DeleteStrategyAfterResultReturn
-	DeleteStrategyAfterResultContinueWithError
+	DeleteStrategyAfterResultCONTINUE DeleteStrategyAfterResult = iota
+	DeleteStrategyAfterResultRETURN
+	DeleteStrategyAfterResultCONTINUEWITHERROR
 )
 
 type DeleteStrategy[K comparable, V any] interface {

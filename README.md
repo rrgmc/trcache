@@ -5,6 +5,20 @@ trcache
 
 Package trcache implements strongly-typed generics-based cache library wrappers.
 
+```go
+type Cache[K comparable, V any] interface {
+	Name() string
+	Get(ctx context.Context, key K, options ...GetOption) (V, error)
+	Set(ctx context.Context, key K, value V, options ...SetOption) error
+	Delete(ctx context.Context, key K, options ...DeleteOption) error
+}
+
+type RefreshCache[K comparable, V any] interface {
+	Cache[K, V]
+	GetOrRefresh(ctx context.Context, key K, options ...RefreshOption) (V, error)
+}
+```
+
 The wrappers are highly customizable and allows accessing the underlying cache functionality if desired.
 
 A loadable (refresh) implementation is available for all caches, which provides a "GetOrRefresh" method which

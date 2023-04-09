@@ -20,8 +20,7 @@ test:
 .PHONY: update-dep-version
 update-dep-version:
 	test -n "$(TAG)"  # $$TAG
-	sh -c 'cd mocks; go get github.com/RangelReale/trcache@$(TAG); go mod tidy'
-	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go get github.com/RangelReale/trcache@$(TAG); go get github.com/RangelReale/trcache/mocks@$(TAG); go mod tidy'
+	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go get github.com/RangelReale/trcache@$(TAG); go mod tidy'
 
 git-status:
 	@status=$$(git status --porcelain); \
@@ -35,7 +34,6 @@ git-status:
 gittag: git-status update-dep-version
 	test -n "$(TAG)"  # $$TAG
 	git commit -a -m "Release $(TAG)"
-	sh -c 'git tag mocks/$(TAG)'
 	sh -c 'git tag cmd/troptgen/$(TAG)'
 	find cache -maxdepth 1 ! -path cache -type d | xargs -I % sh -c 'git tag %/$(TAG)'
 	git tag $(TAG)

@@ -1,7 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/RangelReale/trcache?status.png)](https://godoc.org/github.com/RangelReale/trcache)
-
-trcache
-=======
+# trcache [![GoDoc](https://godoc.org/github.com/RangelReale/trcache?status.png)](https://godoc.org/github.com/RangelReale/trcache)
 
 Package trcache implements strongly-typed generics-based cache library wrappers.
 

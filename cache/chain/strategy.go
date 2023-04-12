@@ -33,6 +33,27 @@ const (
 	GetStrategyAfterSetResultRETURN
 )
 
+// GetStrategy is the strategy to be used on [Chain.Get].
+//
+// [Chain.Get] uses this logic:
+//   - **loop** on the list of caches from 0 to len().
+//   - call [GetStrategy.BeforeGet] on the current cache.
+//   - if SKIP, stop processing this cache and go to next loop.
+//   - if GET, continue processing.
+//   - call [Cache.Get] and store the result / error.
+//   - call [GetStrategy.AfterGet] with the result of the previous call (including the error).
+//   - if SKIP, continue to the next loop item.
+//   - if RETURN, set this result as the current function result (even if it was an error) and exit the loop.
+//   - **if no result was found**, or the last returned result is an error, return the error to the user.
+//   - **loop** on the list of cache from len() to 0 (backwards)
+//   - call [GetStrategy.BeforeSet] on the current cache.
+//   - if SKIP, stop processing this cache and go to next loop.
+//   - if SET, continue processing.
+//   - call [Cache.Set] with the result found in the "Get" loop.
+//   - call [GetStrategy.AfterSet] with the result of the previous call (including the error).
+//   - if RETURN, return immediately with the result and error of the last "Set" call.
+//   - if CONTINUE, continue to the next loop item.
+//   - at the end, return the found result and error.
 type GetStrategy[K comparable, V any] interface {
 	BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult
 	AfterGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult
@@ -79,6 +100,19 @@ const (
 	SetStrategyAfterResultCONTINUEWITHERROR
 )
 
+// SetStrategy is the strategy to be used on [Chain.Set].
+//
+// [Chain.Set] uses this logic:
+//   - **loop** on the list of caches from 0 to len().
+//   - call [SetStrategy.BeforeSet] on the current cache.
+//   - if SKIP, stop processing this cache and go to next loop.
+//   - if SET, continue processing.
+//   - call [Cache.Set] and store the error.
+//   - call [SetStrategy.AfterSet] with the result of the previous call (including the error).
+//   - if RETURN, return immediately the previous call error result.
+//   - if CONTINUEWITHERROR, continue to the next loop item, appending the error to a list of errors to return.
+//   - if CONTINUE, continue to the next loop item.
+//   - at the end, return the error list if any.
 type SetStrategy[K comparable, V any] interface {
 	BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult
 	AfterSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult
@@ -113,6 +147,19 @@ const (
 	DeleteStrategyAfterResultCONTINUEWITHERROR
 )
 
+// DeleteStrategy is the strategy to be used on [Chain.Delete].
+//
+// [Chain.Delete] uses this logic:
+//   - **loop** on the list of caches from 0 to len().
+//   - call [DeleteStrategy.BeforeDelete] on the current cache.
+//   - if SKIP, stop processing this cache and go to next loop.
+//   - if DELETE, continue processing.
+//   - call [Cache.Delete] and store the error
+//   - call [DeleteStrategy.AfterDelete] with the result of the previous call (including the error).
+//   - if RETURN, return immediately the previous call error result.
+//   - if CONTINUEWITHERROR, continue to the next loop item, appending the error to a list of errors to return.
+//   - if CONTINUE, continue to the next loop item.
+//   - at the end, return the error list if any.
 type DeleteStrategy[K comparable, V any] interface {
 	BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult
 	AfterDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult

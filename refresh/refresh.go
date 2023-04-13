@@ -34,16 +34,16 @@ func (r *Helper[K, V]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], 
 	ret, err := c.Get(ctx, key, optns.getOptions...)
 	if err == nil {
 		if r.options.metricsMetrics != nil {
-			r.options.metricsMetrics.Hit(ctx, r.options.metricsName)
+			r.options.metricsMetrics.Hit(ctx, r.options.metricsName, key)
 		}
 		return ret, nil
 	} else if err != nil && !errors.Is(err, trcache.ErrNotFound) {
 		if r.options.metricsMetrics != nil {
 			var cerr *trcache.CodecError
 			if errors.As(err, &cerr) {
-				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeDecode)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, key, trcache.MetricsErrorTypeDecode)
 			} else {
-				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeGet)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, key, trcache.MetricsErrorTypeGet)
 			}
 		}
 		var empty V
@@ -51,7 +51,7 @@ func (r *Helper[K, V]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], 
 	}
 
 	if r.options.metricsMetrics != nil {
-		r.options.metricsMetrics.Miss(ctx, r.options.metricsName)
+		r.options.metricsMetrics.Miss(ctx, r.options.metricsName, key)
 	}
 
 	// call refresh
@@ -65,7 +65,7 @@ func (r *Helper[K, V]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], 
 	})
 	if err != nil {
 		if r.options.metricsMetrics != nil {
-			r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeRefresh)
+			r.options.metricsMetrics.Error(ctx, r.options.metricsName, key, trcache.MetricsErrorTypeRefresh)
 		}
 		var empty V
 		return empty, err
@@ -76,9 +76,9 @@ func (r *Helper[K, V]) GetOrRefresh(ctx context.Context, c trcache.Cache[K, V], 
 		if r.options.metricsMetrics != nil {
 			var cerr *trcache.CodecError
 			if errors.As(err, &cerr) {
-				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeEncode)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, key, trcache.MetricsErrorTypeEncode)
 			} else {
-				r.options.metricsMetrics.Error(ctx, r.options.metricsName, trcache.MetricsErrorTypeSet)
+				r.options.metricsMetrics.Error(ctx, r.options.metricsName, key, trcache.MetricsErrorTypeSet)
 			}
 		}
 		var empty V

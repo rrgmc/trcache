@@ -7,6 +7,20 @@ import (
 	"time"
 )
 
+// WithDefaultStrategyCallback sets a callback function to receive strategy results.
+func WithDefaultStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.RootOption {
+	const optionName = "github.com/RangelReale/trcache/cache/chain/options.DefaultStrategyCallback"
+	const optionHash = uint64(0xba694c293ad3e7ba)
+	return trcache.RootOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case options[K, V]:
+			opt.OptDefaultStrategyCallback(callback)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
+
 // WithDeleteStrategy sets the [DeleteStrategy] to use for the chain operation. The default is
 // [DeleteStrategyDeleteAll].
 func WithDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) trcache.RootOption {
@@ -52,20 +66,6 @@ func WithSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache
 	}, optionName, optionHash)
 }
 
-// WithStrategyCallback sets a callback function to receive strategy results.
-func WithStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/options.StrategyCallback"
-	const optionHash = uint64(0x7e0c139bdc5b9f77)
-	return trcache.RootOptionFunc(func(o any) bool {
-		switch opt := o.(type) {
-		case options[K, V]:
-			opt.OptStrategyCallback(callback)
-			return true
-		}
-		return false
-	}, optionName, optionHash)
-}
-
 // WithGetSetOptions adds options to the [Cache.Set] call done after one of the [Cache.Get] function calls succeeds.
 func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
@@ -80,15 +80,57 @@ func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcach
 	}, optionName, optionHash)
 }
 
+// WithGetStrategyCallback sets a callback function to receive strategy results.
+func WithGetStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.GetOption {
+	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.StrategyCallback"
+	const optionHash = uint64(0xf083d5cb17c16a0d)
+	return trcache.GetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case getOptions[K, V]:
+			opt.OptStrategyCallback(callback)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
+
+// WithSetStrategyCallback sets a callback function to receive strategy results.
+func WithSetStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.SetOption {
+	const optionName = "github.com/RangelReale/trcache/cache/chain/setOptions.StrategyCallback"
+	const optionHash = uint64(0xcc37a90344a23759)
+	return trcache.SetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case setOptions[K, V]:
+			opt.OptStrategyCallback(callback)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
+
+// WithDeleteStrategyCallback sets a callback function to receive strategy results.
+func WithDeleteStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.DeleteOption {
+	const optionName = "github.com/RangelReale/trcache/cache/chain/deleteOptions.StrategyCallback"
+	const optionHash = uint64(0xe0f7c60406a6643e)
+	return trcache.DeleteOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case deleteOptions[K, V]:
+			opt.OptStrategyCallback(callback)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
+
 type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultDeleteOptions []trcache.DeleteOption
 	callDefaultGetOptions    []trcache.GetOption
 	callDefaultSetOptions    []trcache.SetOption
+	defaultStrategyCallback  StrategyCallback
 	deleteStrategy           DeleteStrategy[K, V]
 	getStrategy              GetStrategy[K, V]
 	name                     string
 	setStrategy              SetStrategy[K, V]
-	strategyCallback         StrategyCallback
 }
 
 var _ options[string, string] = &rootOptionsImpl[string, string]{}
@@ -102,6 +144,9 @@ func (o *rootOptionsImpl[K, V]) OptCallDefaultGetOptions(options ...trcache.GetO
 func (o *rootOptionsImpl[K, V]) OptCallDefaultSetOptions(options ...trcache.SetOption) {
 	o.callDefaultSetOptions = options
 }
+func (o *rootOptionsImpl[K, V]) OptDefaultStrategyCallback(callback StrategyCallback) {
+	o.defaultStrategyCallback = callback
+}
 func (o *rootOptionsImpl[K, V]) OptDeleteStrategy(deleteStrategy DeleteStrategy[K, V]) {
 	o.deleteStrategy = deleteStrategy
 }
@@ -114,12 +159,10 @@ func (o *rootOptionsImpl[K, V]) OptName(name string) {
 func (o *rootOptionsImpl[K, V]) OptSetStrategy(setStrategy SetStrategy[K, V]) {
 	o.setStrategy = setStrategy
 }
-func (o *rootOptionsImpl[K, V]) OptStrategyCallback(callback StrategyCallback) {
-	o.strategyCallback = callback
-}
 
 type getOptionsImpl[K comparable, V any] struct {
-	setOptions []trcache.SetOption
+	setOptions       []trcache.SetOption
+	strategyCallback StrategyCallback
 }
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
@@ -127,9 +170,13 @@ var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 func (o *getOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options
 }
+func (o *getOptionsImpl[K, V]) OptStrategyCallback(callback StrategyCallback) {
+	o.strategyCallback = callback
+}
 
 type setOptionsImpl[K comparable, V any] struct {
-	duration time.Duration
+	duration         time.Duration
+	strategyCallback StrategyCallback
 }
 
 var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
@@ -137,7 +184,16 @@ var _ setOptions[string, string] = &setOptionsImpl[string, string]{}
 func (o *setOptionsImpl[K, V]) OptDuration(duration time.Duration) {
 	o.duration = duration
 }
+func (o *setOptionsImpl[K, V]) OptStrategyCallback(callback StrategyCallback) {
+	o.strategyCallback = callback
+}
 
-type deleteOptionsImpl[K comparable, V any] struct{}
+type deleteOptionsImpl[K comparable, V any] struct {
+	strategyCallback StrategyCallback
+}
 
 var _ deleteOptions[string, string] = &deleteOptionsImpl[string, string]{}
+
+func (o *deleteOptionsImpl[K, V]) OptStrategyCallback(callback StrategyCallback) {
+	o.strategyCallback = callback
+}

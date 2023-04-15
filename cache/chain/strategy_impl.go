@@ -6,6 +6,43 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
+// Implementations: StrategyCallback
+
+type StrategyCallbackFunc struct {
+	GetFn    func(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result GetStrategyAfterResult)
+	GetSetFn func(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result GetStrategyAfterSetResult)
+	SetFn    func(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result SetStrategyAfterResult)
+	DeleteFn func(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result DeleteStrategyAfterResult)
+}
+
+func (s *StrategyCallbackFunc) Get(ctx context.Context, cacheIdx int, cacheName string, key any, err error,
+	result GetStrategyAfterResult) {
+	if s.GetFn != nil {
+		s.Get(ctx, cacheIdx, cacheName, key, err, result)
+	}
+}
+
+func (s *StrategyCallbackFunc) GetSet(ctx context.Context, cacheIdx int, cacheName string, key any, err error,
+	result GetStrategyAfterSetResult) {
+	if s.GetSetFn != nil {
+		s.GetSet(ctx, cacheIdx, cacheName, key, err, result)
+	}
+}
+
+func (s *StrategyCallbackFunc) Set(ctx context.Context, cacheIdx int, cacheName string, key any, err error,
+	result SetStrategyAfterResult) {
+	if s.SetFn != nil {
+		s.SetFn(ctx, cacheIdx, cacheName, key, err, result)
+	}
+}
+
+func (s *StrategyCallbackFunc) Delete(ctx context.Context, cacheIdx int, cacheName string, key any, err error,
+	result DeleteStrategyAfterResult) {
+	if s.DeleteFn != nil {
+		s.DeleteFn(ctx, cacheIdx, cacheName, key, err, result)
+	}
+}
+
 // Implementations: Get strategy
 
 type GetStrategyGetFirstSetPrevious[K comparable, V any] struct {

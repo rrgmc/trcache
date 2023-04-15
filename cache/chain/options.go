@@ -11,8 +11,8 @@ type options[K comparable, V any] interface {
 	trcache.Options[K, V]
 	trcache.NameOptions[K, V]
 	trcache.CallDefaultOptions[K, V]
-	// OptStrategyCallback sets a callback function to receive strategy results.
-	OptStrategyCallback(callback StrategyCallback)
+	// OptDefaultStrategyCallback sets a callback function to receive strategy results.
+	OptDefaultStrategyCallback(callback StrategyCallback)
 	// OptGetStrategy sets the [GetStrategy] to use for the chain operation. The default is
 	// [GetStrategyGetFirstSetPrevious].
 	OptGetStrategy(getStrategy GetStrategy[K, V])
@@ -29,6 +29,8 @@ type options[K comparable, V any] interface {
 //troptgen:get
 type getOptions[K comparable, V any] interface {
 	trcache.GetOptions[K, V]
+	// OptStrategyCallback sets a callback function to receive strategy results.
+	OptStrategyCallback(callback StrategyCallback)
 	// OptSetOptions adds options to the [Cache.Set] call done after one of the [Cache.Get] function calls succeeds.
 	OptSetOptions(options ...trcache.SetOption)
 }
@@ -38,6 +40,8 @@ type getOptions[K comparable, V any] interface {
 //troptgen:set
 type setOptions[K comparable, V any] interface {
 	trcache.SetOptions[K, V]
+	// OptStrategyCallback sets a callback function to receive strategy results.
+	OptStrategyCallback(callback StrategyCallback)
 }
 
 // Cache delete options
@@ -45,6 +49,8 @@ type setOptions[K comparable, V any] interface {
 //troptgen:delete
 type deleteOptions[K comparable, V any] interface {
 	trcache.DeleteOptions[K, V]
+	// OptStrategyCallback sets a callback function to receive strategy results.
+	OptStrategyCallback(callback StrategyCallback)
 }
 
 //go:generate troptgen

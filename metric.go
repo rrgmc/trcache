@@ -3,9 +3,9 @@ package trcache
 import "context"
 
 type Metrics interface {
-	Hit(ctx context.Context, name string, key any)
-	Miss(ctx context.Context, name string, key any)
-	Error(ctx context.Context, name string, key any, errorType MetricsErrorType)
+	Hit(ctx context.Context, name string, cacheName string, key any)
+	Miss(ctx context.Context, name string, cacheName string, key any)
+	Error(ctx context.Context, name string, cacheName string, key any, errorType MetricsErrorType)
 }
 
 type MetricsErrorType int

@@ -92,6 +92,10 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 		return empty, err
 	}
 
+	if gotCacheIdx != -1 && optns.getInfo != nil {
+		optns.getInfo.cacheName = c.caches[gotCacheIdx].Name()
+	}
+
 	if reterr != nil {
 		var empty V
 		return empty, reterr

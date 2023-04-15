@@ -65,6 +65,18 @@ func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcach
 		return false
 	}, optionName, optionHash)
 }
+func withGetGetInfo[K comparable, V any](info *getInfo) trcache.GetOption {
+	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.GetInfo"
+	const optionHash = uint64(0x9d1cdfa367c0ef9)
+	return trcache.GetOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case getOptions[K, V]:
+			opt.optGetInfo(info)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
 
 type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultDeleteOptions []trcache.DeleteOption
@@ -102,12 +114,16 @@ func (o *rootOptionsImpl[K, V]) OptSetStrategy(setStrategy SetStrategy[K, V]) {
 
 type getOptionsImpl[K comparable, V any] struct {
 	setOptions []trcache.SetOption
+	getInfo    *getInfo
 }
 
 var _ getOptions[string, string] = &getOptionsImpl[string, string]{}
 
 func (o *getOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
 	o.setOptions = options
+}
+func (o *getOptionsImpl[K, V]) optGetInfo(info *getInfo) {
+	o.getInfo = info
 }
 
 type setOptionsImpl[K comparable, V any] struct {
@@ -123,3 +139,45 @@ func (o *setOptionsImpl[K, V]) OptDuration(duration time.Duration) {
 type deleteOptionsImpl[K comparable, V any] struct{}
 
 var _ deleteOptions[string, string] = &deleteOptionsImpl[string, string]{}
+
+type refreshOptionsImpl[K comparable, V any] struct {
+	data       interface{}
+	funcx      trcache.CacheRefreshFunc[K, V]
+	getOptions []trcache.GetOption
+	setOptions []trcache.SetOption
+}
+
+var _ refreshOptions[string, string] = &refreshOptionsImpl[string, string]{}
+
+func (o *refreshOptionsImpl[K, V]) OptData(data interface{}) {
+	o.data = data
+}
+func (o *refreshOptionsImpl[K, V]) OptFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
+	o.funcx = refreshFunc
+}
+func (o *refreshOptionsImpl[K, V]) OptGetOptions(options ...trcache.GetOption) {
+	o.getOptions = options
+}
+func (o *refreshOptionsImpl[K, V]) OptSetOptions(options ...trcache.SetOption) {
+	o.setOptions = options
+}
+
+type rootRefreshOptionsImpl[K comparable, V any] struct {
+	callDefaultRefreshOptions []trcache.RefreshOption
+	defaultRefreshFunc        trcache.CacheRefreshFunc[K, V]
+	metricsMetrics            trcache.Metrics
+	metricsName               string
+}
+
+var _ rootRefreshOptions[string, string] = &rootRefreshOptionsImpl[string, string]{}
+
+func (o *rootRefreshOptionsImpl[K, V]) OptCallDefaultRefreshOptions(options ...trcache.RefreshOption) {
+	o.callDefaultRefreshOptions = options
+}
+func (o *rootRefreshOptionsImpl[K, V]) OptDefaultRefreshFunc(refreshFunc trcache.CacheRefreshFunc[K, V]) {
+	o.defaultRefreshFunc = refreshFunc
+}
+func (o *rootRefreshOptionsImpl[K, V]) OptMetrics(metrics trcache.Metrics, name string) {
+	o.metricsMetrics = metrics
+	o.metricsName = name
+}

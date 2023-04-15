@@ -22,6 +22,13 @@ type options[K comparable, V any] interface {
 	OptDeleteStrategy(deleteStrategy DeleteStrategy[K, V])
 }
 
+//troptgen:root name=rootRefreshOptions
+type rootRefreshOptions[K comparable, V any] interface {
+	trcache.MetricsOptions[K, V]
+	trcache.DefaultRefreshOptions[K, V]
+	trcache.CallDefaultRefreshOptions[K, V]
+}
+
 // Cache get options
 
 //troptgen:get
@@ -29,6 +36,7 @@ type getOptions[K comparable, V any] interface {
 	trcache.GetOptions[K, V]
 	// OptSetOptions adds options to the [Cache.Set] call done after one of the [Cache.Get] function calls succeeds.
 	OptSetOptions(options ...trcache.SetOption)
+	optGetInfo(info *getInfo)
 }
 
 // Cache set options
@@ -43,6 +51,13 @@ type setOptions[K comparable, V any] interface {
 //troptgen:delete
 type deleteOptions[K comparable, V any] interface {
 	trcache.DeleteOptions[K, V]
+}
+
+// Refresh options
+
+//troptgen:refresh
+type refreshOptions[K comparable, V any] interface {
+	trcache.RefreshOptions[K, V]
 }
 
 //go:generate troptgen

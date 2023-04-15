@@ -202,14 +202,21 @@ func runMain() error {
 			for i := 0; i < interfaceType.NumMethods(); i++ {
 				method := interfaceType.Method(i)
 
-				if !method.Exported() {
+				// if !method.Exported() {
+				if !strings.HasPrefix(method.Name(), "Opt") && !strings.HasPrefix(method.Name(), "opt") {
 					continue
 				}
 
-				baseMethodName := strings.TrimPrefix(method.Name(), "Opt")
+				methodPrefix := method.Name()[0:3]
+				withPrefix := "With"
+				if methodPrefix == "opt" {
+					withPrefix = "with"
+				}
+
+				baseMethodName := strings.TrimPrefix(method.Name(), methodPrefix)
 				optionMethodName := fmt.Sprintf("%s/%s.%s", namedType.Obj().Pkg().Path(), namedType.Obj().Name(), baseMethodName)
-				methodName := fmt.Sprintf("With%s%s%s", makeFirstUpperCase(*prefix), UCDefaultDirectiveCMDOptional, baseMethodName)
-				defaultMethodName := fmt.Sprintf("With%s%s", UCDefaultDirectiveCMDOptional, baseMethodName)
+				methodName := fmt.Sprintf("%s%s%s%s", withPrefix, makeFirstUpperCase(*prefix), UCDefaultDirectiveCMDOptional, baseMethodName)
+				defaultMethodName := fmt.Sprintf("%s%s%s", withPrefix, UCDefaultDirectiveCMDOptional, baseMethodName)
 				fsig := method.Type().(*types.Signature)
 
 				methodDoc := getMethodComments(stinterface, method.Name())

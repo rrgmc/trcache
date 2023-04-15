@@ -52,6 +52,20 @@ func WithSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache
 	}, optionName, optionHash)
 }
 
+// WithStrategyCallback sets a callback function to receive strategy results.
+func WithStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.RootOption {
+	const optionName = "github.com/RangelReale/trcache/cache/chain/options.StrategyCallback"
+	const optionHash = uint64(0x7e0c139bdc5b9f77)
+	return trcache.RootOptionFunc(func(o any) bool {
+		switch opt := o.(type) {
+		case options[K, V]:
+			opt.OptStrategyCallback(callback)
+			return true
+		}
+		return false
+	}, optionName, optionHash)
+}
+
 // WithGetSetOptions adds options to the [Cache.Set] call done after one of the [Cache.Get] function calls succeeds.
 func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.GetOption {
 	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
@@ -74,6 +88,7 @@ type rootOptionsImpl[K comparable, V any] struct {
 	getStrategy              GetStrategy[K, V]
 	name                     string
 	setStrategy              SetStrategy[K, V]
+	strategyCallback         StrategyCallback
 }
 
 var _ options[string, string] = &rootOptionsImpl[string, string]{}
@@ -98,6 +113,9 @@ func (o *rootOptionsImpl[K, V]) OptName(name string) {
 }
 func (o *rootOptionsImpl[K, V]) OptSetStrategy(setStrategy SetStrategy[K, V]) {
 	o.setStrategy = setStrategy
+}
+func (o *rootOptionsImpl[K, V]) OptStrategyCallback(callback StrategyCallback) {
+	o.strategyCallback = callback
 }
 
 type getOptionsImpl[K comparable, V any] struct {

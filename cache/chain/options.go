@@ -11,6 +11,8 @@ type options[K comparable, V any] interface {
 	trcache.Options[K, V]
 	trcache.NameOptions[K, V]
 	trcache.CallDefaultOptions[K, V]
+	// OptStrategyCallback sets a callback function to receive strategy results.
+	OptStrategyCallback(callback StrategyCallback)
 	// OptGetStrategy sets the [GetStrategy] to use for the chain operation. The default is
 	// [GetStrategyGetFirstSetPrevious].
 	OptGetStrategy(getStrategy GetStrategy[K, V])

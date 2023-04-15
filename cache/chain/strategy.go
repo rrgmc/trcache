@@ -6,6 +6,13 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
+type StrategyCallback interface {
+	Get(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result GetStrategyAfterResult)
+	GetSet(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result GetStrategyAfterSetResult)
+	Set(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result SetStrategyAfterResult)
+	Delete(ctx context.Context, cacheIdx int, cacheName string, key any, err error, result DeleteStrategyAfterResult)
+}
+
 // Cache get strategy
 
 type GetStrategyBeforeResult int

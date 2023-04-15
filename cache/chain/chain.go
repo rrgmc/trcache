@@ -71,7 +71,13 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 		value, err := cache.Get(ctx, key, trcache.ForwardOptionsChecker(getChecker)...)
 
-		switch c.options.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err) {
+		afterGetResult := c.options.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err)
+
+		if c.options.strategyCallback != nil {
+			c.options.strategyCallback.Get(ctx, cacheIdx, cache.Name(), key, err, afterGetResult)
+		}
+
+		switch afterGetResult {
 		case GetStrategyAfterResultSKIP:
 			continue
 		case GetStrategyAfterResultRETURN:
@@ -116,7 +122,13 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 		err := c.caches[cacheIdx].Set(ctx, key, ret, trcache.ForwardOptionsChecker(setChecker)...)
 
-		switch c.options.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err) {
+		afterSetResult := c.options.getStrategy.AfterSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret, err)
+
+		if c.options.strategyCallback != nil {
+			c.options.strategyCallback.GetSet(ctx, cacheIdx, c.caches[cacheIdx].Name(), key, err, afterSetResult)
+		}
+
+		switch afterSetResult {
 		case GetStrategyAfterSetResultRETURN:
 			return ret, err
 		case GetStrategyAfterSetResultCONTINUE:
@@ -161,7 +173,13 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 
 		err := cache.Set(ctx, key, value, trcache.ForwardOptionsChecker(checker)...)
 
-		switch c.options.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err) {
+		afterSetResult := c.options.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err)
+
+		if c.options.strategyCallback != nil {
+			c.options.strategyCallback.Set(ctx, cacheIdx, cache.Name(), key, err, afterSetResult)
+		}
+
+		switch afterSetResult {
 		case SetStrategyAfterResultRETURN:
 			return err
 		case SetStrategyAfterResultCONTINUEWITHERROR:
@@ -218,7 +236,13 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 
 		err := cache.Delete(ctx, key, trcache.ForwardOptionsChecker(checker)...)
 
-		switch c.options.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err) {
+		afterDeleteResult := c.options.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err)
+
+		if c.options.strategyCallback != nil {
+			c.options.strategyCallback.Delete(ctx, cacheIdx, cache.Name(), key, err, afterDeleteResult)
+		}
+
+		switch afterDeleteResult {
 		case DeleteStrategyAfterResultRETURN:
 			return err
 		case DeleteStrategyAfterResultCONTINUEWITHERROR:

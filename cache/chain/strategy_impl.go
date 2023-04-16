@@ -18,14 +18,14 @@ type StrategyCallbackFunc struct {
 func (s *StrategyCallbackFunc) Get(ctx context.Context, cacheIdx int, cacheName string, key any, err error,
 	result GetStrategyAfterResult) {
 	if s.GetFn != nil {
-		s.Get(ctx, cacheIdx, cacheName, key, err, result)
+		s.GetFn(ctx, cacheIdx, cacheName, key, err, result)
 	}
 }
 
 func (s *StrategyCallbackFunc) GetSet(ctx context.Context, cacheIdx int, cacheName string, key any, err error,
 	result GetStrategyAfterSetResult) {
 	if s.GetSetFn != nil {
-		s.GetSet(ctx, cacheIdx, cacheName, key, err, result)
+		s.GetSetFn(ctx, cacheIdx, cacheName, key, err, result)
 	}
 }
 

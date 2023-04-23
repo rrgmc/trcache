@@ -6,6 +6,13 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
+type StrategyLoopOrder int
+
+const (
+	StrategyLoopOrderFORWARD StrategyLoopOrder = iota
+	StrategyLoopOrderBACKWARD
+)
+
 // Cache get strategy
 
 type GetStrategyBeforeResult int
@@ -55,17 +62,25 @@ const (
 //   - if CONTINUE, continue to the next loop item.
 //   - at the end, return the found result and error.
 type GetStrategy[K comparable, V any] interface {
+	GetLoopOrder(ctx context.Context) StrategyLoopOrder
 	BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult
 	AfterGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult
+	SetLoopOrder(ctx context.Context) StrategyLoopOrder
 	BeforeSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult
 	AfterSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult
 }
 
 type GetStrategyFunc[K comparable, V any] struct {
-	BeforeGetFn func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult
-	AfterGetFn  func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult
-	BeforeSetFn func(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult
-	AfterSetFn  func(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult
+	GetLoopOrderFn func(ctx context.Context) StrategyLoopOrder
+	BeforeGetFn    func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult
+	AfterGetFn     func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult
+	SetLoopOrderFn func(ctx context.Context) StrategyLoopOrder
+	BeforeSetFn    func(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult
+	AfterSetFn     func(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterSetResult
+}
+
+func (f GetStrategyFunc[K, V]) GetLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return f.GetLoopOrderFn(ctx)
 }
 
 func (f GetStrategyFunc[K, V]) BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult {
@@ -74,6 +89,10 @@ func (f GetStrategyFunc[K, V]) BeforeGet(ctx context.Context, cacheIdx int, cach
 
 func (f GetStrategyFunc[K, V]) AfterGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) GetStrategyAfterResult {
 	return f.AfterGetFn(ctx, cacheIdx, cache, key, value, err)
+}
+
+func (f GetStrategyFunc[K, V]) SetLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return f.SetLoopOrderFn(ctx)
 }
 
 func (f GetStrategyFunc[K, V]) BeforeSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult {
@@ -114,13 +133,19 @@ const (
 //   - if CONTINUE, continue to the next loop item.
 //   - at the end, return the error list if any.
 type SetStrategy[K comparable, V any] interface {
+	SetLoopOrder(ctx context.Context) StrategyLoopOrder
 	BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult
 	AfterSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult
 }
 
 type SetStrategyFunc[K comparable, V any] struct {
-	BeforeSetFn func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult
-	AfterSetFn  func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult
+	SetLoopOrderFn func(ctx context.Context) StrategyLoopOrder
+	BeforeSetFn    func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult
+	AfterSetFn     func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V, err error) SetStrategyAfterResult
+}
+
+func (f SetStrategyFunc[K, V]) SetLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return f.SetLoopOrderFn(ctx)
 }
 
 func (f SetStrategyFunc[K, V]) BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult {
@@ -161,13 +186,19 @@ const (
 //   - if CONTINUE, continue to the next loop item.
 //   - at the end, return the error list if any.
 type DeleteStrategy[K comparable, V any] interface {
+	DeleteLoopOrder(ctx context.Context) StrategyLoopOrder
 	BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult
 	AfterDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult
 }
 
 type DeleteStrategyFunc[K comparable, V any] struct {
-	BeforeDeleteFn func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult
-	AfterDeleteFn  func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult
+	DeleteLoopOrderFn func(ctx context.Context) StrategyLoopOrder
+	BeforeDeleteFn    func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult
+	AfterDeleteFn     func(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, err error) DeleteStrategyAfterResult
+}
+
+func (f DeleteStrategyFunc[K, V]) DeleteLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return f.DeleteLoopOrderFn(ctx)
 }
 
 func (f DeleteStrategyFunc[K, V]) BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult {

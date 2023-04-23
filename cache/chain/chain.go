@@ -59,8 +59,11 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 	gotCacheIdx := -1
 	var ret V
 
-	for cacheIdx, cache := range c.caches {
-		switch c.options.getStrategy.BeforeGet(ctx, cacheIdx, cache, key) {
+	getLoop := newCacheLoop(len(c.caches), c.options.getStrategy.GetLoopOrder(ctx))
+	for getLoop.next() {
+		cacheIdx := getLoop.current()
+
+		switch c.options.getStrategy.BeforeGet(ctx, cacheIdx, c.caches[cacheIdx], key) {
 		case GetStrategyBeforeResultSKIP:
 			continue
 		case GetStrategyBeforeResultGET:
@@ -70,12 +73,12 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 			return empty, ErrInvalidStrategyResult
 		}
 
-		value, err := cache.Get(ctx, key, trcache.ForwardOptionsChecker(getChecker)...)
+		value, err := c.caches[cacheIdx].Get(ctx, key, trcache.ForwardOptionsChecker(getChecker)...)
 
-		afterGetResult := c.options.getStrategy.AfterGet(ctx, cacheIdx, cache, key, ret, err)
+		afterGetResult := c.options.getStrategy.AfterGet(ctx, cacheIdx, c.caches[cacheIdx], key, ret, err)
 
 		if optns.strategyCallback != nil {
-			optns.strategyCallback.Get(ctx, cacheIdx, cache.Name(), key, err, afterGetResult)
+			optns.strategyCallback.Get(ctx, cacheIdx, c.caches[cacheIdx].Name(), key, err, afterGetResult)
 		}
 
 		switch afterGetResult {
@@ -110,7 +113,10 @@ func (c *Chain[K, V]) Get(ctx context.Context, key K,
 
 	setChecker := trcache.NewOptionChecker(c.options.callDefaultSetOptions, optns.setOptions)
 
-	for cacheIdx := len(c.caches) - 1; cacheIdx >= 0; cacheIdx-- {
+	setLoop := newCacheLoop(len(c.caches), c.options.getStrategy.SetLoopOrder(ctx))
+	for setLoop.next() {
+		cacheIdx := setLoop.current()
+
 		switch c.options.getStrategy.BeforeSet(ctx, gotCacheIdx, cacheIdx, c.caches[cacheIdx], key, ret) {
 		case GetStrategyBeforeSetResultSKIP:
 			continue
@@ -164,8 +170,11 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 	var reterr error
 
 	success := false
-	for cacheIdx, cache := range c.caches {
-		switch c.options.setStrategy.BeforeSet(ctx, cacheIdx, cache, key, value) {
+	setLoop := newCacheLoop(len(c.caches), c.options.setStrategy.SetLoopOrder(ctx))
+	for setLoop.next() {
+		cacheIdx := setLoop.current()
+
+		switch c.options.setStrategy.BeforeSet(ctx, cacheIdx, c.caches[cacheIdx], key, value) {
 		case SetStrategyBeforeResultSKIP:
 			continue
 		case SetStrategyBeforeResultSET:
@@ -174,12 +183,12 @@ func (c *Chain[K, V]) Set(ctx context.Context, key K, value V,
 			return ErrInvalidStrategyResult
 		}
 
-		err := cache.Set(ctx, key, value, trcache.ForwardOptionsChecker(checker)...)
+		err := c.caches[cacheIdx].Set(ctx, key, value, trcache.ForwardOptionsChecker(checker)...)
 
-		afterSetResult := c.options.setStrategy.AfterSet(ctx, cacheIdx, cache, key, value, err)
+		afterSetResult := c.options.setStrategy.AfterSet(ctx, cacheIdx, c.caches[cacheIdx], key, value, err)
 
 		if optns.strategyCallback != nil {
-			optns.strategyCallback.Set(ctx, cacheIdx, cache.Name(), key, err, afterSetResult)
+			optns.strategyCallback.Set(ctx, cacheIdx, c.caches[cacheIdx].Name(), key, err, afterSetResult)
 		}
 
 		switch afterSetResult {
@@ -227,10 +236,12 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 
 	var reterr error
 
-	// delete from all
 	success := false
-	for cacheIdx, cache := range c.caches {
-		switch c.options.deleteStrategy.BeforeDelete(ctx, cacheIdx, cache, key) {
+	deleteLoop := newCacheLoop(len(c.caches), c.options.deleteStrategy.DeleteLoopOrder(ctx))
+	for deleteLoop.next() {
+		cacheIdx := deleteLoop.current()
+
+		switch c.options.deleteStrategy.BeforeDelete(ctx, cacheIdx, c.caches[cacheIdx], key) {
 		case DeleteStrategyBeforeResultSKIP:
 			continue
 		case DeleteStrategyBeforeResultDELETE:
@@ -239,12 +250,12 @@ func (c *Chain[K, V]) Delete(ctx context.Context, key K,
 			return ErrInvalidStrategyResult
 		}
 
-		err := cache.Delete(ctx, key, trcache.ForwardOptionsChecker(checker)...)
+		err := c.caches[cacheIdx].Delete(ctx, key, trcache.ForwardOptionsChecker(checker)...)
 
-		afterDeleteResult := c.options.deleteStrategy.AfterDelete(ctx, cacheIdx, cache, key, err)
+		afterDeleteResult := c.options.deleteStrategy.AfterDelete(ctx, cacheIdx, c.caches[cacheIdx], key, err)
 
 		if optns.strategyCallback != nil {
-			optns.strategyCallback.Delete(ctx, cacheIdx, cache.Name(), key, err, afterDeleteResult)
+			optns.strategyCallback.Delete(ctx, cacheIdx, c.caches[cacheIdx].Name(), key, err, afterDeleteResult)
 		}
 
 		switch afterDeleteResult {

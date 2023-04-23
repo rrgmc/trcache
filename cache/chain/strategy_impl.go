@@ -23,6 +23,10 @@ func NewDefaultDeleteStrategy[K comparable, V any]() DeleteStrategy[K, V] {
 type GetStrategyGetFirstSetPrevious[K comparable, V any] struct {
 }
 
+func (f GetStrategyGetFirstSetPrevious[K, V]) GetLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return StrategyLoopOrderFORWARD
+}
+
 func (f GetStrategyGetFirstSetPrevious[K, V]) BeforeGet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) GetStrategyBeforeResult {
 	return GetStrategyBeforeResultGET
 }
@@ -32,6 +36,10 @@ func (f GetStrategyGetFirstSetPrevious[K, V]) AfterGet(ctx context.Context, cach
 		return GetStrategyAfterResultRETURN
 	}
 	return GetStrategyAfterResultSKIP
+}
+
+func (f GetStrategyGetFirstSetPrevious[K, V]) SetLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return StrategyLoopOrderBACKWARD
 }
 
 func (f GetStrategyGetFirstSetPrevious[K, V]) BeforeSet(ctx context.Context, gotCacheIdx, cacheIdx int, cache trcache.Cache[K, V], key K, value V) GetStrategyBeforeSetResult {
@@ -50,6 +58,10 @@ func (f GetStrategyGetFirstSetPrevious[K, V]) AfterSet(ctx context.Context, gotC
 type SetStrategySetAll[K comparable, V any] struct {
 }
 
+func (f SetStrategySetAll[K, V]) SetLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return StrategyLoopOrderFORWARD
+}
+
 func (f SetStrategySetAll[K, V]) BeforeSet(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K, value V) SetStrategyBeforeResult {
 	return SetStrategyBeforeResultSET
 }
@@ -61,6 +73,10 @@ func (f SetStrategySetAll[K, V]) AfterSet(ctx context.Context, cacheIdx int, cac
 // Implementations: Delete Strategy
 
 type DeleteStrategyDeleteAll[K comparable, V any] struct {
+}
+
+func (f DeleteStrategyDeleteAll[K, V]) DeleteLoopOrder(ctx context.Context) StrategyLoopOrder {
+	return StrategyLoopOrderFORWARD
 }
 
 func (f DeleteStrategyDeleteAll[K, V]) BeforeDelete(ctx context.Context, cacheIdx int, cache trcache.Cache[K, V], key K) DeleteStrategyBeforeResult {

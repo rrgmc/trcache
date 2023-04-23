@@ -25,13 +25,13 @@ func New[K comparable, V any](cache []trcache.Cache[K, V],
 	}
 
 	if ret.options.getStrategy == nil {
-		ret.options.getStrategy = GetStrategyGetFirstSetPrevious[K, V]{}
+		ret.options.getStrategy = NewDefaultGetStrategy[K, V]()
 	}
 	if ret.options.setStrategy == nil {
-		ret.options.setStrategy = &SetStrategySetAll[K, V]{}
+		ret.options.setStrategy = NewDefaultSetStrategy[K, V]()
 	}
 	if ret.options.deleteStrategy == nil {
-		ret.options.deleteStrategy = &DeleteStrategyDeleteAll[K, V]{}
+		ret.options.deleteStrategy = NewDefaultDeleteStrategy[K, V]()
 	}
 
 	return ret, nil

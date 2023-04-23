@@ -6,6 +6,18 @@ import (
 	"github.com/RangelReale/trcache"
 )
 
+func NewDefaultGetStrategy[K comparable, V any]() GetStrategy[K, V] {
+	return &GetStrategyGetFirstSetPrevious[K, V]{}
+}
+
+func NewDefaultSetStrategy[K comparable, V any]() SetStrategy[K, V] {
+	return &SetStrategySetAll[K, V]{}
+}
+
+func NewDefaultDeleteStrategy[K comparable, V any]() DeleteStrategy[K, V] {
+	return &DeleteStrategyDeleteAll[K, V]{}
+}
+
 // Implementations: StrategyCallback
 
 type StrategyCallbackFunc struct {

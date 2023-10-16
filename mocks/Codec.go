@@ -21,7 +21,60 @@ func (_m *Codec[V]) EXPECT() *Codec_Expecter[V] {
 	return &Codec_Expecter[V]{mock: &_m.Mock}
 }
 
-// Marshal provides a mock function with given fields: ctx, data
+// Decode provides a mock function with given fields: ctx, data
+func (_m *Codec[V]) Decode(ctx context.Context, data interface{}) (V, error) {
+	ret := _m.Called(ctx, data)
+
+	var r0 V
+	var r1 error
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}) (V, error)); ok {
+		return rf(ctx, data)
+	}
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}) V); ok {
+		r0 = rf(ctx, data)
+	} else {
+		r0 = ret.Get(0).(V)
+	}
+
+	if rf, ok := ret.Get(1).(func(context.Context, interface{}) error); ok {
+		r1 = rf(ctx, data)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Codec_Decode_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Decode'
+type Codec_Decode_Call[V interface{}] struct {
+	*mock.Call
+}
+
+// Decode is a helper method to define mock.On call
+//   - ctx context.Context
+//   - data interface{}
+func (_e *Codec_Expecter[V]) Decode(ctx interface{}, data interface{}) *Codec_Decode_Call[V] {
+	return &Codec_Decode_Call[V]{Call: _e.mock.On("Decode", ctx, data)}
+}
+
+func (_c *Codec_Decode_Call[V]) Run(run func(ctx context.Context, data interface{})) *Codec_Decode_Call[V] {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(interface{}))
+	})
+	return _c
+}
+
+func (_c *Codec_Decode_Call[V]) Return(_a0 V, _a1 error) *Codec_Decode_Call[V] {
+	_c.Call.Return(_a0, _a1)
+	return _c
+}
+
+func (_c *Codec_Decode_Call[V]) RunAndReturn(run func(context.Context, interface{}) (V, error)) *Codec_Decode_Call[V] {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Encode provides a mock function with given fields: ctx, data
 func (_m *Codec[V]) Encode(ctx context.Context, data V) (interface{}, error) {
 	ret := _m.Called(ctx, data)
 
@@ -47,84 +100,31 @@ func (_m *Codec[V]) Encode(ctx context.Context, data V) (interface{}, error) {
 	return r0, r1
 }
 
-// Codec_Marshal_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Encode'
-type Codec_Marshal_Call[V interface{}] struct {
+// Codec_Encode_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Encode'
+type Codec_Encode_Call[V interface{}] struct {
 	*mock.Call
 }
 
-// Marshal is a helper method to define mock.On call
+// Encode is a helper method to define mock.On call
 //   - ctx context.Context
 //   - data V
-func (_e *Codec_Expecter[V]) Marshal(ctx interface{}, data interface{}) *Codec_Marshal_Call[V] {
-	return &Codec_Marshal_Call[V]{Call: _e.mock.On("Encode", ctx, data)}
+func (_e *Codec_Expecter[V]) Encode(ctx interface{}, data interface{}) *Codec_Encode_Call[V] {
+	return &Codec_Encode_Call[V]{Call: _e.mock.On("Encode", ctx, data)}
 }
 
-func (_c *Codec_Marshal_Call[V]) Run(run func(ctx context.Context, data V)) *Codec_Marshal_Call[V] {
+func (_c *Codec_Encode_Call[V]) Run(run func(ctx context.Context, data V)) *Codec_Encode_Call[V] {
 	_c.Call.Run(func(args mock.Arguments) {
 		run(args[0].(context.Context), args[1].(V))
 	})
 	return _c
 }
 
-func (_c *Codec_Marshal_Call[V]) Return(_a0 interface{}, _a1 error) *Codec_Marshal_Call[V] {
+func (_c *Codec_Encode_Call[V]) Return(_a0 interface{}, _a1 error) *Codec_Encode_Call[V] {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *Codec_Marshal_Call[V]) RunAndReturn(run func(context.Context, V) (interface{}, error)) *Codec_Marshal_Call[V] {
-	_c.Call.Return(run)
-	return _c
-}
-
-// Unmarshal provides a mock function with given fields: ctx, data
-func (_m *Codec[V]) Decode(ctx context.Context, data interface{}) (V, error) {
-	ret := _m.Called(ctx, data)
-
-	var r0 V
-	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) (V, error)); ok {
-		return rf(ctx, data)
-	}
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) V); ok {
-		r0 = rf(ctx, data)
-	} else {
-		r0 = ret.Get(0).(V)
-	}
-
-	if rf, ok := ret.Get(1).(func(context.Context, interface{}) error); ok {
-		r1 = rf(ctx, data)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// Codec_Unmarshal_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Decode'
-type Codec_Unmarshal_Call[V interface{}] struct {
-	*mock.Call
-}
-
-// Unmarshal is a helper method to define mock.On call
-//   - ctx context.Context
-//   - data interface{}
-func (_e *Codec_Expecter[V]) Unmarshal(ctx interface{}, data interface{}) *Codec_Unmarshal_Call[V] {
-	return &Codec_Unmarshal_Call[V]{Call: _e.mock.On("Decode", ctx, data)}
-}
-
-func (_c *Codec_Unmarshal_Call[V]) Run(run func(ctx context.Context, data interface{})) *Codec_Unmarshal_Call[V] {
-	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(interface{}))
-	})
-	return _c
-}
-
-func (_c *Codec_Unmarshal_Call[V]) Return(_a0 V, _a1 error) *Codec_Unmarshal_Call[V] {
-	_c.Call.Return(_a0, _a1)
-	return _c
-}
-
-func (_c *Codec_Unmarshal_Call[V]) RunAndReturn(run func(context.Context, interface{}) (V, error)) *Codec_Unmarshal_Call[V] {
+func (_c *Codec_Encode_Call[V]) RunAndReturn(run func(context.Context, V) (interface{}, error)) *Codec_Encode_Call[V] {
 	_c.Call.Return(run)
 	return _c
 }

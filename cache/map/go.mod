@@ -3,7 +3,7 @@ module github.com/rrgmc/trcache/cache/map
 go 1.19
 
 require (
-	github.com/rrgmc/trcache v0.14.0
+	github.com/rrgmc/trcache v0.15.0
 	github.com/stretchr/testify v1.8.2
 )
 

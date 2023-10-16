@@ -3,8 +3,8 @@ module github.com/rrgmc/trcache/cache/ttlcache
 go 1.19
 
 require (
-	github.com/rrgmc/trcache v0.14.0
 	github.com/jellydator/ttlcache/v3 v3.0.1
+	github.com/rrgmc/trcache v0.15.0
 	github.com/stretchr/testify v1.8.2
 )
 

@@ -1,6 +1,6 @@
-# trcache ristretto [![GoDoc](https://godoc.org/github.com/RangelReale/trcache/cache/ristretto?status.png)](https://godoc.org/github.com/RangelReale/trcache/cache/ristretto)
+# trcache ristretto [![GoDoc](https://godoc.org/github.com/rrgmc/trcache/cache/ristretto?status.png)](https://godoc.org/github.com/rrgmc/trcache/cache/ristretto)
 
-This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [Ristretto](https://github.com/dgraph-io/ristretto).
+This is a [trcache](https://github.com/rrgmc/trcache) wrapper for [Ristretto](https://github.com/dgraph-io/ristretto).
 
 ## Info
 
@@ -23,5 +23,5 @@ This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [Ristret
 ## Installation
 
 ```shell
-go get github.com/RangelReale/trcache/cache/ristretto
+go get github.com/rrgmc/trcache/cache/ristretto
 ```

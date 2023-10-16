@@ -3,12 +3,12 @@
 package trttlcache
 
 import (
-	trcache "github.com/RangelReale/trcache"
+	trcache "github.com/rrgmc/trcache"
 	"time"
 )
 
 func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.DefaultDuration"
+	const optionName = "github.com/rrgmc/trcache/cache/ttlcache/options.DefaultDuration"
 	const optionHash = uint64(0xf4362521639a8ceb)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -20,7 +20,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.Ro
 	}, optionName, optionHash)
 }
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/options.Validator"
+	const optionName = "github.com/rrgmc/trcache/cache/ttlcache/options.Validator"
 	const optionHash = uint64(0xb698c8bd56c6af3e)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -32,7 +32,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 	}, optionName, optionHash)
 }
 func WithGetTouch[K comparable, V any](touch bool) trcache.GetOption {
-	const optionName = "github.com/RangelReale/trcache/cache/ttlcache/getOptions.Touch"
+	const optionName = "github.com/rrgmc/trcache/cache/ttlcache/getOptions.Touch"
 	const optionHash = uint64(0x88193653496df4fd)
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {

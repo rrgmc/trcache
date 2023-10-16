@@ -1,7 +1,7 @@
 package refresh
 
 import (
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // Option

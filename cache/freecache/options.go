@@ -3,7 +3,7 @@ package trfreecache
 import (
 	"time"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // Option

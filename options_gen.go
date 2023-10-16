@@ -6,7 +6,7 @@ import "time"
 
 // WithName sets the cache name.
 func WithName[K comparable, V any](name string) RootOption {
-	const optionName = "github.com/RangelReale/trcache/NameOptions.Name"
+	const optionName = "github.com/rrgmc/trcache/NameOptions.Name"
 	const optionHash = uint64(0x98d6a600b692b726)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -20,7 +20,7 @@ func WithName[K comparable, V any](name string) RootOption {
 
 // WithMetrics sets the [Metrics] instance to call for metrics.
 func WithMetrics[K comparable, V any](metrics Metrics, name string) RootOption {
-	const optionName = "github.com/RangelReale/trcache/MetricsOptions.Metrics"
+	const optionName = "github.com/rrgmc/trcache/MetricsOptions.Metrics"
 	const optionHash = uint64(0x1beb63d6b36d066c)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -34,7 +34,7 @@ func WithMetrics[K comparable, V any](metrics Metrics, name string) RootOption {
 
 // WithCallDefaultDeleteOptions sets the default options to be appended to all [Cache.Delete] calls.
 func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) RootOption {
-	const optionName = "github.com/RangelReale/trcache/CallDefaultOptions.CallDefaultDeleteOptions"
+	const optionName = "github.com/rrgmc/trcache/CallDefaultOptions.CallDefaultDeleteOptions"
 	const optionHash = uint64(0x406b2f02562353ed)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -48,7 +48,7 @@ func WithCallDefaultDeleteOptions[K comparable, V any](options ...DeleteOption) 
 
 // WithCallDefaultGetOptions sets the default options to be appended to all [Cache.Get] calls.
 func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption) RootOption {
-	const optionName = "github.com/RangelReale/trcache/CallDefaultOptions.CallDefaultGetOptions"
+	const optionName = "github.com/rrgmc/trcache/CallDefaultOptions.CallDefaultGetOptions"
 	const optionHash = uint64(0x22e5cf931cff25e)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -62,7 +62,7 @@ func WithCallDefaultGetOptions[K comparable, V any](options ...GetOption) RootOp
 
 // WithCallDefaultSetOptions sets the default options to be appended to all [Cache.Set] calls.
 func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOption {
-	const optionName = "github.com/RangelReale/trcache/CallDefaultOptions.CallDefaultSetOptions"
+	const optionName = "github.com/rrgmc/trcache/CallDefaultOptions.CallDefaultSetOptions"
 	const optionHash = uint64(0xbe5b3492dd589c42)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -76,7 +76,7 @@ func WithCallDefaultSetOptions[K comparable, V any](options ...SetOption) RootOp
 
 // WithCallDefaultRefreshOptions sets the default options to be appended to all [RefreshCache.GetOrRefresh] calls.
 func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption) RootOption {
-	const optionName = "github.com/RangelReale/trcache/CallDefaultRefreshOptions.CallDefaultRefreshOptions"
+	const optionName = "github.com/rrgmc/trcache/CallDefaultRefreshOptions.CallDefaultRefreshOptions"
 	const optionHash = uint64(0x1ff4089053065e4c)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -90,7 +90,7 @@ func WithCallDefaultRefreshOptions[K comparable, V any](options ...RefreshOption
 
 // WithSetDuration sets the cache duration (TTL) to be used for this set call instead of the default.
 func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
-	const optionName = "github.com/RangelReale/trcache/SetOptions.Duration"
+	const optionName = "github.com/rrgmc/trcache/SetOptions.Duration"
 	const optionHash = uint64(0x4782e16ce757eefa)
 	return SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -104,7 +104,7 @@ func WithSetDuration[K comparable, V any](duration time.Duration) SetOption {
 
 // WithRefreshData sets a custom data to be sent to the refresh function.
 func WithRefreshData[K comparable, V any](data interface{}) RefreshOption {
-	const optionName = "github.com/RangelReale/trcache/RefreshOptions.Data"
+	const optionName = "github.com/rrgmc/trcache/RefreshOptions.Data"
 	const optionHash = uint64(0x15f36f99082ff0db)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -118,7 +118,7 @@ func WithRefreshData[K comparable, V any](data interface{}) RefreshOption {
 
 // WithRefreshFunc sets the refresh function for this call, possibly overriding a default one.
 func WithRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) RefreshOption {
-	const optionName = "github.com/RangelReale/trcache/RefreshOptions.Func"
+	const optionName = "github.com/rrgmc/trcache/RefreshOptions.Func"
 	const optionHash = uint64(0x27dba799127e8249)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -132,7 +132,7 @@ func WithRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) Re
 
 // WithRefreshGetOptions sets the options to be appended to all [Cache.Get] calls inside the refresh function.
 func WithRefreshGetOptions[K comparable, V any](options ...GetOption) RefreshOption {
-	const optionName = "github.com/RangelReale/trcache/RefreshOptions.GetOptions"
+	const optionName = "github.com/rrgmc/trcache/RefreshOptions.GetOptions"
 	const optionHash = uint64(0x8991bcf58fe8472d)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -146,7 +146,7 @@ func WithRefreshGetOptions[K comparable, V any](options ...GetOption) RefreshOpt
 
 // WithRefreshSetOptions sets the options to be appended to all [Cache.Set] calls inside the refresh function.
 func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOption {
-	const optionName = "github.com/RangelReale/trcache/RefreshOptions.SetOptions"
+	const optionName = "github.com/rrgmc/trcache/RefreshOptions.SetOptions"
 	const optionHash = uint64(0x67f5357186bd5f31)
 	return RefreshOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -160,7 +160,7 @@ func WithRefreshSetOptions[K comparable, V any](options ...SetOption) RefreshOpt
 
 // WithDefaultRefreshFunc sets the default refresh function to be used for [RefreshCache.GetOrRefresh].
 func WithDefaultRefreshFunc[K comparable, V any](refreshFunc CacheRefreshFunc[K, V]) RootOption {
-	const optionName = "github.com/RangelReale/trcache/DefaultRefreshOptions.DefaultRefreshFunc"
+	const optionName = "github.com/rrgmc/trcache/DefaultRefreshOptions.DefaultRefreshFunc"
 	const optionHash = uint64(0x11a5dca1c92613ac)
 	return RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {

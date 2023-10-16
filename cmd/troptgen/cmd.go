@@ -32,7 +32,7 @@ type specValue struct {
 }
 
 const directive = "//troptgen:"
-const rootPackage = "github.com/RangelReale/trcache"
+const rootPackage = "github.com/rrgmc/trcache"
 
 func runMain() error {
 

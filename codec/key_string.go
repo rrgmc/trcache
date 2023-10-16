@@ -3,7 +3,7 @@ package codec
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // StringKeyCodec is a key codec that converts all values to string.

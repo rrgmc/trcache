@@ -1,6 +1,6 @@
-# trcache gocache [![GoDoc](https://godoc.org/github.com/RangelReale/trcache/cache/gocache?status.png)](https://godoc.org/github.com/RangelReale/trcache/cache/gocache)
+# trcache gocache [![GoDoc](https://godoc.org/github.com/rrgmc/trcache/cache/gocache?status.png)](https://godoc.org/github.com/rrgmc/trcache/cache/gocache)
 
-This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [go-cache](https://github.com/patrickmn/go-cache).
+This is a [trcache](https://github.com/rrgmc/trcache) wrapper for [go-cache](https://github.com/patrickmn/go-cache).
 
 ## Info
 
@@ -23,5 +23,5 @@ This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [go-cach
 ## Installation
 
 ```shell
-go get github.com/RangelReale/trcache/cache/gocache
+go get github.com/rrgmc/trcache/cache/gocache
 ```

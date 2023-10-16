@@ -2,7 +2,7 @@
 
 package refresh
 
-import trcache "github.com/RangelReale/trcache"
+import trcache "github.com/rrgmc/trcache"
 
 type rootOptionsImpl[K comparable, V any] struct {
 	callDefaultRefreshOptions []trcache.RefreshOption

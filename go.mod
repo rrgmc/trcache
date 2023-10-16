@@ -1,4 +1,4 @@
-module github.com/RangelReale/trcache
+module github.com/rrgmc/trcache
 
 go 1.19
 

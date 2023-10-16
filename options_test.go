@@ -3,7 +3,7 @@ package trcache_test
 import (
 	"testing"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 	"github.com/stretchr/testify/require"
 )
 

@@ -20,7 +20,7 @@ test:
 .PHONY: update-dep-version
 update-dep-version:
 	test -n "$(TAG)"  # $$TAG
-	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go get github.com/RangelReale/trcache@$(TAG); go mod tidy'
+	find ./cache -maxdepth 1 ! -path ./cache -type d | xargs -I % sh -c 'cd %; go get github.com/rrgmc/trcache@$(TAG); go mod tidy'
 
 git-status:
 	@status=$$(git status --porcelain); \

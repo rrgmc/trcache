@@ -6,7 +6,7 @@ import (
 	"encoding/gob"
 	"fmt"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // GOBCodec is a Codec that marshals from/to [encoding/gob].

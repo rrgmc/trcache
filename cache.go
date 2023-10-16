@@ -7,7 +7,7 @@ import (
 // Cache is the base interface for all cache implementations.
 type Cache[K comparable, V any] interface {
 	// Name returns the name for the cache. It can be useful in cases where multiple caches are used at the same time,
-	// like on [github.com/RangelReale/trcache/cache/chain.Chain]. It often is blank.
+	// like on [github.com/rrgmc/trcache/cache/chain.Chain]. It often is blank.
 	Name() string
 
 	// Get gets the value of an item from the cache with this key. If not found, it returns [ErrNotFound] as the error.

@@ -1,4 +1,4 @@
-# trcache [![GoDoc](https://godoc.org/github.com/RangelReale/trcache?status.png)](https://godoc.org/github.com/RangelReale/trcache)
+# trcache [![GoDoc](https://godoc.org/github.com/rrgmc/trcache?status.png)](https://godoc.org/github.com/rrgmc/trcache)
 
 Package trcache implements strongly-typed generics-based cache library wrappers.
 
@@ -21,13 +21,13 @@ The wrappers are highly customizable and allows accessing the underlying cache f
 A loadable (refresh) implementation is available for all caches, which provides a "GetOrRefresh" method which
 calls a refresh function if the data was not found in "Get".
 
-A [chain](https://pkg.go.dev/github.com/RangelReale/trcache/cache/chain) implementation is available to chain
+A [chain](https://pkg.go.dev/github.com/rrgmc/trcache/cache/chain) implementation is available to chain
 multiples caches in sequence, for example to use an in-memory cache with a lower TTL before calling a Redis backend.
 
 ## Installation
 
 ```go
-go get github.com/RangelReale/trcache
+go get github.com/rrgmc/trcache
 ```
 
 ## Examples
@@ -107,15 +107,15 @@ fmt.Println(v)
 
 ## Implementations
 
-- Go `map`: [github.com/RangelReale/trcache/cache/map](https://pkg.go.dev/github.com/RangelReale/trcache/cache/map)
-- Chain (ordered list of caches): [github.com/RangelReale/trcache/cache/chain](https://pkg.go.dev/github.com/RangelReale/trcache/cache/chain)
-- bigcache: [github.com/RangelReale/trcache/cache/bigcache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/bigcache)
-- freecache: [github.com/RangelReale/trcache/cache/freecache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/freecache)
-- gocache: [github.com/RangelReale/trcache/cache/gocache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/gocache)
-- ristretto: [github.com/RangelReale/trcache/cache/ristretto](https://pkg.go.dev/github.com/RangelReale/trcache/cache/ristretto)
-- ttlcache: [github.com/RangelReale/trcache/cache/ttlcache](https://pkg.go.dev/github.com/RangelReale/trcache/cache/ttlcache)
-- goredis: [github.com/RangelReale/trcache-goredis](https://github.com/RangelReale/trcache-goredis)
-- rueidis: [github.com/RangelReale/trcache-rueidis](https://github.com/RangelReale/trcache-rueidis)
+- Go `map`: [github.com/rrgmc/trcache/cache/map](https://pkg.go.dev/github.com/rrgmc/trcache/cache/map)
+- Chain (ordered list of caches): [github.com/rrgmc/trcache/cache/chain](https://pkg.go.dev/github.com/rrgmc/trcache/cache/chain)
+- bigcache: [github.com/rrgmc/trcache/cache/bigcache](https://pkg.go.dev/github.com/rrgmc/trcache/cache/bigcache)
+- freecache: [github.com/rrgmc/trcache/cache/freecache](https://pkg.go.dev/github.com/rrgmc/trcache/cache/freecache)
+- gocache: [github.com/rrgmc/trcache/cache/gocache](https://pkg.go.dev/github.com/rrgmc/trcache/cache/gocache)
+- ristretto: [github.com/rrgmc/trcache/cache/ristretto](https://pkg.go.dev/github.com/rrgmc/trcache/cache/ristretto)
+- ttlcache: [github.com/rrgmc/trcache/cache/ttlcache](https://pkg.go.dev/github.com/rrgmc/trcache/cache/ttlcache)
+- goredis: [github.com/rrgmc/trcache-goredis](https://github.com/rrgmc/trcache-goredis)
+- rueidis: [github.com/rrgmc/trcache-rueidis](https://github.com/rrgmc/trcache-rueidis)
 
 ## Author
 

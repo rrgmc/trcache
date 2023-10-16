@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/RangelReale/trcache"
-	trmap "github.com/RangelReale/trcache/cache/map"
+	"github.com/rrgmc/trcache"
+	trmap "github.com/rrgmc/trcache/cache/map"
 )
 
 func ExampleCache() {

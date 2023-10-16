@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/codec"
 	"github.com/dgraph-io/ristretto"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/codec"
 )
 
 type Cache[K comparable, V any] struct {

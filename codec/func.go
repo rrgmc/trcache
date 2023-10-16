@@ -3,7 +3,7 @@ package codec
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // FuncCodec is a Codec that uses the passed functions as its methods.

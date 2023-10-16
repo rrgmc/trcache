@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // JSONCodec is a Codec that marshals from/to JSON.

@@ -3,7 +3,7 @@ package trttlcache
 import (
 	"time"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 // Root options

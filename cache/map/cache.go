@@ -3,7 +3,7 @@ package trmap
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 type Cache[K comparable, V any] struct {

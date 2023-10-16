@@ -3,12 +3,12 @@
 package trfreecache
 
 import (
-	trcache "github.com/RangelReale/trcache"
+	trcache "github.com/rrgmc/trcache"
 	"time"
 )
 
 func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.DefaultDuration"
+	const optionName = "github.com/rrgmc/trcache/cache/freecache/options.DefaultDuration"
 	const optionHash = uint64(0xfc78f1dc412cb93)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -20,7 +20,7 @@ func WithDefaultDuration[K comparable, V any](duration time.Duration) trcache.Ro
 	}, optionName, optionHash)
 }
 func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.KeyCodec"
+	const optionName = "github.com/rrgmc/trcache/cache/freecache/options.KeyCodec"
 	const optionHash = uint64(0xb9ee75f082d5a609)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -32,7 +32,7 @@ func WithKeyCodec[K comparable, V any](keyCodec trcache.KeyCodec[K]) trcache.Roo
 	}, optionName, optionHash)
 }
 func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.Validator"
+	const optionName = "github.com/rrgmc/trcache/cache/freecache/options.Validator"
 	const optionHash = uint64(0x6922cae8c8088f36)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -44,7 +44,7 @@ func WithValidator[K comparable, V any](validator trcache.Validator[V]) trcache.
 	}, optionName, optionHash)
 }
 func WithValueCodec[K comparable, V any](valueCodec trcache.Codec[V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/freecache/options.ValueCodec"
+	const optionName = "github.com/rrgmc/trcache/cache/freecache/options.ValueCodec"
 	const optionHash = uint64(0x24b0cbecad2b20f)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {

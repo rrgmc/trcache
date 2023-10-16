@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/codec"
 	"github.com/allegro/bigcache/v3"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/codec"
 )
 
 type Cache[K comparable, V any] struct {

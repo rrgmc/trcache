@@ -3,9 +3,9 @@ package trristretto
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/refresh"
 	"github.com/dgraph-io/ristretto"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/refresh"
 )
 
 type RefreshCache[K comparable, V any] struct {

@@ -3,9 +3,9 @@ package trttlcache
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/refresh"
 	"github.com/jellydator/ttlcache/v3"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/refresh"
 )
 
 type RefreshCache[K comparable, V any] struct {

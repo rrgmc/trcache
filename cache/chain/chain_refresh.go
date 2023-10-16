@@ -3,8 +3,8 @@ package chain
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/refresh"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/refresh"
 )
 
 type ChainRefresh[K comparable, V any] struct {

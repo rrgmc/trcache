@@ -156,7 +156,7 @@ func FromTypeParam(tp *types.TypeParam) *jen.Statement {
 
 func CheckCustomNamedType(t *types.Named) (bool, *jen.Statement) {
 	if t.Obj().Pkg() != nil && t.Obj().Pkg().Path() == rootPackage && t.Obj().Name() == "IOption" {
-		// github.com/RangelReale/trcache/IOption[IXXXOpt]
+		// github.com/rrgmc/trcache/IOption[IXXXOpt]
 		if t.TypeArgs().Len() > 0 {
 			switch tt := t.TypeArgs().At(0).(type) {
 			case *types.Named:

@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	trcache "github.com/RangelReale/trcache"
+	trcache "github.com/rrgmc/trcache"
 	mock "github.com/stretchr/testify/mock"
 )
 

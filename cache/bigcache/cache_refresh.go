@@ -3,9 +3,9 @@ package trbigcache
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/refresh"
 	"github.com/allegro/bigcache/v3"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/refresh"
 )
 
 type RefreshCache[K comparable, V any] struct {

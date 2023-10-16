@@ -1,4 +1,4 @@
-module github.com/RangelReale/trcache/cmd/troptgen
+module github.com/rrgmc/trcache/cmd/troptgen
 
 go 1.19
 

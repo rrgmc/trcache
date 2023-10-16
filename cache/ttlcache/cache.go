@@ -3,8 +3,8 @@ package trttlcache
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
 	"github.com/jellydator/ttlcache/v3"
+	"github.com/rrgmc/trcache"
 )
 
 type Cache[K comparable, V any] struct {

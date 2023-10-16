@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/RangelReale/trcache"
-	"github.com/RangelReale/trcache/mocks"
 	"github.com/patrickmn/go-cache"
+	"github.com/rrgmc/trcache"
+	"github.com/rrgmc/trcache/mocks"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )

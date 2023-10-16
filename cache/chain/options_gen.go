@@ -3,13 +3,13 @@
 package chain
 
 import (
-	trcache "github.com/RangelReale/trcache"
+	trcache "github.com/rrgmc/trcache"
 	"time"
 )
 
 // WithDefaultStrategyCallback sets a callback function to receive strategy results.
 func WithDefaultStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/options.DefaultStrategyCallback"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/options.DefaultStrategyCallback"
 	const optionHash = uint64(0xba694c293ad3e7ba)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -24,7 +24,7 @@ func WithDefaultStrategyCallback[K comparable, V any](callback StrategyCallback)
 // WithDeleteStrategy sets the [DeleteStrategy] to use for the chain operation. The default is
 // [DeleteStrategyDeleteAll].
 func WithDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/options.DeleteStrategy"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/options.DeleteStrategy"
 	const optionHash = uint64(0x9611f18cf7185dfb)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -39,7 +39,7 @@ func WithDeleteStrategy[K comparable, V any](deleteStrategy DeleteStrategy[K, V]
 // WithGetStrategy sets the [GetStrategy] to use for the chain operation. The default is
 // [GetStrategyGetFirstSetPrevious].
 func WithGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/options.GetStrategy"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/options.GetStrategy"
 	const optionHash = uint64(0x6eeb406b2a0672b8)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -54,7 +54,7 @@ func WithGetStrategy[K comparable, V any](getStrategy GetStrategy[K, V]) trcache
 // WithSetStrategy sets the [SetStrategy] to use for the chain operation. The default is
 // [SetStrategySetAll].
 func WithSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache.RootOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/options.SetStrategy"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/options.SetStrategy"
 	const optionHash = uint64(0x1dcc48665967d4c)
 	return trcache.RootOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -68,7 +68,7 @@ func WithSetStrategy[K comparable, V any](setStrategy SetStrategy[K, V]) trcache
 
 // WithGetSetOptions adds options to the [Cache.Set] call done after one of the [Cache.Get] function calls succeeds.
 func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcache.GetOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.SetOptions"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/getOptions.SetOptions"
 	const optionHash = uint64(0x20cdc9d4030ddb85)
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -82,7 +82,7 @@ func WithGetSetOptions[K comparable, V any](options ...trcache.SetOption) trcach
 
 // WithGetStrategyCallback sets a callback function to receive strategy results.
 func WithGetStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.GetOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/getOptions.StrategyCallback"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/getOptions.StrategyCallback"
 	const optionHash = uint64(0xf083d5cb17c16a0d)
 	return trcache.GetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -96,7 +96,7 @@ func WithGetStrategyCallback[K comparable, V any](callback StrategyCallback) trc
 
 // WithSetStrategyCallback sets a callback function to receive strategy results.
 func WithSetStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.SetOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/setOptions.StrategyCallback"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/setOptions.StrategyCallback"
 	const optionHash = uint64(0xcc37a90344a23759)
 	return trcache.SetOptionFunc(func(o any) bool {
 		switch opt := o.(type) {
@@ -110,7 +110,7 @@ func WithSetStrategyCallback[K comparable, V any](callback StrategyCallback) trc
 
 // WithDeleteStrategyCallback sets a callback function to receive strategy results.
 func WithDeleteStrategyCallback[K comparable, V any](callback StrategyCallback) trcache.DeleteOption {
-	const optionName = "github.com/RangelReale/trcache/cache/chain/deleteOptions.StrategyCallback"
+	const optionName = "github.com/rrgmc/trcache/cache/chain/deleteOptions.StrategyCallback"
 	const optionHash = uint64(0xe0f7c60406a6643e)
 	return trcache.DeleteOptionFunc(func(o any) bool {
 		switch opt := o.(type) {

@@ -1,4 +1,4 @@
-[![GoDoc](https://godoc.org/github.com/RangelReale/trcache/cmd/troptgen?status.png)](https://godoc.org/github.com/RangelReale/trcache/cmd/troptgen)
+[![GoDoc](https://godoc.org/github.com/rrgmc/trcache/cmd/troptgen?status.png)](https://godoc.org/github.com/rrgmc/trcache/cmd/troptgen)
 
 trcache troptgen
 ================
@@ -7,5 +7,5 @@ trcache troptgen
 ## Installation
 
 ```go
-go install github.com/RangelReale/trcache/cmd/troptgen@latest
+go install github.com/rrgmc/trcache/cmd/troptgen@latest
 ```

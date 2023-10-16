@@ -3,7 +3,7 @@ package chain
 import (
 	"context"
 
-	"github.com/RangelReale/trcache"
+	"github.com/rrgmc/trcache"
 )
 
 func NewDefaultGetStrategy[K comparable, V any]() GetStrategy[K, V] {

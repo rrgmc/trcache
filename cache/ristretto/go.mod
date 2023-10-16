@@ -1,9 +1,9 @@
-module github.com/RangelReale/trcache/cache/ristretto
+module github.com/rrgmc/trcache/cache/ristretto
 
 go 1.19
 
 require (
-	github.com/RangelReale/trcache v0.14.0
+	github.com/rrgmc/trcache v0.14.0
 	github.com/dgraph-io/ristretto v0.1.1
 	github.com/stretchr/testify v1.8.2
 )
@@ -21,4 +21,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/RangelReale/trcache => ../..
+replace github.com/rrgmc/trcache => ../..

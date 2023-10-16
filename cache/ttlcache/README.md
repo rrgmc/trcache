@@ -1,6 +1,6 @@
-# trcache ttlcache [![GoDoc](https://godoc.org/github.com/RangelReale/trcache/cache/ttlcache?status.png)](https://godoc.org/github.com/RangelReale/trcache/cache/ttlcache)
+# trcache ttlcache [![GoDoc](https://godoc.org/github.com/rrgmc/trcache/cache/ttlcache?status.png)](https://godoc.org/github.com/rrgmc/trcache/cache/ttlcache)
 
-This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [TTLCache](github.com/jellydator/ttlcache).
+This is a [trcache](https://github.com/rrgmc/trcache) wrapper for [TTLCache](github.com/jellydator/ttlcache).
 
 ## Info
 
@@ -23,5 +23,5 @@ This is a [trcache](https://github.com/RangelReale/trcache) wrapper for [TTLCach
 ## Installation
 
 ```shell
-go get github.com/RangelReale/trcache/cache/ttlcache
+go get github.com/rrgmc/trcache/cache/ttlcache
 ```
